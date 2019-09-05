@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-09-04 16:12:48
+ * @LastEditTime: 2019-09-05 10:29:03
  * @LastEditors: Please set LastEditors
  */
 
@@ -27,8 +27,8 @@ extern int list_insert(list_t* list, node_t node, list_node_t* before)
 
     if (before)
     {
-        
-        list_node_t *list_node = (list_node_t *)allocate(pool, sizeof(list_node_t));
+        int ret;
+        list_node_t *list_node = (list_node_t *)allocate(pool(&ret), sizeof(list_node_t));
         list_node->node = node;
 
         list_node->prve = before->prve;
@@ -38,7 +38,6 @@ extern int list_insert(list_t* list, node_t node, list_node_t* before)
         before->prve = list_node;
 
         return ++list->size;
-        return 0;
     }
     return -1;
 }
@@ -53,8 +52,8 @@ extern int list_delete(list_t* list, list_node_t* del_node)
         if ( del_node->node.clean) {
             del_node->node.clean(&(del_node->node));
         }
-
-        deallocate(pool, del_node, sizeof(list_node_t));
+        
+        deallocate(pool(NULL), del_node, sizeof(list_node_t));
 
         return --list->size;
     }

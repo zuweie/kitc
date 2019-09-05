@@ -33,26 +33,26 @@ mem_pool_objects := $(subst .c,.o,$(mem_pool_sources))
 test_objects  	 := $(subst .c,.o,$(test_sources))
 
 INCLUDE_FLAGS   := $(addprefix -I, $(base_dir)) $(addprefix -I, $(mem_pool_dir)) 
-PROGRAM_CFLAGS  := -lm -g -Wall -O3 $(INCLUDE_FLAGS) 
+PROGRAM_CFLAGS  := -lcunit -lm -g $(INCLUDE_FLAGS) 
 LIBS_CFLAGS     := -lm $(INCLUDE_FLAGS) 
 
-.PHONY: debug
-debug:
-	@echo $(INCLUDE_FLAGS)
-	@echo $(PROGRAM_CFLAGS)
-	@echo $(LIBS_CFLAGS)
-	@echo ---------------------
-	@echo $(base_sources)
-	@echo $(base_headers)
-	@echo $(mem_pool_sources)
-	@echo $(mem_pool_headers)
-	@echo $(test_sources)
-	@echo ----------------------
-	@echo $(base_objects)
-	@echo $(mem_pool_objects)
-	@echo $(test_objects)
-	@echo ----------------------
-	@echo $(data_curr_dir)
+# .PHONY: debug
+# debug:
+# 	@echo $(INCLUDE_FLAGS)
+# 	@echo $(PROGRAM_CFLAGS)
+# 	@echo $(LIBS_CFLAGS)
+# 	@echo ---------------------
+# 	@echo $(base_sources)
+# 	@echo $(base_headers)
+# 	@echo $(mem_pool_sources)
+# 	@echo $(mem_pool_headers)
+# 	@echo $(test_sources)
+# 	@echo ----------------------
+# 	@echo $(base_objects)
+# 	@echo $(mem_pool_objects)
+# 	@echo $(test_objects)
+# 	@echo ----------------------
+# 	@echo $(data_curr_dir)
 
 MV  :=  mv -f
 RM  :=  rm 
@@ -75,6 +75,6 @@ $(libs): $(base_sources) $(mem_pool_sources)
 
 .PHONY: clean
 clean:
-	$(RM) -rf $(base_objects) $(mem_pool_objects) $(bin_dir) $(export_header_dir)/*.h 
+	$(RM) -rf $(test_objects) $(base_objects) $(mem_pool_objects) $(bin_dir) $(export_header_dir)/*.h 
 
  
