@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:40
- * @LastEditTime: 2019-09-03 19:42:52
+ * @LastEditTime: 2019-09-04 16:11:21
  * @LastEditors: Please set LastEditors
  */
 
@@ -24,8 +24,8 @@
 typedef struct _list_node
 {
     /* data */
-    list_node_t* prve;
-    list_node_t* next;
+    struct _list_node* prve;
+    struct _list_node* next;
     node_t node;
 
 } list_node_t;

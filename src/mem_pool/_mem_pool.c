@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 17:13:19
- * @LastEditTime: 2019-09-03 19:52:07
+ * @LastEditTime: 2019-09-04 16:15:12
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -11,16 +11,24 @@
 
 
 
-static void * _refill(alloc_t * palloc, size_t n);
-static char * _chunk_alloc (alloc_t * palloc, size_t size, int * nobjs);
+static void * _refill(pool_t * palloc, size_t n);
+static char * _chunk_alloc (pool_t * palloc, size_t size, int * nobjs);
 
-extern alloc_t* instance() {
-    static alloc_t instance;
-    alloc_init(&instance);
-    return &instance;
+// 全局的 pool变量。
+static pool_t POOL_INSTANCE;
+
+extern pool_t* instance() {
+
+    static pool_t* instance = NULL;
+
+    if (!instance) {
+        alloc_init(&POOL_INSTANCE);
+    }
+    
+    return instance;
 }
 
-extern void alloc_init(alloc_t * palloc)
+extern void alloc_init(pool_t * palloc)
 {
 	memset(palloc->free_list, 0, sizeof(palloc->free_list));
 	palloc->start_free = 0;
@@ -29,7 +37,7 @@ extern void alloc_init(alloc_t * palloc)
 	return;
 }
 
-extern void *allocate (alloc_t* palloc, size_t n)
+extern void *allocate (pool_t* palloc, size_t n)
 {
 	if (n <= (size_t)__MAX_BYTES){
 		pool_node_t * volatile * my_free_list;
@@ -49,7 +57,7 @@ extern void *allocate (alloc_t* palloc, size_t n)
 	}
 }
 
-extern void deallocate (alloc_t * palloc, void * p, size_t n)
+extern void deallocate (pool_t * palloc, void * p, size_t n)
 {
 	pool_node_t *q = (pool_node_t *) p;
 	pool_node_t *volatile * my_free_list;
@@ -63,7 +71,7 @@ extern void deallocate (alloc_t * palloc, void * p, size_t n)
 }
 
 #if ALLOC_DEBUG
-extern size_t oz_freelist_size (alloc_t * palloc, size_t n)
+extern size_t freelist_size (pool_t * palloc, size_t n)
 {
 	pool_node_t * volatile * my_free_list = palloc->free_list + FREELIST_INDEX(n);
 	pool_node_t * current_obj;
@@ -77,7 +85,7 @@ extern size_t oz_freelist_size (alloc_t * palloc, size_t n)
 }
 #endif
 
-static void * _refill (alloc_t* palloc, size_t n)
+static void * _refill (pool_t* palloc, size_t n)
 {
 	int nobjs = 20;
 	char * chunk =  _chunk_alloc(palloc, n, &nobjs);
@@ -129,7 +137,7 @@ static void * _refill (alloc_t* palloc, size_t n)
  *  4 再递归调用自己看看内存池还有没有。
  */
 
-static char * _chunk_alloc(alloc_t *palloc, size_t size, int * nobjs)
+static char * _chunk_alloc(pool_t *palloc, size_t size, int * nobjs)
 {
 	char* result;
 	size_t total_bytes = size * (*nobjs);
@@ -168,7 +176,7 @@ static char * _chunk_alloc(alloc_t *palloc, size_t size, int * nobjs)
 						palloc->start_free = (char*) p;
 						palloc->end_free = palloc->start_free +i;
 						// 释放完了，继续调用自己看看，mem pool 里面够不够内存返回。
-						return (chunk_alloc(palloc, size, nobjs));
+						return (_chunk_alloc(palloc, size, nobjs));
 					}
 			}
 			//到了这里一点内存也没有了。只能返回空null
@@ -178,7 +186,7 @@ static char * _chunk_alloc(alloc_t *palloc, size_t size, int * nobjs)
 		// 申请到内存,下次多申请一点
 		palloc->heap_size += bytes_to_get;
 		palloc->end_free = palloc->start_free + bytes_to_get;
-		return (chunk_alloc(palloc, size, nobjs));
+		return (_chunk_alloc(palloc, size, nobjs));
 	}
 
 }
