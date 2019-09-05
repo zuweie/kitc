@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-05 19:31:05
+ * @LastEditTime: 2019-09-06 00:27:10
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -62,20 +62,23 @@ void test_mem_pool_inspect (void) {
     CU_ASSERT(1);
     pool_t pool;
     alloc_init(&pool);
-    inspect_pool(&pool);
+    //inspect_pool(&pool);
     char* test1 = allocate(&pool, 7);
-    char* test2 = allocate(&pool, 7);
-    char* test3 = allocate(&pool, 7);
-    char* test4 = allocate(&pool, 7);
-    char* test5 = allocate(&pool, 7);
-    char* test6 = allocate(&pool, 7);
+    strcpy(test1, "123456");
+    printf("test is %s \n", test1);
+    //char* test2 = allocate(&pool, 7);
+    //char* test3 = allocate(&pool, 9);
+    //char* test4 = allocate(&pool, 17);
+    //char* test5 = allocate(&pool, 25);
+    //char* test6 = allocate(&pool, 33);
+    
     inspect_pool(&pool);
-    deallocate(&pool, test1, 7);
-    deallocate(&pool, test2, 7);
-    deallocate(&pool, test3, 7);
-    deallocate(&pool, test4, 7);
-    deallocate(&pool, test5, 7);
-    deallocate(&pool, test6, 7);
+    deallocate(&pool, test1);
+    //deallocate(&pool, test2, 7);
+    //deallocate(&pool, test3, 9);
+    //deallocate(&pool, test4, 17);
+    //deallocate(&pool, test5, 25);
+    //deallocate(&pool, test6, 33);
     inspect_pool(&pool);
 }
 

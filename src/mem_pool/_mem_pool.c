@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 17:13:19
- * @LastEditTime: 2019-09-05 21:01:41
+ * @LastEditTime: 2019-09-06 00:24:34
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -11,7 +11,7 @@
 
 
 
-static int * _refill(pool_t * palloc, size_t n);
+static int _refill(pool_t * palloc, size_t n);
 static char * _chunk_alloc (pool_t * palloc, size_t size, int * nobjs);
 
 // 全局的 pool变量。
@@ -44,32 +44,41 @@ extern void *allocate (pool_t* palloc, size_t x)
 	// 多加一个info的空位放置块信息。
 	//x += __NODE_INFO_BYTES;
 
-	if (x <= (size_t)__MAX_BYTES){
+	if ( ATTACH_INFO_SIZE(x) <= (size_t)__MAX_BYTES ){
+
 		pool_node_t * volatile * my_free_list;
 		pool_node_t * result;
 
-		my_free_list = palloc->free_list + FREELIST_INDEX(x);
+		my_free_list = palloc->free_list + FREELIST_INDEX(ATTACH_INFO_SIZE(x));
 		result = *my_free_list;
 
-		if (result == 0){
-			void * r = _refill(palloc, ROUND_UP(x));
-			return r;
+		if (result == 0 ){
+			// 重新填充 free list
+			return (_refill(palloc, ROUND_UP(ATTACH_INFO_SIZE(x))) == 0) ? allocate(palloc, x) : result;
+			
+		}else{
+			// 把slot第一个指针指向下个块，这个块就返回出去。给用户用了
+			*my_free_list = result->free_list_link;
+			//result->slot = FREELIST_INDEX(x);
+			result->slot =  FREELIST_INDEX(ATTACH_INFO_SIZE(x));
+			
+			return (EXPORT_POINTER(result));
 		}
-		// 把slot第一个指针指向下个块，这个块就返回出去。给用户用了
-		*my_free_list = result->free_list_link;
-		result->slot = FREELIST_INDEX(x);
-		return (result);
+
 	}else{
 		return malloc(x);
 	}
 }
 
-extern void deallocate (pool_t * palloc, void * p, size_t n)
+extern void deallocate (pool_t * palloc, void * p)
 {
-	pool_node_t *q = (pool_node_t *) p;
-	pool_node_t *volatile * my_free_list;
-	if (n <= (size_t) __MAX_BYTES){
-		my_free_list = palloc->free_list + FREELIST_INDEX(n);
+	pool_node_t *q = (pool_node_t *) RECOVER_POINTER(p);
+	size_t n = q->slot;
+	
+	if (n <= FREELIST_SIZE){
+		// 这里是头部插入。
+		pool_node_t *volatile * my_free_list;
+		my_free_list = palloc->free_list + n;
 		q->free_list_link = * my_free_list;
 		*my_free_list = q;
 	}else{
@@ -92,19 +101,19 @@ extern size_t freelist_size (pool_t * palloc, size_t n)
 }
 
 extern void inspect_pool(pool_t* pool) {
-	printf("\n----------------- Inspect Pool -----------------\n");
+	printf("\n***************** Inspect Pool ***********************\n");
 	printf(" Pool Heap size : %d \n", pool->heap_size);
 	printf(" Pool size : %d \n", (pool->end_free - pool->start_free));
 	printf(" Pool start at : %p \n", pool->start_free);
 	printf(" Pool end at : %p \n", pool->end_free);
-	printf("\n\n\n");
+	printf("\n\n");
 	printf("----------------- Inspect Free List -----------------\n\n");
 	int i;
 	for (i=0; i<FREELIST_SIZE; ++i) {
 		pool_node_t * volatile * my_free_list = pool->free_list + i;
 		pool_node_t * first = * my_free_list;
 		if (first) {
-			printf("------------- slot %02d --------------\n", i);
+			printf("------------- slot %02d for size %d --------------\n", i, size_of_slot(i));
 			int j = 0;
 			for (j = 0, first; first != 0; first = first->free_list_link, ++j)
 			{
@@ -114,14 +123,21 @@ extern void inspect_pool(pool_t* pool) {
 		}
 
 	}
+	printf("\n*********************************************************\n");
+}
+
+extern size_t size_of_slot (int slot) {
+	return (slot + 1) * __ALIGN;
 }
 #endif
 
-static int * _refill (pool_t* palloc, size_t n)
+static int _refill (pool_t* palloc, size_t n)
 {
-	int nobjs = 20;
+	int nobjs = __REFILL_CHUNK_SIZE;
+
 	// chunk 是 nobjs 个大小为 n 的block。
-	// nobjs 进入未必一定满足。
+	// _chunk_alloc 后返回 nobjs 是获得块的个数。
+	
 	char * chunk =  _chunk_alloc(palloc, n, &nobjs);
 	if (0 == chunk) {
 		// 拿不到任何内存
@@ -129,43 +145,33 @@ static int * _refill (pool_t* palloc, size_t n)
 	}
 
 	pool_node_t * volatile * my_free_list;
-	//pool_node_t * result;
 	pool_node_t * current_obj;
     pool_node_t * next_obj;
-    
-	/* 
-	int i;
-	if (1 == nobjs ) {
-		return chunk;
+    int list_index = FREELIST_INDEX(n);
+	if (list_index == 1) {
+		int i =0;
 	}
-	*/
-
-	my_free_list = palloc->free_list + FREELIST_INDEX(n);
-	result = chunk;
-
-	// 原来的代码可能有一个bug
-	// 这里chunk + n 是指将chunk偏移n的size，也就是从下一个nsize的地址赋值给指针链表的
-	// 应为第一个nsize是要返回给用户使用的。剩下的编入free_list
-	// 原来的 chunk + n 的写法应该是有错误的，因为 chunk + n 则偏移了 n 个oz_node 的大小。而不是nsize的大小。
-	// 稍候验证一下。
+	my_free_list = palloc->free_list + list_index;
 	
-	// 先切一块大小为n的块，剩下的chunk用来切豆腐。
-	*my_free_list = next_obj = (pool_node_t*) ((char*) chunk + n);
+	// 直接切豆腐，放入对应的篮中
+	*my_free_list = next_obj = (pool_node_t*) chunk;
 
 	// 拿到的chunk开始切豆腐。切成对应的solt大小的快编入连表中。
-	for (i=1;;++i){
+	int i;
+	for (i=1; i<=nobjs; ++i){
 		current_obj = next_obj;
 		// next_obj + n 是指将一个块完整的内存块，每个size个大小就切开来。
 		//  这个n 可能是 8 16 24 32 。。。128
 		next_obj = (pool_node_t *) ((char *) next_obj + n);
-		if (nobjs - 1 == i) {
-			current_obj ->free_list_link = 0;
+		if (nobjs == i) {
+			// 最后一块，尾巴收0
+			current_obj->free_list_link = 0;
 			break;
 		}else{
-			current_obj ->free_list_link = next_obj;
+			current_obj->free_list_link = next_obj;
 		}
 	}
-	return (result);
+	return (0);
 }
 
 /**
