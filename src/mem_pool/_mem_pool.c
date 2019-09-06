@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 17:13:19
- * @LastEditTime: 2019-09-06 08:29:45
+ * @LastEditTime: 2019-09-06 12:05:27
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -44,7 +44,7 @@ extern void *allocate(pool_t *palloc, size_t x)
 	// 多加一个info的空位放置块信息。
 	//x += __NODE_INFO_BYTES;
 
-	if (POOL_FREELIST_INDEX(POOL_ATTACH_INFO_SIZE(x)) <= POOL_FREELIST_SIZE)
+	if ( POOL_FREELIST_INDEX(POOL_ATTACH_INFO_SIZE(x)) < POOL_FREELIST_SIZE)
 	{
 
 		pool_node_t *volatile *my_free_list;
@@ -62,32 +62,25 @@ extern void *allocate(pool_t *palloc, size_t x)
 		{
 			// 把slot第一个指针指向下个块，这个块就返回出去。给用户用了
 			*my_free_list = result->free_list_link;
-			result->slot = POOL_FREELIST_INDEX(POOL_ATTACH_INFO_SIZE(x));
+			//result->slot = POOL_FREELIST_INDEX(POOL_ATTACH_INFO_SIZE(x));
+			set_node_header_slot(result, POOL_FREELIST_INDEX(POOL_ATTACH_INFO_SIZE(x)));
 			return POOL_EXPORT_POINTER(result);
 		}
 	}
-	else
-	{
-		return malloc(x);
-	}
+	return NULL;
 }
 
 extern void deallocate(pool_t *palloc, void *p)
 {
 	pool_node_t *q = (pool_node_t *)POOL_RECOVER_POINTER(p);
-	size_t n = q->slot;
-
-	if (n <= POOL_FREELIST_SIZE)
+	size_t slot = get_node_header_slot(q);
+	if (slot < POOL_FREELIST_SIZE)
 	{
 		// 这里是头部插入。
 		pool_node_t *volatile *my_free_list;
-		my_free_list = palloc->free_list + n;
+		my_free_list = palloc->free_list + slot;
 		q->free_list_link = *my_free_list;
 		*my_free_list = q;
-	}
-	else
-	{
-		free(p);
 	}
 }
 
@@ -139,6 +132,25 @@ extern size_t size_of_slot(int slot)
 	return (slot + 1) * __ALIGN;
 }
 #endif
+
+extern void set_node_slot(pool_node_t* p, unsigned int slot)
+{
+	
+	for (int i=__SLOT_INFO_BYTES-1, j=0; i>=0; --i, ++j) 
+	{
+		p->slot[i] = (unsigned char)(slot>>j*8);
+	}
+	return;
+}
+
+extern unsigned int get_node_slot(pool_node_t* p){
+	unsigned int slot = 0;
+	for (int i=0,j=__SLOT_INFO_BYTES-1; i<__SLOT_INFO_BYTES; ++i, --j) 
+	{
+		slot |= (unsigned int)(p->slot[i]<<j*8);
+	}
+	return slot;
+}
 
 static int _refill(pool_t *palloc, size_t n)
 {

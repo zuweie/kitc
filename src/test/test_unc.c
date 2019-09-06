@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-06 08:22:55
+ * @LastEditTime: 2019-09-06 11:38:09
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -63,29 +63,37 @@ void test_mem_pool_inspect (void) {
     pool_t pool;
     alloc_init(&pool);
     //inspect_pool(&pool);
-    char* test1 = allocate(&pool, 25);
-    char* test2 = allocate(&pool, 8);
-    char* test3 = allocate(&pool, 9);
-    char* test4 = allocate(&pool, 17);
-    char* test5 = allocate(&pool, 25);
-    char* test6 = allocate(&pool, 33);
-    
+    // char* test1 = allocate(&pool, 25);
+    // char* test2 = allocate(&pool, 8);
+    // char* test3 = allocate(&pool, 9);
+    // char* test4 = allocate(&pool, 17);
+    // char* test5 = allocate(&pool, 25);
+    // char* test6 = allocate(&pool, 33);
+    char* test7 = allocate(&pool, 2998);
     inspect_pool(&pool);
 
-    memset(test1, 0, 25);
-    memset(test2, 0, 8);
-    memset(test3, 0, 9);
-    memset(test4, 0, 17);
-    memset(test5, 0, 25);
-    memset(test6,0, 33);
+    // memset(test1, 0, 25);
+    // memset(test2, 0, 8);
+    // memset(test3, 0, 9);
+    // memset(test4, 0, 17);
+    // memset(test5, 0, 25);
+    // memset(test6,0, 33);
 
-    deallocate(&pool, test1);
-    deallocate(&pool, test2);
-    deallocate(&pool, test3);
-    deallocate(&pool, test4);
-    deallocate(&pool, test5);
-    deallocate(&pool, test6);
+    // deallocate(&pool, test1);
+    // deallocate(&pool, test2);
+    // deallocate(&pool, test3);
+    // deallocate(&pool, test4);
+    // deallocate(&pool, test5);
+    // deallocate(&pool, test6);
+    deallocate(&pool, test7);
     inspect_pool(&pool);
+}
+
+void 
+test_mem_pool_maxslot (void)
+{
+    CU_ASSERT(1);
+    printf("\n%ld\n", (unsigned int)POOL_MAX_FREELIST_SLOT);
 }
 
 int main () 
@@ -104,12 +112,18 @@ int main ()
       CU_cleanup_registry();
       return CU_get_error();
     }
-
+    /*
+    if (NULL == CU_add_test(pSuite, "test_mem_pool_maxslot", test_mem_pool_maxslot) ) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+    */
+    
     if (NULL == CU_add_test(pSuite, "test_mem_pool_inspect", test_mem_pool_inspect) ) {
         CU_cleanup_registry();
         return CU_get_error();
     }
-
+    
     /* 
     if (NULL == CU_add_test(pSuite, "test_mem_instance", test_mem_instance) ) {
         CU_cleanup_registry();
