@@ -2,7 +2,7 @@
  * @Description: 一个简单的内存池模型
  * @Author: zuweie
  * @Date: 2019-09-03 17:13:11
- * @LastEditTime: 2019-09-06 12:05:11
+ * @LastEditTime: 2019-09-06 17:11:37
  * @LastEditors: Please set LastEditors
  */
 #ifndef _MEM_POOL_H_
@@ -27,7 +27,7 @@
 //     i=...,  最大值为...
 #define MAX_VAL_OF_BYTES(i) ((1<<(8*i-1)) | ~(-(1<<(8*i-1))))
 
-#define POOL_MAX_FREELIST_SIZE MAX_VAL_OF_BYTES(__SLOT_INFO_BYTES)
+#define POOL_MAX_FREELIST_SLOT MAX_VAL_OF_BYTES(__SLOT_INFO_BYTES)
 
 #define POOL_ROUND_UP(x) (((x) + __ALIGN - 1) & ~(__ALIGN - 1))
 #define POOL_FREELIST_INDEX(x) (((x) + __ALIGN - 1) / __ALIGN - 1)
@@ -67,10 +67,8 @@ extern void set_node_slot(pool_node_t* node, unsigned int);
 extern unsigned int get_node_slot(pool_node_t* p);
 
 #if ALLOC_DEBUG
-extern size_t freelist_size(pool_t *, size_t n);
 extern void inspect_pool(pool_t *);
 extern size_t size_of_slot(int slot);
-
 #endif
 
 #endif

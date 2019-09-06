@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-06 11:38:09
+ * @LastEditTime: 2019-09-06 17:04:46
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -69,7 +69,7 @@ void test_mem_pool_inspect (void) {
     // char* test4 = allocate(&pool, 17);
     // char* test5 = allocate(&pool, 25);
     // char* test6 = allocate(&pool, 33);
-    char* test7 = allocate(&pool, 2998);
+    char* test7 = allocate(&pool, 126);
     inspect_pool(&pool);
 
     // memset(test1, 0, 25);

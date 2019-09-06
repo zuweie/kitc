@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 17:13:19
- * @LastEditTime: 2019-09-06 12:05:27
+ * @LastEditTime: 2019-09-06 17:13:33
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -62,8 +62,7 @@ extern void *allocate(pool_t *palloc, size_t x)
 		{
 			// 把slot第一个指针指向下个块，这个块就返回出去。给用户用了
 			*my_free_list = result->free_list_link;
-			//result->slot = POOL_FREELIST_INDEX(POOL_ATTACH_INFO_SIZE(x));
-			set_node_header_slot(result, POOL_FREELIST_INDEX(POOL_ATTACH_INFO_SIZE(x)));
+			set_node_slot(result, POOL_FREELIST_INDEX(POOL_ATTACH_INFO_SIZE(x)));
 			return POOL_EXPORT_POINTER(result);
 		}
 	}
@@ -72,32 +71,22 @@ extern void *allocate(pool_t *palloc, size_t x)
 
 extern void deallocate(pool_t *palloc, void *p)
 {
-	pool_node_t *q = (pool_node_t *)POOL_RECOVER_POINTER(p);
-	size_t slot = get_node_header_slot(q);
-	if (slot < POOL_FREELIST_SIZE)
+	if (p)
 	{
-		// 这里是头部插入。
-		pool_node_t *volatile *my_free_list;
-		my_free_list = palloc->free_list + slot;
-		q->free_list_link = *my_free_list;
-		*my_free_list = q;
+		pool_node_t *q = (pool_node_t *)POOL_RECOVER_POINTER(p);
+		size_t slot = get_node_slot(q);
+		if (slot < POOL_FREELIST_SIZE)
+		{
+			// 这里是头部插入。
+			pool_node_t *volatile *my_free_list;
+			my_free_list = palloc->free_list + slot;
+			q->free_list_link = *my_free_list;
+			*my_free_list = q;
+		}
 	}
 }
 
 #if ALLOC_DEBUG
-extern size_t freelist_size(pool_t *palloc, size_t n)
-{
-	pool_node_t *volatile *my_free_list = palloc->free_list + POOL_FREELIST_INDEX(n);
-	pool_node_t *current_obj;
-	current_obj = *my_free_list;
-	size_t count = 0;
-	while (0 != current_obj && current_obj->free_list_link != 0)
-	{
-		current_obj = current_obj->free_list_link;
-		++count;
-	}
-	return count;
-}
 
 extern void inspect_pool(pool_t *pool)
 {
@@ -108,16 +97,16 @@ extern void inspect_pool(pool_t *pool)
 	printf(" Pool end at : %p \n", pool->end_free);
 	printf("\n\n");
 	printf("----------------- Inspect Free List -----------------\n\n");
-	int i;
-	for (i = 0; i < POOL_FREELIST_SIZE; ++i)
+	
+	for (int i = 0; i < POOL_FREELIST_SIZE; ++i)
 	{
 		pool_node_t *volatile *my_free_list = pool->free_list + i;
 		pool_node_t *first = *my_free_list;
 		if (first)
 		{
 			printf("------------- slot %02d for size %d --------------\n", i, size_of_slot(i));
-			int j = 0;
-			for (j = 0, first; first != 0; first = first->free_list_link, ++j)
+			int j;
+			for (j = 0; first != 0; first = first->free_list_link, ++j)
 			{
 				printf(" %d node at %p\n", j, first);
 			}
@@ -143,7 +132,8 @@ extern void set_node_slot(pool_node_t* p, unsigned int slot)
 	return;
 }
 
-extern unsigned int get_node_slot(pool_node_t* p){
+extern unsigned int get_node_slot(pool_node_t* p)
+{
 	unsigned int slot = 0;
 	for (int i=0,j=__SLOT_INFO_BYTES-1; i<__SLOT_INFO_BYTES; ++i, --j) 
 	{
@@ -175,8 +165,7 @@ static int _refill(pool_t *palloc, size_t n)
 	*my_free_list = next_obj = (pool_node_t *)chunk;
 
 	// 拿到的chunk开始切豆腐。切成对应的solt大小的快编入连表中。
-	int i;
-	for (i = 1; i <= nobjs; ++i)
+	for (int i = 1; i <= nobjs; ++i)
 	{
 		current_obj = next_obj;
 		// next_obj + n 是指将一个块完整的内存块，每个size个大小就切开来。
@@ -263,9 +252,9 @@ static char *_chunk_alloc(pool_t *palloc, size_t size, int *nobjs)
 		if (0 == palloc->start_free)
 		{
 			// 当想系统申请内存失败的时候，将freelist其他还未用的内存拿回来，然后看看能不能组成一块，返回给用户。
-			int i;
+			
 			pool_node_t *volatile *my_free_list, *p;
-			for (i = size; i < __MAX_BYTES; i += __ALIGN)
+			for (int i = size; i < __MAX_BYTES; i += __ALIGN)
 			{
 				my_free_list = palloc->free_list + POOL_FREELIST_INDEX(i);
 				p = *my_free_list;
