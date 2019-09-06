@@ -2,7 +2,7 @@
  * @Description: 一个简单的内存池模型
  * @Author: zuweie
  * @Date: 2019-09-03 17:13:11
- * @LastEditTime: 2019-09-06 17:11:37
+ * @LastEditTime: 2019-09-06 19:54:27
  * @LastEditors: Please set LastEditors
  */
 #ifndef _MEM_POOL_H_
@@ -12,31 +12,43 @@
 
 #define ALLOC_DEBUG 1
 
+// 申请内存最少为8个byte。
 #define __ALIGN 8
-#define __MAX_BYTES 128
 
-// slot_info_bytes 占位最多4个字节 多了不知会发生什么可怕的事情。
+// 每次重新装到freelist时的内存块数量
+#define __REFILL_CHUNK_SIZE 2
+
+// 每块重此出去的内存,最大只能是4.多了会出事的啊。千万别乱来啊。
 #define __SLOT_INFO_BYTES 1
-#define __REFILL_CHUNK_SIZE 20
-
-#define POOL_FREELIST_SIZE (__MAX_BYTES) / (__ALIGN)
 
 //此宏求i个byte的最大无符号值。
 // 例如 i=1，最大值为255
 //     i=2, 最大值为65535
 //     i=...,  最大值为...
-#define MAX_VAL_OF_BYTES(i) ((1<<(8*i-1)) | ~(-(1<<(8*i-1))))
+// 
+// i 为 1 时的计算过程：
+//     1 << 8            => 0000 0000 1000 0000
+// - (1 << 8)            => 1111 1111 1000 0000
+// ~ (-(1<<8))           => 0000 0000 0111 1111
+// (1<<8) | (~(-(1<<8))) => 0000 0000 1111 1111
+#define __MAX_VAL_OF_BYTES(i) ((1<<(8*i-1)) | ~(-(1<<(8*i-1))))
 
-#define POOL_MAX_FREELIST_SLOT MAX_VAL_OF_BYTES(__SLOT_INFO_BYTES)
+#define __MAX_FREELIST_SIZE __MAX_VAL_OF_BYTES(__SLOT_INFO_BYTES)
+
+// 保留一位用作内存数超出最大size的标志位
+#define __MAX_BYTES ( (__MAX_FREELIST_SIZE - 1) * __ALIGN )
+
+#define __FREELIST_SIZE (__MAX_BYTES) / (__ALIGN)
 
 #define POOL_ROUND_UP(x) (((x) + __ALIGN - 1) & ~(__ALIGN - 1))
 #define POOL_FREELIST_INDEX(x) (((x) + __ALIGN - 1) / __ALIGN - 1)
 
-#define POOL_ATTACH_INFO_SIZE(x) (x + __SLOT_INFO_BYTES)
-#define POOL_DETACH_INFO_SIZE(X) (x - __SLOT_INFO_BYTES)
+#define POOL_ATTACH_SLOT_INFO_SIZE(x) (x + __SLOT_INFO_BYTES)
+#define POOL_DETACH_SLOT_INFO_SIZE(X) (x - __SLOT_INFO_BYTES)
 
 #define POOL_EXPORT_POINTER(p) ((char *)p + __SLOT_INFO_BYTES)
 #define POOL_RECOVER_POINTER(p) ((char *)p - __SLOT_INFO_BYTES)
+
 #define pool(x) instance(x)
 
 typedef union _pool_node 
@@ -55,7 +67,7 @@ typedef struct _pool
 	char *start_free;
 	char *end_free;
 	size_t heap_size;
-	pool_node_t *volatile free_list[POOL_FREELIST_SIZE];
+	pool_node_t *volatile free_list[__FREELIST_SIZE];
 
 } pool_t;
 

@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-06 17:04:46
+ * @LastEditTime: 2019-09-06 19:46:54
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -28,9 +28,9 @@ test_mem_instance(void) {
 
 void 
 test_mem_attr(void) {
-    CU_ASSERT(POOL_FREELIST_SIZE == 16);
+    CU_ASSERT(__FREELIST_SIZE == 16);
 
-    printf("%d", POOL_FREELIST_SIZE);
+    printf("%d", __FREELIST_SIZE);
     printf("\n%d\n", POOL_ROUND_UP(9));
     printf("%d\n", POOL_ROUND_UP(97));
     printf("%d\n", POOL_ROUND_UP(3399));
@@ -69,7 +69,7 @@ void test_mem_pool_inspect (void) {
     // char* test4 = allocate(&pool, 17);
     // char* test5 = allocate(&pool, 25);
     // char* test6 = allocate(&pool, 33);
-    char* test7 = allocate(&pool, 126);
+    char* test7 = allocate(&pool, 2032);
     inspect_pool(&pool);
 
     // memset(test1, 0, 25);
@@ -93,7 +93,7 @@ void
 test_mem_pool_maxslot (void)
 {
     CU_ASSERT(1);
-    printf("\n%ld\n", (unsigned int)POOL_MAX_FREELIST_SLOT);
+    printf("\n%ld\n", (unsigned int)__MAX_FREELIST_SIZE);
 }
 
 int main () 
