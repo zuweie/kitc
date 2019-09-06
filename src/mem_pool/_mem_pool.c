@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 17:13:19
- * @LastEditTime: 2019-09-06 00:24:34
+ * @LastEditTime: 2019-09-06 08:20:17
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -44,25 +44,23 @@ extern void *allocate (pool_t* palloc, size_t x)
 	// 多加一个info的空位放置块信息。
 	//x += __NODE_INFO_BYTES;
 
-	if ( ATTACH_INFO_SIZE(x) <= (size_t)__MAX_BYTES ){
+	if ( POOL_FREELIST_INDEX( POOL_ATTACH_INFO_SIZE(x) ) <= POOL_FREELIST_SIZE ){
 
 		pool_node_t * volatile * my_free_list;
 		pool_node_t * result;
 
-		my_free_list = palloc->free_list + FREELIST_INDEX(ATTACH_INFO_SIZE(x));
+		my_free_list = palloc->free_list + POOL_FREELIST_INDEX( POOL_ATTACH_INFO_SIZE(x) );
 		result = *my_free_list;
 
 		if (result == 0 ){
 			// 重新填充 free list
-			return (_refill(palloc, ROUND_UP(ATTACH_INFO_SIZE(x))) == 0) ? allocate(palloc, x) : result;
+			return (_refill(palloc, POOL_ROUND_UP( POOL_ATTACH_INFO_SIZE(x) )) == 0) ? allocate(palloc, x) : result;
 			
 		}else{
 			// 把slot第一个指针指向下个块，这个块就返回出去。给用户用了
 			*my_free_list = result->free_list_link;
-			//result->slot = FREELIST_INDEX(x);
-			result->slot =  FREELIST_INDEX(ATTACH_INFO_SIZE(x));
-			
-			return (EXPORT_POINTER(result));
+			result->slot = POOL_FREELIST_INDEX( POOL_ATTACH_INFO_SIZE(x) );
+			return POOL_EXPORT_POINTER(result);
 		}
 
 	}else{
@@ -72,10 +70,10 @@ extern void *allocate (pool_t* palloc, size_t x)
 
 extern void deallocate (pool_t * palloc, void * p)
 {
-	pool_node_t *q = (pool_node_t *) RECOVER_POINTER(p);
+	pool_node_t *q = (pool_node_t *) POOL_RECOVER_POINTER(p);
 	size_t n = q->slot;
 	
-	if (n <= FREELIST_SIZE){
+	if (n <= POOL_FREELIST_SIZE){
 		// 这里是头部插入。
 		pool_node_t *volatile * my_free_list;
 		my_free_list = palloc->free_list + n;
@@ -89,7 +87,7 @@ extern void deallocate (pool_t * palloc, void * p)
 #if ALLOC_DEBUG
 extern size_t freelist_size (pool_t * palloc, size_t n)
 {
-	pool_node_t * volatile * my_free_list = palloc->free_list + FREELIST_INDEX(n);
+	pool_node_t * volatile * my_free_list = palloc->free_list + POOL_FREELIST_INDEX(n);
 	pool_node_t * current_obj;
 	current_obj = *my_free_list;
 	size_t count = 0;
@@ -109,7 +107,7 @@ extern void inspect_pool(pool_t* pool) {
 	printf("\n\n");
 	printf("----------------- Inspect Free List -----------------\n\n");
 	int i;
-	for (i=0; i<FREELIST_SIZE; ++i) {
+	for (i=0; i<POOL_FREELIST_SIZE; ++i) {
 		pool_node_t * volatile * my_free_list = pool->free_list + i;
 		pool_node_t * first = * my_free_list;
 		if (first) {
@@ -147,11 +145,7 @@ static int _refill (pool_t* palloc, size_t n)
 	pool_node_t * volatile * my_free_list;
 	pool_node_t * current_obj;
     pool_node_t * next_obj;
-    int list_index = FREELIST_INDEX(n);
-	if (list_index == 1) {
-		int i =0;
-	}
-	my_free_list = palloc->free_list + list_index;
+	my_free_list = palloc->free_list + POOL_FREELIST_INDEX(n);
 	
 	// 直接切豆腐，放入对应的篮中
 	*my_free_list = next_obj = (pool_node_t*) chunk;
@@ -203,7 +197,7 @@ static char * _chunk_alloc(pool_t *palloc, size_t size, int * nobjs)
 		return (result);
 	}else{
 		// 水池剩下的内存比一块size的都要少。
-		size_t bytes_to_get = 2 * total_bytes + ROUND_UP(palloc->heap_size >> 4);
+		size_t bytes_to_get = 2 * total_bytes + POOL_ROUND_UP(palloc->heap_size >> 4);
 
 		// 着堆代码是什么鬼意思呢
 		if (bytes_left > 0) {
@@ -214,7 +208,7 @@ static char * _chunk_alloc(pool_t *palloc, size_t size, int * nobjs)
 			 // my_free_list是第 FREELIST_INDEX(bytes_left)个槽的指向第一个块的指针。
 			 // 这里注意要将期编入free list
 
-			 pool_node_t * volatile * my_free_list = palloc->free_list + FREELIST_INDEX(bytes_left);
+			 pool_node_t * volatile * my_free_list = palloc->free_list + POOL_FREELIST_INDEX(bytes_left);
 			 
 			// 分析说明：
 			// 1 ((pool_node_t *) (palloc->start_free)) 这个其实就是将水池剩下的chunk变成(pool_node_t) 
@@ -237,7 +231,7 @@ static char * _chunk_alloc(pool_t *palloc, size_t size, int * nobjs)
 			int i;
 			pool_node_t * volatile * my_free_list, *p;
 			for (i=size; i<__MAX_BYTES; i += __ALIGN) {
-					my_free_list = palloc->free_list + FREELIST_INDEX(i);
+					my_free_list = palloc->free_list + POOL_FREELIST_INDEX(i);
 					p = *my_free_list;
 					// 以下代码其实跟allocate中 free_list 不为0时返回的结果一样。
 					// 但是这里是当前的slot没有的话就去找下一个更加大的slot，

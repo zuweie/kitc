@@ -2,7 +2,7 @@
  * @Description: 一个简单的内存池模型
  * @Author: zuweie
  * @Date: 2019-09-03 17:13:11
- * @LastEditTime: 2019-09-06 00:21:11
+ * @LastEditTime: 2019-09-06 08:25:31
  * @LastEditors: Please set LastEditors
  */
 #ifndef _MEM_POOL_H_
@@ -16,17 +16,17 @@
 #define __MAX_BYTES 128
 
 #define __NODE_INFO_BYTES 1
-#define __REFILL_CHUNK_SIZE 2
+#define __REFILL_CHUNK_SIZE 20
 
-#define FREELIST_SIZE  (__MAX_BYTES)/(__ALIGN)
-#define ROUND_UP(x) (((x) +  __ALIGN-1) & ~(__ALIGN - 1))
-#define FREELIST_INDEX(x) (((x) + __ALIGN-1)/__ALIGN -1)
+#define POOL_FREELIST_SIZE  (__MAX_BYTES)/(__ALIGN)
+#define POOL_ROUND_UP(x) (((x) +  __ALIGN-1) & ~(__ALIGN - 1))
+#define POOL_FREELIST_INDEX(x) (((x) + __ALIGN-1)/__ALIGN -1)
 
-#define ATTACH_INFO_SIZE(x) (x + __NODE_INFO_BYTES)
-#define DETACH_INFO_SIZE(X) (x - __NODE_INFO_BYTES)
+#define POOL_ATTACH_INFO_SIZE(x) (x + __NODE_INFO_BYTES)
+#define POOL_DETACH_INFO_SIZE(X) (x - __NODE_INFO_BYTES)
 
-#define EXPORT_POINTER(p) (p + __NODE_INFO_BYTES)
-#define RECOVER_POINTER(p) (p - __NODE_INFO_BYTES)
+#define POOL_EXPORT_POINTER(p) ((char*)p + __NODE_INFO_BYTES)
+#define POOL_RECOVER_POINTER(p) ((char*)p - __NODE_INFO_BYTES)
 #define pool(x) instance(x)
 
 typedef union _pool_node
@@ -46,7 +46,7 @@ typedef struct _pool
 	char * start_free;
 	char * end_free;
 	size_t heap_size;
-	pool_node_t * volatile free_list[FREELIST_SIZE];
+	pool_node_t * volatile free_list[POOL_FREELIST_SIZE];
 
 } pool_t;
 
