@@ -2,12 +2,12 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:40
- * @LastEditTime: 2019-09-04 16:11:21
+ * @LastEditTime: 2019-09-07 23:24:48
  * @LastEditors: Please set LastEditors
  */
 
-#ifndef _list_h_
-#define _list_h_
+#ifndef _LIST_H_
+#define _LIST_H_
 #include "_node.h"
 
 #define list_head(list) (&((list)->sentinel))

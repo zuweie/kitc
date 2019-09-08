@@ -2,22 +2,20 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 13:29:13
- * @LastEditTime: 2019-09-03 18:29:55
+ * @LastEditTime: 2019-09-07 23:24:18
  * @LastEditors: Please set LastEditors
  */
 
-#ifndef _node_h_
-#define _node_h_
+#ifndef _NODE_H_
+#define _NODE_H_
 
-typedef struct _node
+typedef union _node
 {
+    
     /* key */
     int id;
     /* data */
     void* data;
-    /* clean up function */
-    int (*clean)(void*);
-
 } node_t;
 
 // 
