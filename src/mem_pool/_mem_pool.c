@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 17:13:19
- * @LastEditTime: 2019-09-06 19:20:58
+ * @LastEditTime: 2019-09-09 16:49:48
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -10,12 +10,12 @@
 #include "_mem_pool.h"
 
 static int _refill(pool_t *palloc, size_t n);
-static char *_chunk_alloc(pool_t *palloc, size_t size, int *nobjs);
+static char* _chunk_alloc(pool_t *palloc, size_t size, int *nobjs);
 
 // 全局的 pool变量。
 static pool_t POOL_INSTANCE;
 
-extern pool_t *instance(int *ret)
+pool_t *instance(int *ret)
 {
 
 	ret ? *ret = 1 : 0;
@@ -30,7 +30,7 @@ extern pool_t *instance(int *ret)
 	return p_instance;
 }
 
-extern int alloc_init(pool_t *palloc)
+int alloc_init(pool_t *palloc)
 {
 	memset(palloc->free_list, 0, sizeof(palloc->free_list));
 	palloc->start_free = 0;
@@ -39,7 +39,7 @@ extern int alloc_init(pool_t *palloc)
 	return 0;
 }
 
-extern void *allocate(pool_t *palloc, size_t x)
+void* allocate(pool_t *palloc, size_t x)
 {
 	// 多加一个info的空位放置块信息。
 	//x += __NODE_INFO_BYTES;
@@ -83,7 +83,7 @@ extern void *allocate(pool_t *palloc, size_t x)
 }
 
 // 接受的指针必须是从allocate出来的～～～否则后果难料啊。
-extern void deallocate(pool_t *palloc, void *p)
+void deallocate(pool_t *palloc, void *p)
 {
 	if (p)
 	{
@@ -107,7 +107,7 @@ extern void deallocate(pool_t *palloc, void *p)
 
 #if ALLOC_DEBUG
 
-extern void inspect_pool(pool_t *pool)
+void inspect_pool(pool_t *pool)
 {
 	printf("\n***************** Inspect Pool ***********************\n");
 	printf(" Pool Heap size : %d \n", pool->heap_size);
@@ -135,13 +135,13 @@ extern void inspect_pool(pool_t *pool)
 	printf("\n*********************************************************\n");
 }
 
-extern size_t size_of_slot(int slot)
+size_t size_of_slot(int slot)
 {
 	return (slot + 1) * __ALIGN;
 }
 #endif
 
-extern void set_node_slot(pool_node_t *p, unsigned int slot)
+void set_node_slot(pool_node_t *p, unsigned int slot)
 {
 
 	for (int i = __SLOT_INFO_BYTES - 1, j = 0; i >= 0; --i, ++j)
@@ -151,7 +151,7 @@ extern void set_node_slot(pool_node_t *p, unsigned int slot)
 	return;
 }
 
-extern unsigned int get_node_slot(pool_node_t *p)
+unsigned int get_node_slot(pool_node_t *p)
 {
 	unsigned int slot = 0;
 	for (int i = 0, j = __SLOT_INFO_BYTES - 1; i < __SLOT_INFO_BYTES; ++i, --j)

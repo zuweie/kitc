@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:54
- * @LastEditTime: 2019-09-08 18:32:03
+ * @LastEditTime: 2019-09-09 23:21:17
  * @LastEditors: Please set LastEditors
  */
 #ifndef _ITERATOR_H_
@@ -11,26 +11,29 @@
 #include "_container.h"
 #include "_node.h"
 
-#define dereference(iter) (&iter)->dereference(iter)
-#define next(iter) (&iter)->next(iter)
-#define forward(iter) (&iter)->forward(iter)
-#define has_next(iter) (&iter)->has_next(iter)
-#define compare(iter1, iter2) (&iter)->compare(iter1, iter2)
+//typedef struct _iterator iterator_t;
+#define iterator_reference(iter) ((&iter)->reference)
+#define iterator_next(iter) (&iter)->next(iter)
+#define iterator_prev(iter) (&iter)->prev(iter)
+#define iterator_equal(iter1, iter2) (&iter1)->equal(iter1, iter2)
+#define iterator_assign(iter1, iter2) (&iter1)->assign(iter1, iter2)
 
-#define initialize_iterator (iter, dereference, next, forward, has_next, compare) do { \
-    iter->dereference = dereference;    \
-    iter->next = next;                  \
-    iter->forward = forward;            \
-    iter->has_next = has_next;          \
-    iter->compare = compare;            \
+#define initialize_iterator(iter, __refer, __next, __prev, __equal, __assign) do { \
+    (&iter)->reference   = (__refer);          \
+    (&iter)->next        = (__next);           \
+    (&iter)->prev        = (__prev);           \
+    (&iter)->equal       = (__equal);          \
+    (&iter)->assign      = (__assign);         \
 } while(0)
 
-typedef struct _iterator {
-    void* (*dereference)(struct _iterator);
-    struct _iterator (*next)(struct _iteractor);
-    struct _iterator (*forward)(struct _iteractor);
-    unsigned char (*has_next)(struct _iteractor);
-    int (*compare)(struct _iterator, struct _iterator);
-} iterator_t;
+typedef struct _iterator iterator_t;
+
+struct _iterator {
+    iterator_t (*next)(iterator_t);
+    iterator_t (*prev)(iterator_t);
+    int (*equal) (iterator_t t1, iterator_t t2);
+    int (*assign) (iterator_t t1, iterator_t t2);
+    void* reference;
+};
 
 #endif
