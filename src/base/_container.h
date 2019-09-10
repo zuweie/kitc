@@ -2,14 +2,15 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:46
- * @LastEditTime: 2019-09-10 13:54:16
+ * @LastEditTime: 2019-09-10 14:22:28
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CONTAINER_H_
 #define _CONTAINER_H_
 
-#include "_iterator.h"
+
 #include "_type_value.h"
+#include "_iterator.h"
 
 #define container_first(container) (((container_t*)(container))->first(container))
 #define container_last(container) (((container_t*)(container))->last(container))
@@ -26,8 +27,8 @@
 } while (0)
 
 typedef struct _container container_t;
+typedef struct _iterator iterator_t;
 struct _container {
-    
     iterator_t (*first) (container_t* container);   
     iterator_t (*last) (container_t * container);   
     iterator_t (*find) (container_t* container, type_value_t data, int (*compare)(type_value_t, type_value_t)); 

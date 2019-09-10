@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:54
- * @LastEditTime: 2019-09-10 13:23:45
+ * @LastEditTime: 2019-09-10 14:21:33
  * @LastEditors: Please set LastEditors
  */
 #ifndef _ITERATOR_H_
@@ -21,7 +21,6 @@
 
 
 typedef struct _iterator iterator_t;
-
 struct _iterator {
     type_value_t (*dereference) (iterator_t);
     iterator_t (*next)(iterator_t);
@@ -31,6 +30,6 @@ struct _iterator {
     void* reference;
 };
 
-extern inline iterator_t get_iterator(void*, type_value_t (*) (iterator_t), iterator_t (*)(iterator_t), iterator_t (*)(iterator_t));
+extern iterator_t get_iterator(void*, type_value_t (*) (iterator_t), iterator_t (*)(iterator_t), iterator_t (*)(iterator_t));
 
 #endif

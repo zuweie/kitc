@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 13:29:13
- * @LastEditTime: 2019-09-10 12:47:49
+ * @LastEditTime: 2019-09-10 18:53:46
  * @LastEditors: Please set LastEditors
  */
 
@@ -13,6 +13,7 @@ typedef unsigned int type_value_size;
 
 typedef union _type_value
 {
+   void* pointer;
    unsigned char type_value[sizeof(type_value_size)];
 } type_value_t;
 

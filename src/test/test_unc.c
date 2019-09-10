@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-10 10:02:00
+ * @LastEditTime: 2019-09-10 19:04:32
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -10,6 +10,7 @@
 #include "_mem_pool.h"
 #include "_type_value.h"
 #include "_vector.h"
+#include "_list.h"
 
 
 int suite_success_init(void) {
@@ -101,9 +102,38 @@ test_mem_pool_maxslot (void)
 
 void test_vector (void) {
     vector_t vet;
-    iterator_t first = container_first(&vet);
-    iterator_t last_next = iterator_next( container_last(&vet) );
+    init_vector(&vet);
     
+    iterator_t first = container_first(&vet);
+
+    for(int i=0; i<10; ++i) {
+        container_insert(&vet, first, int_type(i*10));
+    }
+    
+    iterator_t tail = iterator_next( container_last(&vet) );
+
+    for(; !iterator_equal(first, tail); first = iterator_next(first)) {
+        int v = type_int( iterator_dereference(first) );
+        printf("\n %d \n", v);
+    }
+    
+    CU_ASSERT(1);
+}
+
+void test_list (void) {
+    list_t list;
+    init_list(&list);
+    for(int i=0; i<10; ++i) {
+        container_insert(&list, container_first(&list), float_type(i*(-0.01)));
+    }
+
+    iterator_t tail = iterator_next( container_last(&list) );
+    iterator_t first = container_first( &list );
+    
+    for(; !iterator_equal(first, tail); first = iterator_next(first)) {
+        float fv = type_float( iterator_dereference(first) );
+        printf("\n %f \n", fv);
+    }
     CU_ASSERT(1);
 }
 
@@ -124,7 +154,18 @@ int main ()
       return CU_get_error();
     } 
 
+    /*
     
+    if (NULL == CU_add_test(pSuite, "test_vector", test_vector) ) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+    */
+
+    if (NULL == CU_add_test(pSuite, "test_list", test_list) ) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
     /*
     if (NULL == CU_add_test(pSuite, "test_mem_pool_maxslot", test_mem_pool_maxslot) ) {
         CU_cleanup_registry();
@@ -147,6 +188,7 @@ int main ()
         return CU_get_error();
     }
     */
+   
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
     CU_cleanup_registry();
