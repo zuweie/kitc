@@ -2,7 +2,7 @@
  * @Description: node
  * @Author: zuweie
  * @Date: 2019-09-03 13:29:23
- * @LastEditTime: 2019-09-10 19:01:27
+ * @LastEditTime: 2019-09-10 19:25:01
  * @LastEditors: Please set LastEditors
  */
 
@@ -65,6 +65,5 @@ int compare_float(type_value_t v1, type_value_t v2)
 int compare_pointer(type_value_t v1, type_value_t v2){
     void* p1 = type_pointer(v1);
     void* p2 = type_pointer(v2);
-
     return p1 == p2;
 }

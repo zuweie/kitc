@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-08 00:02:36
- * @LastEditTime: 2019-09-10 14:25:06
+ * @LastEditTime: 2019-09-11 00:04:24
  * @LastEditors: Please set LastEditors
  */
 #include "_vector.h"
@@ -12,26 +12,20 @@
 /** iterator function **/
 static iterator_t _get_iter (void* refer);
 
-static type_value_t _dereference (iterator_t it) 
-{
-    type_value_t* pv = iterator_reference(it);
-    return *pv;
-}
-
 static iterator_t _next (iterator_t it) 
 {
-    type_value_t* pv = iterator_reference(it);
+    type_value_t* pv = (type_value_t*) iterator_reference(it);
     return _get_iter( pv + 1 );
 }
 
 static iterator_t _prev (iterator_t it) 
 {
-    type_value_t* pv = iterator_reference(it);
+    type_value_t* pv = (type_value_t*) iterator_reference(it);
     return _get_iter( pv - 1 );
 }
 
 static iterator_t _get_iter (void* refer) {
-    iterator_t it =  get_iterator(refer, _dereference, _next, _prev);
+    iterator_t it =  get_iterator(refer, _next, _prev);
     return it;
 }
 /** iterator function **/
@@ -46,7 +40,7 @@ static iterator_t _vector_first (container_t* container)
 static iterator_t _vector_last (container_t* container) 
 {
     vector_t* vec = container;
-    return _get_iter(vec->_data + vec->_size-1);
+    return _get_iter(vec->_data + vec->_size -1 );
 }
 
 static iterator_t _vector_find (container_t* container, type_value_t find, int (*compare)(type_value_t, type_value_t)) 
@@ -68,6 +62,7 @@ static int _vector_insert (container_t* container, iterator_t pos, type_value_t 
     vector_t* vec = container;
 
     if (vec->_size < VEC_SIZE) {
+        
         iterator_t last = container_last(container);
         iterator_t pos_prev = iterator_prev(pos);
 
@@ -78,7 +73,7 @@ static int _vector_insert (container_t* container, iterator_t pos, type_value_t 
             iterator_assign(last, next);
         }
         // 插入
-        type_value_t* pt = iterator_reference(last);
+        type_value_t* pt = iterator_reference(pos);
         *pt = data;
 
         vec->_size++;

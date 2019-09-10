@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:54
- * @LastEditTime: 2019-09-10 14:21:33
+ * @LastEditTime: 2019-09-10 19:22:25
  * @LastEditors: Please set LastEditors
  */
 #ifndef _ITERATOR_H_
@@ -30,6 +30,6 @@ struct _iterator {
     void* reference;
 };
 
-extern iterator_t get_iterator(void*, type_value_t (*) (iterator_t), iterator_t (*)(iterator_t), iterator_t (*)(iterator_t));
+extern iterator_t get_iterator(void*, iterator_t (*)(iterator_t), iterator_t (*)(iterator_t));
 
 #endif

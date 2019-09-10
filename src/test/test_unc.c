@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-10 19:04:32
+ * @LastEditTime: 2019-09-10 19:33:46
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -104,12 +104,12 @@ void test_vector (void) {
     vector_t vet;
     init_vector(&vet);
     
-    iterator_t first = container_first(&vet);
 
-    for(int i=0; i<10; ++i) {
-        container_insert(&vet, first, int_type(i*10));
+    for(int i=0; i<2; ++i) {
+        container_insert(&vet, container_first(&vet), int_type((i+1)*10));
     }
     
+    iterator_t first = container_first( &vet );
     iterator_t tail = iterator_next( container_last(&vet) );
 
     for(; !iterator_equal(first, tail); first = iterator_next(first)) {
@@ -154,18 +154,19 @@ int main ()
       return CU_get_error();
     } 
 
-    /*
+    
     
     if (NULL == CU_add_test(pSuite, "test_vector", test_vector) ) {
         CU_cleanup_registry();
         return CU_get_error();
     }
-    */
 
+    /*
     if (NULL == CU_add_test(pSuite, "test_list", test_list) ) {
         CU_cleanup_registry();
         return CU_get_error();
     }
+    */
     /*
     if (NULL == CU_add_test(pSuite, "test_mem_pool_maxslot", test_mem_pool_maxslot) ) {
         CU_cleanup_registry();

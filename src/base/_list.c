@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-09-10 16:49:30
+ * @LastEditTime: 2019-09-10 19:15:02
  * @LastEditors: Please set LastEditors
  */
 
@@ -17,11 +17,11 @@
 /** iter function **/
 static iterator_t _get_iter (void* refer);
 
-static type_value_t _dereference(iterator_t it) 
-{
-    list_node_t* pnode = iterator_reference(it);
-    return pnode->data;
-}
+// static type_value_t _dereference(iterator_t it) 
+// {
+//     list_node_t* pnode = iterator_reference(it);
+//     return pnode->data;
+// }
 
 static iterator_t _next (iterator_t it) 
 {
@@ -37,7 +37,7 @@ static iterator_t _prev (iterator_t it)
 
 static iterator_t _get_iter(void *refer) 
 {
-    return get_iterator(refer, _dereference, _next, _prev);
+    return get_iterator(refer, _next, _prev);
 }
 /** iter function **/
 
