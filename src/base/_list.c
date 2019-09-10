@@ -2,27 +2,52 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-09-06 00:28:16
+ * @LastEditTime: 2019-09-10 11:14:00
  * @LastEditors: Please set LastEditors
  */
 
 #include <stdlib.h>
+
+#include "_type_value.h"
+#include "_iterator.h"
+#include "_container.h"
+
 #include "_list.h"
 #include "_mem_pool.h"
 
-extern list_node_t* list_search(list_t* list, void* target, node_cmp_func cmp) 
+
+static iterator_t get_iter (void* refer);
+
+static iterator_t _dereference(iterator_t it) 
+{
+    
+}
+
+static iterator_t _next (iterator_t it) 
+{
+
+}
+
+static iterator_t _prev (iterator_t it)
+{
+    
+}
+
+list_node_t* list_search(list_t* list, void* target) 
 {
     list_node_t* first = list_first(list);
 
     for(;first != list_tail(list); first = first->next) {
+        /*
         if (cmp(first, target) == 0) {
             return first;
         }
+        */
     }
     return NULL;
 }
 
-extern int list_insert(list_t* list, node_t node, list_node_t* before) 
+int list_insert(list_t* list, node_t node, list_node_t* before) 
 {
 
     if (before)
@@ -42,16 +67,14 @@ extern int list_insert(list_t* list, node_t node, list_node_t* before)
     return -1;
 }
 
-extern int list_delete(list_t* list, list_node_t* del_node) 
+int list_delete(list_t* list, list_node_t* del_node) 
 {
     if (del_node) 
     {
         del_node->prve->next = del_node->next;
         del_node->next->prve = del_node->prve;
 
-        if ( del_node->node.clean) {
-            del_node->node.clean(&(del_node->node));
-        }
+        
         
         //deallocate(pool(NULL), del_node, sizeof(list_node_t));
 

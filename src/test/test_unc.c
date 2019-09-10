@@ -2,12 +2,15 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-06 20:03:12
+ * @LastEditTime: 2019-09-10 10:02:00
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
 #include <CUnit/Basic.h>
-#include <_mem_pool.h>
+#include "_mem_pool.h"
+#include "_type_value.h"
+#include "_vector.h"
+
 
 int suite_success_init(void) {
     return 0;
@@ -96,6 +99,14 @@ test_mem_pool_maxslot (void)
     printf("\n%ld\n", (unsigned int)__MAX_FREELIST_SIZE);
 }
 
+void test_vector (void) {
+    vector_t vet;
+    iterator_t first = container_first(&vet);
+    iterator_t last_next = iterator_next( container_last(&vet) );
+    
+    CU_ASSERT(1);
+}
+
 int main () 
 {
     printf("test unc what ");
@@ -111,19 +122,21 @@ int main ()
     if (NULL == pSuite){
       CU_cleanup_registry();
       return CU_get_error();
-    }
+    } 
+
+    
     /*
     if (NULL == CU_add_test(pSuite, "test_mem_pool_maxslot", test_mem_pool_maxslot) ) {
         CU_cleanup_registry();
         return CU_get_error();
     }
     */
-    
+    /*
     if (NULL == CU_add_test(pSuite, "test_mem_pool_inspect", test_mem_pool_inspect) ) {
         CU_cleanup_registry();
         return CU_get_error();
     }
-    
+    */
     /* 
     if (NULL == CU_add_test(pSuite, "test_mem_instance", test_mem_instance) ) {
         CU_cleanup_registry();

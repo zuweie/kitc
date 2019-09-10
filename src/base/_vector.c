@@ -2,41 +2,36 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-08 00:02:36
- * @LastEditTime: 2019-09-09 23:20:24
+ * @LastEditTime: 2019-09-10 11:10:31
  * @LastEditors: Please set LastEditors
  */
 #include "_vector.h"
 #include "_iterator.h"
+#include "_type_value.h"
 
 /** iterator function **/
+static iterator_t get_iter (void* refer);
+
+static type_value_t _dereference (iterator_t it) 
+{
+    type_value_t* pv = iterator_reference(it);
+    return *pv;
+}
+
 static iterator_t _next (iterator_t it) 
 {
-    node_t* pnode = iterator_reference(it);
-    return get_iter( pnode + 1 );
+    type_value_t* pv = iterator_reference(it);
+    return get_iter( pv + 1 );
 }
 
 static iterator_t _prev (iterator_t it) 
 {
-    node_t* pnode = iterator_reference(it);
-    return get_iter( pnode - 1 );
-}
-
-static int _equal(iterator_t t1, iterator_t t2) 
-{
-    return iterator_reference(t1) = iterator_reference(t2);
-}
-
-static int _assign(iterator_t t1, iterator_t t2) 
-{
-    node_t* p1 = iterator_reference(t1);
-    node_t* p2 = iterator_reference(t2);
-    *p2 = *p1;
-    return 0;
+    type_value_t* pv = iterator_reference(it);
+    return get_iter( pv - 1 );
 }
 
 static iterator_t get_iter (void* refer) {
-    iterator_t it;
-    initialize_iterator(it, refer, _next, _prev, _equal, _assign);
+    iterator_t it =  get_iterator(refer, _dereference, _next, _prev);
     return it;
 }
 
@@ -69,7 +64,7 @@ static iterator_t vector_find (container_t* container, void* data, int (*compare
     return get_iter((void*)0);
 }
 
-static int vector_insert (container_t* container, iterator_t position, void* data) 
+static int vector_insert (container_t* container, iterator_t position, type_value_t data) 
 {
     
     vector_t* vec = container;
@@ -79,28 +74,32 @@ static int vector_insert (container_t* container, iterator_t position, void* dat
         iterator_t insert_pos_prev = iterator_prev(position);
 
         // 挪位
-        for(; iterator_equal(last, insert_pos_prev) == 0; last = iterator_prev(last)) 
+        for(; !iterator_equal(last, insert_pos_prev); last = iterator_prev(last)) 
         {
             iterator_t next = iterator_next(last);
             iterator_assign(last, next);
         }
         // 插入
-        node_t* pnode = iterator_reference(last);
-        *pnode = *((node_t*)data);
+        type_value_t* pt = iterator_reference(last);
+        *pt = data;
+
         vec->_size++;
         return 0;
     }
     return -1;
 }
 
-static int vector_remove (container_t* container, iterator_t position) 
+static int vector_remove (container_t* container, iterator_t position, type_value_t* ret_data) 
 {
     vector_t* vec = container;
 
     if (vec->_size >0) {
         iterator_t last = container_last(container);
-
-        for(; iterator_equal(position, last); position = iterator_next(position)) {
+        if (ret_data) {
+            *ret_data = iterator_dereference(position);
+        }
+        // 擦除
+        for(; !iterator_equal(position, last); position = iterator_next(position)) {
             iterator_t rm_next = iterator_next(position);
             iterator_assign(rm_next, position);
         }
@@ -110,7 +109,8 @@ static int vector_remove (container_t* container, iterator_t position)
     return -1;
 }
 
-extern void init_vector(vector_t* vector) {
+void init_vector(vector_t* vector) {
     initialize_container(vector, vector_first, vector_last, vector_find, vector_insert, vector_remove);
-    return vector;
+    vector->_size = 0;
+    return;
 }
