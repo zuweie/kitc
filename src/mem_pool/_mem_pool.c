@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 17:13:19
- * @LastEditTime: 2019-09-09 16:49:48
+ * @LastEditTime: 2019-09-10 12:55:24
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -44,7 +44,7 @@ void* allocate(pool_t *palloc, size_t x)
 	// 多加一个info的空位放置块信息。
 	//x += __NODE_INFO_BYTES;
 
-	if (POOL_FREELIST_INDEX(POOL_ATTACH_SLOT_INFO_SIZE(x)) < __FREELIST_SIZE)
+	if (ENABLE_ALLOC && POOL_FREELIST_INDEX(POOL_ATTACH_SLOT_INFO_SIZE(x)) < __FREELIST_SIZE)
 	{
 
 		pool_node_t *volatile *my_free_list;
@@ -89,7 +89,7 @@ void deallocate(pool_t *palloc, void *p)
 	{
 		pool_node_t *q = (pool_node_t *)POOL_RECOVER_POINTER(p);
 		size_t slot = get_node_slot(q);
-		if (slot < __FREELIST_SIZE)
+		if (ENABLE_ALLOC && slot < __FREELIST_SIZE)
 		{
 			// 这里是头部插入。
 			pool_node_t *volatile *my_free_list;

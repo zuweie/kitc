@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:46
- * @LastEditTime: 2019-09-10 10:23:20
+ * @LastEditTime: 2019-09-10 13:54:16
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CONTAINER_H_
@@ -18,16 +18,15 @@
 #define container_remove(container, iter, ret_data) (((container_t*)(container))->remove(container, iter, ret_data))
 
 #define initialize_container(container, __first, __last, __find, __insert, __remove) do { \
-    ((container_t*)container)->first = __first;                                         \
-    ((container_t*)container)->last = __last;                                           \
-    ((container_t*)container)->find = __find;                                           \
-    ((container_t*)container)->insert = __insert;                                       \
-    ((container_t*)container)->remove = __remove;                                       \
+    ((container_t*)container)->first = (__first);                                         \
+    ((container_t*)container)->last = (__last);                                           \
+    ((container_t*)container)->find = (__find);                                           \
+    ((container_t*)container)->insert = (__insert);                                       \
+    ((container_t*)container)->remove = (__remove);                                       \
 } while (0)
 
 typedef struct _container container_t;
-
-typedef struct _container {
+struct _container {
     
     iterator_t (*first) (container_t* container);   
     iterator_t (*last) (container_t * container);   

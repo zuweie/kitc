@@ -2,7 +2,7 @@
  * @Description: node
  * @Author: zuweie
  * @Date: 2019-09-03 13:29:23
- * @LastEditTime: 2019-09-10 09:58:21
+ * @LastEditTime: 2019-09-10 12:51:24
  * @LastEditors: Please set LastEditors
  */
 
@@ -43,4 +43,30 @@ float type_float(type_value_t tv)
 void* type_pointer(type_value_t tv) 
 {
     return (void*)(*((type_value_size*)(tv.type_value)));
+}
+
+int compare_int(type_value_t v1, type_value_t v2) 
+{
+    int vv1 = type_int(v1);
+    int vv2 = type_int(v2);
+    if (vv1 == vv2) return 0;
+    else if (vv1 > vv2) return 1;
+    else return -1;
+}
+
+int compare_float(type_value_t v1, type_value_t v2)
+{
+    float vv1 = type_float(v1);
+    float vv2 = type_float(v2);
+
+    if (vv1 == vv2) return 0;
+    else if (vv1 > vv2) return 1;
+    else return -1;
+}
+
+int compare_pointer(type_value_t v1, type_value_t v2){
+    void* p1 = type_pointer(v1);
+    void* p2 = type_pointer(v2);
+
+    return p1 == p2;
 }

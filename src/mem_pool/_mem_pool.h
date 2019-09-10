@@ -2,7 +2,7 @@
  * @Description: 一个简单的内存池模型
  * @Author: zuweie
  * @Date: 2019-09-03 17:13:11
- * @LastEditTime: 2019-09-06 19:57:42
+ * @LastEditTime: 2019-09-10 12:54:17
  * @LastEditors: Please set LastEditors
  */
 #ifndef _MEM_POOL_H_
@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #define ALLOC_DEBUG 1
+#define ENABLE_ALLOC 1
 
 // 申请内存最少为8个byte。
 #define __ALIGN 8

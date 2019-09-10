@@ -2,83 +2,111 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-09-10 11:14:00
+ * @LastEditTime: 2019-09-10 13:48:25
  * @LastEditors: Please set LastEditors
  */
 
 #include <stdlib.h>
 
+#include "_list.h"
 #include "_type_value.h"
 #include "_iterator.h"
 #include "_container.h"
-
-#include "_list.h"
 #include "_mem_pool.h"
 
+/** iter function **/
+static iterator_t _get_iter (void* refer);
 
-static iterator_t get_iter (void* refer);
-
-static iterator_t _dereference(iterator_t it) 
+static type_value_t _dereference(iterator_t it) 
 {
-    
+    list_node_t* pnode = iterator_reference(it);
+    return pnode->data;
 }
 
 static iterator_t _next (iterator_t it) 
 {
-
+    list_node_t* pnode = iterator_reference(it);
+    return _get_iter(pnode->next);
 }
 
 static iterator_t _prev (iterator_t it)
 {
-    
+    list_node_t* pnode = iterator_reference(it);
+    return _get_iter(pnode->prev);
 }
 
-list_node_t* list_search(list_t* list, void* target) 
+static iterator_t _get_iter(void *refer) 
 {
-    list_node_t* first = list_first(list);
+    return get_iterator(refer, _dereference, _next, _prev);
+}
+/** iter function **/
 
-    for(;first != list_tail(list); first = first->next) {
-        /*
-        if (cmp(first, target) == 0) {
+/** container function **/
+
+static iterator_t _list_first (container_t* container)
+{
+    list_t* plist = container;
+    return _get_iter(list_first(plist));
+}
+
+static iterator_t _list_last (container_t* container)
+{
+    list_t* plist = container;
+    return _get_iter(list_head(plist));
+}
+
+static iterator_t _list_find (container_t* container, type_value_t find, int(compare)(type_value_t data1, type_value_t data2))
+{
+    iterator_t first = container_first(container);
+    iterator_t tail  = iterator_next( container_last(container) );
+    for(;iterator_equal(first, tail); first = iterator_next(first)) {
+        if (compare(iterator_dereference(first), find) == 0) {
             return first;
         }
-        */
     }
-    return NULL;
+    // 找不到返回空指针
+    return _get_iter((void*)0);
 }
 
-int list_insert(list_t* list, node_t node, list_node_t* before) 
+static int _list_insert(container_t* container, iterator_t pos, type_value_t data)
 {
+    list_node_t* pnode = iterator_reference(pos);
+    list_node_t* pnew  = allocate(pool(0), sizeof(list_node_t));
+    // 赋值 和 插入
 
-    if (before)
-    {
-        int ret;
-        list_node_t *list_node = NULL; //(list_node_t *)allocate(pool(&ret), sizeof(list_node_t));
-        list_node->node = node;
+    pnew->data = data;
+    pnew->prev = pnode->prev;
+    pnew->next = pnode;
 
-        list_node->prve = before->prve;
-        list_node->next = before;
+    pnode->prev->next = pnew;
+    pnode->prev = pnew;
 
-        before->prve->next = list_node;
-        before->prve = list_node;
-
-        return ++list->size;
-    }
-    return -1;
+    list_t* plist = container;
+    plist->_size++;
+    return 0;
 }
 
-int list_delete(list_t* list, list_node_t* del_node) 
+static int _list_remove(container_t* container, iterator_t pos, type_value_t* ret_data)
 {
-    if (del_node) 
-    {
-        del_node->prve->next = del_node->next;
-        del_node->next->prve = del_node->prve;
+    // 删除
+    list_node_t* pnode = iterator_reference(pos);
+    pnode->prev->next = pnode->next;
+    pnode->next->prev = pnode->prev;
 
-        
-        
-        //deallocate(pool(NULL), del_node, sizeof(list_node_t));
-
-        return --list->size;
+    if (ret_data) {
+        *ret_data = iterator_dereference(pos);
     }
-    return -1;
+
+    // 回收
+    deallocate(pool(0), pnode);
+
+    list_t* plist = container;
+    plist->_size--;
+    return 0;
 }
+
+void init_list(list_t* list) {
+    initialize_container(list, _list_first, _list_last, _list_find, _list_insert, _list_remove);
+    return;
+}
+

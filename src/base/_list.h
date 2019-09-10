@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:40
- * @LastEditTime: 2019-09-10 11:15:36
+ * @LastEditTime: 2019-09-10 13:44:27
  * @LastEditors: Please set LastEditors
  */
 
@@ -11,8 +11,8 @@
 #include "_type_value.h"
 #include "_container.h"
 
-#define list_head(list) (&((list)->sentinel))
-#define list_tail(list) (&((list)->sentinel))
+#define list_head(list) (&((list)->_sentinel))
+#define list_tail(list) (&((list)->_sentinel))
 #define list_first(list) (list_head(list)->next)
 #define list_last(list)  (list_tail(list)->prev)
 
@@ -23,20 +23,19 @@
 }while(0)
 
 typedef struct _list_node list_node_t;
-typedef struct _list_node
+struct _list_node
 {
-    /* data */
-    struct list_node_t* prve;
-    struct list_node_t* next;
+    /* 数据节点的data，要放在首段，否则会出现灾难性后果 */
     type_value_t data;
-
+    list_node_t* prev;
+    list_node_t* next;
 };
 
 typedef struct _list 
 {
     container_t container;
-    list_node_t sentinel;
-    unsigned int size;
+    list_node_t _sentinel;
+    unsigned int _size;
 } list_t;
 
 extern void init_list(list_t*);

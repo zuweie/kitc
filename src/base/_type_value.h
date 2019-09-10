@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 13:29:13
- * @LastEditTime: 2019-09-10 09:41:28
+ * @LastEditTime: 2019-09-10 12:47:49
  * @LastEditors: Please set LastEditors
  */
 
@@ -23,5 +23,9 @@ extern inline type_value_t pointer_type(void*);
 extern inline int type_int(type_value_t);
 extern inline float type_float(type_value_t);
 extern inline void* type_pointer(type_value_t);
+
+extern inline int compare_int(type_value_t, type_value_t);
+extern inline int compare_float(type_value_t, type_value_t);
+extern inline int compare_pointer(type_value_t, type_value_t);
 
 #endif
