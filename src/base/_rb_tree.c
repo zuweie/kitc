@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-11 10:15:37
- * @LastEditTime: 2019-09-11 16:21:40
+ * @LastEditTime: 2019-09-12 01:36:43
  * @LastEditors: Please set LastEditors
  */
 #include <stdlib.h>
@@ -13,23 +13,24 @@
 
  static void __init_rb_tree (rb_tree_t* prb, int (insert_compare)(type_value_t, type_value_t)) 
  {
+    
+    /** 初始化 _null 边界节点 **/
+    prb->_null.color = _black;
+    prb->_null.parent = NULL;
+    prb->_null.left = NULL;
+    prb->_null.right = NULL;
+    prb->_null.node = pointer_type(0);
+    
+    /** 初始化其他 **/
     prb->_size = 0;
-    prb->_root = rb_node_null(prb);
+    prb->_root = _null(prb);
     prb->_insert_compare = insert_compare;
-
-    /** 初始化 _node_null 边界节点 **/
-    prb->_node_null.color = _black;
-    prb->_node_null.parent = NULL;
-    prb->_node_null.left = NULL;
-    prb->_node_null.right = NULL;
-    prb->_node_null.node = int_type(-1);
-
  }
 
 // 找到该节点往下最小的那个节点
 static rb_tree_node_t* __tree_minimum (rb_tree_t* prb, rb_tree_node_t* pnode) 
 {
-    while (pnode->left != rb_node_null(prb))
+    while (pnode->left != _null(prb))
     {
        pnode = pnode->left;
     }
@@ -39,7 +40,7 @@ static rb_tree_node_t* __tree_minimum (rb_tree_t* prb, rb_tree_node_t* pnode)
 // 找到该下最大的那个节点
 static rb_tree_node_t* __tree_maximun (rb_tree_t* prb, rb_tree_node_t* pnode) 
 {
-    while (pnode->right != rb_node_null(prb)){
+    while (pnode->right != _null(prb)){
         pnode = pnode->right;
     }
     return pnode;
@@ -49,36 +50,32 @@ static rb_tree_node_t* __tree_maximun (rb_tree_t* prb, rb_tree_node_t* pnode)
 static rb_tree_node_t* __tree_successor (rb_tree_t* prb, rb_tree_node_t* pnode) 
 {
     // 如果该节点右不为空（右边子树的值都比这个节点大），则找到右边子树木最小的那那个值就是该节点的下一个。
-    if (pnode->right != rb_node_null(prb)){
-
+    if (pnode->right != _null(prb)){
       return __tree_minimum(prb, pnode->right);
-      
     }
     // 若该节点右边为空。则往上找。找到第一个为左孩子的节点就是它的下一个。
-    rb_tree_node_t* next = pnode->parent;
-    while( next != rb_node_null(prb) && pnode == next->right){
-      pnode = next;
-      next = pnode->parent;
+    rb_tree_node_t* up = pnode->parent;
+    while( up != _null(prb) && pnode == up->right){
+      pnode = up;
+      up = pnode->parent;
     }
-    return next;
+    return up;
 }
 
 // 找该节点的前一个（比这个小的最后一个）
 static rb_tree_node_t* __tree_predecessor(rb_tree_t* prb, rb_tree_node_t* pnode)
 {
     // 如果该节点左不为空（左边子树的值都比这个节点小），则找到左边子树最大的那个一个。
-    if (pnode->left != rb_node_null(prb)) {
-
+    if (pnode->left != _null(prb)) {
         return __tree_maximun(prb, pnode->left);
-        
     }
     // 如果该节点左边为空。则往上找。找到第一个为右孩子的节点就是它的前一个节点。
-    rb_tree_node_t* prev = pnode->parent;
-    while (prev != rb_node_null(prb) && pnode == prev->left) {
-        pnode = prev;
-        prev = pnode->parent;
+    rb_tree_node_t* up = pnode->parent;
+    while (up != _null(prb) && pnode == up->left) {
+        pnode = up;
+        up = pnode->parent;
     }
-    return prev;
+    return up;
 }
 
 static void __tree_left_rotate (rb_tree_t* prb, rb_tree_node_t* px)
@@ -89,24 +86,28 @@ static void __tree_left_rotate (rb_tree_t* prb, rb_tree_node_t* px)
     // 也就是讲自己的孙子变为儿子了。
 
     rb_tree_node_t *py = px->right;
+
     px->right = py->left;
 
-    if (py->left != rb_node_null(prb))
-        py->left->parent = px;
+    py->left->parent = px;
 
-    // 设置py的新老爸
+    // 这个位置 px 是 py 老爸。
+    // 将px老爸变成py的老爸。也就是将爷爷变成老爸。升级了
     py->parent = px->parent;
 
-    // 设置py新老板的新儿子。
-    if (px->parent == rb_node_null(prb)){
-        // 这里说明px是root
+    
+    if (px->parent == _null(prb)){
+        // 这里说明px原来是root，没有parent的。
         prb->_root = py;
-    }else if (px == px->parent->left){
-        // px 是他老子的左子树。
-        px->parent->left = py;
-    }else{
-        // px 是他老子的右子树。
-        px->parent->right = py;
+    }else {
+        // 这里说明px原来不是root，有partent的。把py设置成它px-
+        if (px == px->parent->left){
+            // px 是他老子的左子树。
+            px->parent->left = py;
+        }else{
+            // px 是他老子的右子树。
+            px->parent->right = py;
+        }
     }
 
     py->left = px;
@@ -117,14 +118,14 @@ static void __tree_left_rotate (rb_tree_t* prb, rb_tree_node_t* px)
 static int __tree_right_rotate(rb_tree_t* prb, rb_tree_node_t* px)
 {
     rb_tree_node_t *py = px->left;
-    px->left = py->right;
 
-    if (py->right != rb_node_null(prb))
-        py->right->parent = px;
+    px->left = py->right;
+    
+    py->right->parent = px;
 
     py->parent = px->parent;
 
-    if (px->parent == rb_node_null(prb)){
+    if (px->parent == _null(prb)){
         prb->_root = py;
     }else if (px->parent->left == px){
         px->parent->left = py;
@@ -242,22 +243,22 @@ static int __rb_tree_insert_fixup (rb_tree_t* prb, rb_tree_node_t* pz)
 
 static int __rb_tree_create_node (rb_tree_t* prb, type_value_t t) {
     rb_tree_node_t* pnode = allocate(pool(0), sizeof (rb_tree_node_t));
-    pnode->parent = rb_node_null(prb);
-    pnode->left   = rb_node_null(prb);
-    pnode->right  = rb_node_null(prb);
+    pnode->parent = _null(prb);
+    pnode->left   = _null(prb);
+    pnode->right  = _null(prb);
     pnode->node   = t;
     return pnode;
 }
 static int __rb_tree_insert (rb_tree_t* prb, type_value_t t) 
 {
 
-	rb_tree_node_t* py = rb_node_null(prb);
+	rb_tree_node_t* py = _null(prb);
 	rb_tree_node_t* px = prb->_root;
     /* alloc */
     rb_tree_node_t* pz = __rb_tree_create_node(prb, t);
 
     // 找位置
-    while(px != rb_node_null(prb)) {
+    while(px != _null(prb)) {
         py = px;
         if (prb->_insert_compare(pz->node, px->node) == -1){
         	px = px->left;
@@ -269,7 +270,7 @@ static int __rb_tree_insert (rb_tree_t* prb, type_value_t t)
     }
     pz->parent = py;
     // 挂叶子
-    if (py == rb_node_null(prb)){
+    if (py == _null(prb)){
     	prb->_root = pz;
     }else if (prb->_insert_compare(pz->node, py->node) == -1){
     	py->left = pz;
@@ -277,8 +278,8 @@ static int __rb_tree_insert (rb_tree_t* prb, type_value_t t)
         py->right = pz;
     }
 
-    pz->left = rb_node_null(prb);
-    pz->right = rb_node_null(prb);
+    pz->left = _null(prb);
+    pz->right = _null(prb);
     pz->color = _red;
     prb->_size++;
     return __rb_tree_insert_fixup(prb, pz);
@@ -309,13 +310,14 @@ static int __rb_tree_remove_fixup (rb_tree_t* prb, rb_tree_node_t* px)
 
     // 这里的px很可能是NULL
     // 若为NULL 则 那个
-    rb_tree_node_t* pw = rb_node_null(prb);
+    rb_tree_node_t* pw = _null(prb);
     while (px != prb->_root && px->color == _black)
     {
         if (px == px->parent->left){
             // 如果px是左孩子。
             // 取pw为px的右兄弟。
             pw = px->parent->right;
+            
             if (pw->color == _red){
                 //CASE 1
                 //若pw是红色。将其染为黑色
@@ -351,7 +353,7 @@ static int __rb_tree_remove_fixup (rb_tree_t* prb, rb_tree_node_t* px)
                 pw->color = px->parent->color;
                 px->parent->color = _black;
                 pw->right->color = _black;
-                left_rotate(prb, px->parent);
+                __tree_left_rotate(prb, px->parent);
                 px = prb->_root;
             } // else
         }else{
@@ -375,14 +377,14 @@ static int __rb_tree_remove_fixup (rb_tree_t* prb, rb_tree_node_t* px)
                 if (pw->left->color == _black){
                     pw->right->color = _black;
                     pw->color = _red;
-                    _tree_left_rotate(prb, pw);
+                    __tree_left_rotate(prb, pw);
                     pw = px->parent->left;
                 }
                 // CASE 4
                 pw->color = px->parent->color;
                 px->parent->color = _black;
                 pw->left->color = _black;
-                right_rotate(prb, px->parent);
+                __tree_right_rotate(prb, px->parent);
                 px = prb->_root;
             } // else
         }
@@ -394,15 +396,15 @@ static int __rb_tree_remove_fixup (rb_tree_t* prb, rb_tree_node_t* px)
 static type_value_t __rb_tree_remove (rb_tree_t* prb, rb_tree_node_t* pz)
 {
 
-	rb_tree_node_t* py = rb_node_null(prb);
-	rb_tree_node_t* px = rb_node_null(prb);
-    if (pz->left == rb_node_null(prb) || pz->right == rb_node_null(prb)){
+	rb_tree_node_t* py = _null(prb);
+	rb_tree_node_t* px = _null(prb);
+    if (pz->left == _null(prb) || pz->right == _null(prb)){
     	py = pz;
     }else{
     	py = __tree_successor(prb, pz);
     }
 
-    if (py->left != rb_node_null(prb)){
+    if (py->left != _null(prb)){
     	px = py->left;
     }else{
     	px = py->right;
@@ -410,7 +412,7 @@ static type_value_t __rb_tree_remove (rb_tree_t* prb, rb_tree_node_t* pz)
 	
     px->parent = py->parent;
     
-    if (py->parent == rb_node_null(prb)){
+    if (py->parent == _null(prb)){
     	prb->_root = px;
     }else{
         if (py == py->parent->left){
@@ -434,7 +436,6 @@ static type_value_t __rb_tree_remove (rb_tree_t* prb, rb_tree_node_t* pz)
     //回收节点，返回拉进来的数据。
     deallocate(pool(0), py);
     prb->_size--;
-    
     return ret_data;
 }
 /** tree function **/
