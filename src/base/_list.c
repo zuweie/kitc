@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-09-10 19:15:02
+ * @LastEditTime: 2019-09-11 16:01:14
  * @LastEditors: Please set LastEditors
  */
 
@@ -37,7 +37,7 @@ static iterator_t _prev (iterator_t it)
 
 static iterator_t _get_iter(void *refer) 
 {
-    return get_iterator(refer, _next, _prev);
+    return get_iterator(refer, 0, _next, _prev);
 }
 /** iter function **/
 
@@ -86,23 +86,22 @@ static int _list_insert(container_t* container, iterator_t pos, type_value_t dat
     return 0;
 }
 
-static int _list_remove(container_t* container, iterator_t pos, type_value_t* ret_data)
+static type_value_t _list_remove(container_t* container, iterator_t pos)
 {
     // 删除
     list_node_t* pnode = iterator_reference(pos);
     pnode->prev->next = pnode->next;
     pnode->next->prev = pnode->prev;
 
-    if (ret_data) {
-        *ret_data = iterator_dereference(pos);
-    }
+    type_value_t ret = iterator_dereference(pos);
+    
 
     // 回收
     deallocate(pool(0), pnode);
 
     list_t* plist = container;
     plist->_size--;
-    return 0;
+    return ret;
 }
 
 void init_list(list_t* list) {

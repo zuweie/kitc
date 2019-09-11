@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-08 00:02:36
- * @LastEditTime: 2019-09-11 00:04:24
+ * @LastEditTime: 2019-09-11 15:59:45
  * @LastEditors: Please set LastEditors
  */
 #include "_vector.h"
@@ -25,7 +25,7 @@ static iterator_t _prev (iterator_t it)
 }
 
 static iterator_t _get_iter (void* refer) {
-    iterator_t it =  get_iterator(refer, _next, _prev);
+    iterator_t it =  get_iterator(refer, 0, _next, _prev);
     return it;
 }
 /** iterator function **/
@@ -82,24 +82,22 @@ static int _vector_insert (container_t* container, iterator_t pos, type_value_t 
     return -1;
 }
 
-static int _vector_remove (container_t* container, iterator_t pos, type_value_t* ret_data) 
+static type_value_t _vector_remove (container_t* container, iterator_t pos) 
 {
     vector_t* vec = container;
 
     if (vec->_size >0) {
         iterator_t last = container_last(container);
-        if (ret_data) {
-            *ret_data = iterator_dereference(pos);
-        }
+        type_value_t ret = iterator_dereference(pos);
         // 擦除
         for(; !iterator_equal(pos, last); pos = iterator_next(pos)) {
             iterator_t pos_next = iterator_next(pos);
             iterator_assign(pos_next, pos);
         }
         vec->_size--;
-        return 0;
+        return ret;
     }
-    return -1;
+    return int_type(-1);
 }
 /** container **/
 
