@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:54
- * @LastEditTime: 2019-09-11 16:12:01
+ * @LastEditTime: 2019-09-12 09:17:12
  * @LastEditors: Please set LastEditors
  */
 #ifndef _ITERATOR_H_
@@ -17,7 +17,7 @@
 #define iterator_next(iter) (iter.next(iter))
 #define iterator_prev(iter) (iter.prev((iter)))
 #define iterator_equal(iter1, iter2) (iter1.equal(iter1, iter2))
-#define iterator_assign(iter1, iter2) (iter1.assign(iter1, iter2))
+#define iterator_assign(from, to) (from.assign(to, from))
 #define iterator_exchange(iter1, itert2) (iter1.exchange(iter1, iter2))
 
 

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-11 10:15:37
- * @LastEditTime: 2019-09-12 01:36:43
+ * @LastEditTime: 2019-09-12 10:28:34
  * @LastEditors: Please set LastEditors
  */
 #include <stdlib.h>
@@ -16,9 +16,9 @@
     
     /** 初始化 _null 边界节点 **/
     prb->_null.color = _black;
-    prb->_null.parent = NULL;
-    prb->_null.left = NULL;
-    prb->_null.right = NULL;
+    prb->_null.parent = _null(prb);
+    prb->_null.left = _null(prb);
+    prb->_null.right = _null(prb);
     prb->_null.node = pointer_type(0);
     
     /** 初始化其他 **/
@@ -30,8 +30,7 @@
 // 找到该节点往下最小的那个节点
 static rb_tree_node_t* __tree_minimum (rb_tree_t* prb, rb_tree_node_t* pnode) 
 {
-    while (pnode->left != _null(prb))
-    {
+    while (pnode != _null(prb) && pnode->left != _null(prb)){
        pnode = pnode->left;
     }
     return pnode;
@@ -40,7 +39,7 @@ static rb_tree_node_t* __tree_minimum (rb_tree_t* prb, rb_tree_node_t* pnode)
 // 找到该下最大的那个节点
 static rb_tree_node_t* __tree_maximun (rb_tree_t* prb, rb_tree_node_t* pnode) 
 {
-    while (pnode->right != _null(prb)){
+    while (pnode != _null(prb) && pnode->right != _null(prb)){
         pnode = pnode->right;
     }
     return pnode;
@@ -137,15 +136,16 @@ static int __tree_right_rotate(rb_tree_t* prb, rb_tree_node_t* px)
     return 0;
 }
 
-static rb_tree_node_t* __rb_tree_find(rb_tree_node_t* pnode, type_value_t find, int(*compare)(type_value_t, type_value_t))
+static rb_tree_node_t* __rb_tree_find(rb_tree_t* prb, rb_tree_node_t* pnode, type_value_t find, int(*compare)(type_value_t, type_value_t))
 {
-    if (pnode) {
-        int result = compare(pnode->node, find);
-        if (result == 0) return pnode;
-        else if (result == 1) {
-            return __rb_tree_find(pnode->right, find, compare);
+    if (pnode != _null(prb)) {
+        int result = compare(find,  pnode->node);
+        if (result == 0) {
+            return pnode;
+        }else if (result == 1) {
+            return __rb_tree_find(prb, pnode->right, find, compare);
         }else{
-            return __rb_tree_find(pnode->left, find, compare); 
+            return __rb_tree_find(prb, pnode->left, find, compare); 
         }
     }
     return pnode;
@@ -241,7 +241,7 @@ static int __rb_tree_insert_fixup (rb_tree_t* prb, rb_tree_node_t* pz)
     return 0;
 }
 
-static int __rb_tree_create_node (rb_tree_t* prb, type_value_t t) {
+static rb_tree_node_t* __rb_tree_create_node (rb_tree_t* prb, type_value_t t) {
     rb_tree_node_t* pnode = allocate(pool(0), sizeof (rb_tree_node_t));
     pnode->parent = _null(prb);
     pnode->left   = _null(prb);
@@ -249,6 +249,7 @@ static int __rb_tree_create_node (rb_tree_t* prb, type_value_t t) {
     pnode->node   = t;
     return pnode;
 }
+
 static int __rb_tree_insert (rb_tree_t* prb, type_value_t t) 
 {
 
@@ -395,48 +396,66 @@ static int __rb_tree_remove_fixup (rb_tree_t* prb, rb_tree_node_t* px)
 
 static type_value_t __rb_tree_remove (rb_tree_t* prb, rb_tree_node_t* pz)
 {
-
-	rb_tree_node_t* py = _null(prb);
-	rb_tree_node_t* px = _null(prb);
-    if (pz->left == _null(prb) || pz->right == _null(prb)){
-    	py = pz;
-    }else{
-    	py = __tree_successor(prb, pz);
-    }
-
-    if (py->left != _null(prb)){
-    	px = py->left;
-    }else{
-    	px = py->right;
-    }
-	
-    px->parent = py->parent;
-    
-    if (py->parent == _null(prb)){
-    	prb->_root = px;
-    }else{
-        if (py == py->parent->left){
-            py->parent->left = px;
-        }else {
-            py->parent->right = px;
+    if (pz != _null(prb))
+    {
+        rb_tree_node_t *py = _null(prb);
+        rb_tree_node_t *px = _null(prb);
+        if (pz->left == _null(prb) || pz->right == _null(prb))
+        {
+            py = pz;
         }
+        else
+        {
+            py = __tree_successor(prb, pz);
+        }
+
+        if (py->left != _null(prb))
+        {
+            px = py->left;
+        }
+        else
+        {
+            px = py->right;
+        }
+
+        px->parent = py->parent;
+
+        if (py->parent == _null(prb))
+        {
+            prb->_root = px;
+        }
+        else
+        {
+            if (py == py->parent->left)
+            {
+                py->parent->left = px;
+            }
+            else
+            {
+                py->parent->right = px;
+            }
+        }
+
+        // 交换两个的值
+        if (py != pz)
+        {
+            type_value_t data = pz->node;
+            pz->node = py->node;
+            py->node = data;
+        }
+
+        if (py->color == _black)
+        {
+            __rb_tree_remove_fixup(prb, px);
+        }
+        type_value_t ret_data = py->node;
+        //回收节点，返回拉进来的数据。
+        deallocate(pool(0), py);
+        prb->_size--;
+        return ret_data;
+    }else{
+        return pz->node;
     }
-    
-    // 交换两个的值
-    if (py != pz){
-    	type_value_t data = pz->node;
-		pz->node = py->node;
-        py->node = data;
-    }
-    
-    if (py->color == _black){
-    	__rb_tree_remove_fixup(prb, px);
-    }
-    type_value_t ret_data = py->node;
-    //回收节点，返回拉进来的数据。
-    deallocate(pool(0), py);
-    prb->_size--;
-    return ret_data;
 }
 /** tree function **/
 
@@ -484,7 +503,8 @@ static iterator_t _rb_tree_last(container_t* container)
 
 static iterator_t _rb_tree_find(container_t* container, type_value_t find, int (*compare)(iterator_t, iterator_t)) 
 {
-    rb_tree_node_t* p = __rb_tree_find(((rb_tree_t*)container)->_root, find, compare);
+    rb_tree_t* tree = container;
+    rb_tree_node_t* p = __rb_tree_find(tree, tree->_root, find, compare);
     return _get_iter(p, container);
 }
 
@@ -499,7 +519,16 @@ static type_value_t _rb_tree_remove(container_t* container, iterator_t pos)
 }
 
 void init_rb_tree(rb_tree_t* tree, int(*insert_compare)(type_value_t, type_value_t)) {
+    initialize_container(tree,_rb_tree_first, _rb_tree_last, _rb_tree_find, _rb_tree_insert, _rb_tree_remove);
     return __init_rb_tree(tree, insert_compare);
 }
 
+iterator_t rb_tree_root(rb_tree_t* tree) {
+    return _get_iter(tree->_root, tree);
+}
+
+iterator_t rb_tree_null(rb_tree_t* tree) 
+{
+    return _get_iter(_null(tree), tree);
+} 
 /** container function **/

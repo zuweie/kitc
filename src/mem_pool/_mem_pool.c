@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 17:13:19
- * @LastEditTime: 2019-09-10 12:55:24
+ * @LastEditTime: 2019-09-12 01:55:02
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -143,7 +143,6 @@ size_t size_of_slot(int slot)
 
 void set_node_slot(pool_node_t *p, unsigned int slot)
 {
-
 	for (int i = __SLOT_INFO_BYTES - 1, j = 0; i >= 0; --i, ++j)
 	{
 		p->slot[i] = (unsigned char)(slot >> j * 8);

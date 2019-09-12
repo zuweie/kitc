@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-11 08:37:22
+ * @LastEditTime: 2019-09-12 10:24:31
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -11,7 +11,9 @@
 #include "_type_value.h"
 #include "_vector.h"
 #include "_list.h"
+#include "_rb_tree.h"
 
+#define TEST_DATA_SIZE 10000
 
 int suite_success_init(void) {
     return 0;
@@ -21,6 +23,18 @@ int suite_success_clean(void) {
     return 0;
 }
 
+static type_value_t test_data[TEST_DATA_SIZE];
+
+static void init_test_data()
+{
+    for(int i=0; i<TEST_DATA_SIZE; ++i) {
+        test_data[i] = int_type(rand() % 100000);
+    }
+    return;
+}
+static type_value_t get(int i) {
+    return test_data[i];
+}
 void
 test_mem_instance(void) {
     int ret = 0;
@@ -137,10 +151,58 @@ void test_list (void) {
     CU_ASSERT(1);
 }
 
+void test_rb_tree(void) 
+{
+    rb_tree_t rbtree;
+    init_rb_tree(&rbtree, compare_int);
+    for(int i=0; i<10; ++i) {
+        container_insert(&rbtree, rb_tree_null(&rbtree), get(i));
+    }
+
+    /** 展示 **/
+    printf("\n size of tree: %d ", rbtree._size);
+    iterator_t first = container_first(&rbtree);
+    iterator_t tail = iterator_next( container_last(&rbtree) );
+    for(;!iterator_equal(first, tail); first = iterator_next(first))
+    {
+        int v = type_int( iterator_dereference(first) );
+        printf("\n %d \n", v);
+    }
+
+    /** 删除 **/
+    for(int i=0; i<5; ++i) {
+        /*
+        iterator_t pos = container_find(&rbtree, get(i), compare_int);
+
+        if ( iterator_reference(pos) != _null(&rbtree)) {
+            int data = type_int (container_remove(&rbtree, pos) );
+            printf("\n delete %d \n", data);
+        }
+        */
+
+       iterator_t pos = rb_tree_null(&rbtree);
+       int data = type_int( container_remove(&rbtree, pos) );
+       printf("\n delete %d \n", data);
+
+    }
+
+    /** 展示 **/
+    printf("\n size of tree: %d ", rbtree._size);
+    first = container_first(&rbtree);
+    tail = iterator_next( container_last(&rbtree) );
+    for(;!iterator_equal(first, tail); first = iterator_next(first))
+    {
+        int v = type_int( iterator_dereference(first) );
+        printf("\n %d \n", v);
+    }
+
+    CU_ASSERT(1);
+}
+
 int main () 
 {
     printf("test unc what ");
-    
+    init_test_data();
 
     CU_pSuite pSuite = NULL;
     if (CUE_SUCCESS != CU_initialize_registry()){
@@ -155,12 +217,18 @@ int main ()
     } 
 
     
-    
+    /*
     if (NULL == CU_add_test(pSuite, "test_vector", test_vector) ) {
         CU_cleanup_registry();
         return CU_get_error();
     }
+    */
 
+    if (NULL == CU_add_test(pSuite, "test_rb_tree", test_rb_tree) ) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+    
     /*
     if (NULL == CU_add_test(pSuite, "test_list", test_list) ) {
         CU_cleanup_registry();

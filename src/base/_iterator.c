@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-10 11:00:17
- * @LastEditTime: 2019-09-11 15:56:25
+ * @LastEditTime: 2019-09-12 09:17:45
  * @LastEditors: Please set LastEditors
  */
 #include "_iterator.h"
@@ -19,9 +19,9 @@ static inline int __iterator_equal (iterator_t t1, iterator_t t2)
     return iterator_reference(t1) == iterator_reference(t2);    
 }
 
-static inline int __iterator_assign (iterator_t t1, iterator_t t2) 
+static inline int __iterator_assign (iterator_t to, iterator_t from) 
 {
-    *((type_value_t*)iterator_reference(t2)) = iterator_dereference(t1);
+    *((type_value_t*)iterator_reference(to)) = iterator_dereference(from);
     return 0;
 }
 
