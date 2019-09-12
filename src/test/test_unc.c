@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-12 10:24:31
+ * @LastEditTime: 2019-09-12 10:37:58
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -155,7 +155,7 @@ void test_rb_tree(void)
 {
     rb_tree_t rbtree;
     init_rb_tree(&rbtree, compare_int);
-    for(int i=0; i<10; ++i) {
+    for(int i=0; i<TEST_DATA_SIZE; ++i) {
         container_insert(&rbtree, rb_tree_null(&rbtree), get(i));
     }
 
@@ -170,19 +170,13 @@ void test_rb_tree(void)
     }
 
     /** 删除 **/
-    for(int i=0; i<5; ++i) {
-        /*
+    for(int i=0; i<TEST_DATA_SIZE/2; ++i) {
+        
         iterator_t pos = container_find(&rbtree, get(i), compare_int);
 
-        if ( iterator_reference(pos) != _null(&rbtree)) {
-            int data = type_int (container_remove(&rbtree, pos) );
-            printf("\n delete %d \n", data);
-        }
-        */
-
-       iterator_t pos = rb_tree_null(&rbtree);
-       int data = type_int( container_remove(&rbtree, pos) );
-       printf("\n delete %d \n", data);
+        int data = type_int (container_remove(&rbtree, pos) );
+        
+        printf("\n delete %d \n", data);
 
     }
 
