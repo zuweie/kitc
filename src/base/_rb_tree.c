@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-11 10:15:37
- * @LastEditTime: 2019-09-12 10:28:34
+ * @LastEditTime: 2019-09-14 07:56:11
  * @LastEditors: Please set LastEditors
  */
 #include <stdlib.h>
@@ -454,6 +454,7 @@ static type_value_t __rb_tree_remove (rb_tree_t* prb, rb_tree_node_t* pz)
         prb->_size--;
         return ret_data;
     }else{
+        // 空节点。返回空节点的node回去就好了
         return pz->node;
     }
 }
@@ -486,7 +487,7 @@ static iterator_t _get_iter(void* refer, void* tree)
 
 
 /** container function **/
-// 中序 bian 
+// 中序 遍历 
 static iterator_t _rb_tree_first(container_t* container) 
 {
     rb_tree_t* tree = container;

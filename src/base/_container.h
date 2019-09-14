@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:46
- * @LastEditTime: 2019-09-11 15:07:12
+ * @LastEditTime: 2019-09-14 07:51:01
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CONTAINER_H_
@@ -14,6 +14,8 @@
 
 #define container_first(container) (((container_t*)(container))->first(container))
 #define container_last(container) (((container_t*)(container))->last(container))
+#define container_head(container) iterator_prev(container_first(container))
+#define container_tail(container) iterator_next(container_last(container))
 #define container_find(container, data, compare) (((container_t*)(container))->find(container, data, compare))
 #define container_insert(container, iter, data) (((container_t*)(container))->insert(container, iter, data))
 #define container_remove(container, iter) (((container_t*)(container))->remove(container, iter))

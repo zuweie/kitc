@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-12 10:37:58
+ * @LastEditTime: 2019-09-14 07:54:01
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -141,11 +141,20 @@ void test_list (void) {
         container_insert(&list, container_first(&list), float_type(i*(-0.01)));
     }
 
-    iterator_t tail = iterator_next( container_last(&list) );
+    iterator_t tail = container_tail(&list);
     iterator_t first = container_first( &list );
     
     for(; !iterator_equal(first, tail); first = iterator_next(first)) {
         float fv = type_float( iterator_dereference(first) );
+        printf("\n %f \n", fv);
+    }
+
+    iterator_t head = container_head(&list);
+    iterator_t last = container_last(&list);
+
+    for(;!iterator_equal(last, head); last = iterator_prev(last)) 
+    {
+        float fv = type_float( iterator_dereference(last) );
         printf("\n %f \n", fv);
     }
     CU_ASSERT(1);
