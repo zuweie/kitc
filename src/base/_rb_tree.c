@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-11 10:15:37
- * @LastEditTime: 2019-09-15 08:01:28
+ * @LastEditTime: 2019-09-15 17:43:39
  * @LastEditors: Please set LastEditors
  */
 #include <stdlib.h>
@@ -458,7 +458,6 @@ static iterator_t _next(iterator_t it)
 {
    rb_tree_node_t* pnode = iterator_reference(it);
    rb_tree_t* tree = iterator_attach(it);
-
    return _get_iter(__tree_successor(tree, pnode), tree);
 }
 
@@ -471,7 +470,7 @@ static iterator_t _prev (iterator_t it)
 
 static iterator_t _get_iter(void* refer, void* tree) 
 {
-    return get_iterator(refer,tree, _next, _prev);
+    return get_iterator(refer, tree, _next, _prev);
 }
 /** iterator function **/
 
@@ -496,7 +495,13 @@ static iterator_t _rb_tree_find(container_t* container, type_value_t find, int (
 {
     rb_tree_t* tree = container;
     rb_tree_node_t* p = __rb_tree_find(tree, tree->_root, find, compare);
-    return _get_iter(p, container);
+
+    if ( p == _null(tree)) {
+        // 外部接口null 用 0;
+        return _get_iter(0, container);
+    }else{
+        return _get_iter(p, container);
+    }
 }
 
 static int _rb_tree_insert(container_t* container, iterator_t pos, type_value_t data)
@@ -506,7 +511,11 @@ static int _rb_tree_insert(container_t* container, iterator_t pos, type_value_t 
 
 static int _rb_tree_remove(container_t* container, iterator_t pos, type_value_t* rdata)
 {
-    return __rb_tree_remove(container, iterator_reference(pos));
+    if (iterator_valid(pos)) {
+        return __rb_tree_remove(container, iterator_reference(pos), rdata);
+    }else{
+        return -1;
+    }
 }
 
 static unsigned int _rb_tree_size(container_t* container)

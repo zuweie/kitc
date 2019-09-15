@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:54
- * @LastEditTime: 2019-09-12 09:17:12
+ * @LastEditTime: 2019-09-15 17:35:44
  * @LastEditors: Please set LastEditors
  */
 #ifndef _ITERATOR_H_
@@ -19,13 +19,14 @@
 #define iterator_equal(iter1, iter2) (iter1.equal(iter1, iter2))
 #define iterator_assign(from, to) (from.assign(to, from))
 #define iterator_exchange(iter1, itert2) (iter1.exchange(iter1, iter2))
-
+#define iterator_valid(iter) (iter.valid(iter))
 
 typedef struct _iterator iterator_t;
 struct _iterator {
     type_value_t (*dereference) (iterator_t);
     iterator_t (*next)(iterator_t);
     iterator_t (*prev)(iterator_t);
+    int (*valid) (iterator_t);
     int (*equal) (iterator_t t1, iterator_t t2);
     int (*assign) (iterator_t t1, iterator_t t2);
     int (*exchange) (iterator_t t1, iterator_t t2);
@@ -33,6 +34,6 @@ struct _iterator {
     void* attach;
 };
 
-extern iterator_t get_iterator(void*, void*, iterator_t (*)(iterator_t), iterator_t (*)(iterator_t));
+extern iterator_t get_iterator(void* __refer, void* __attach, iterator_t (*__next)(iterator_t), iterator_t (*__prev)(iterator_t));
 
 #endif
