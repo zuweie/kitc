@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-11 10:15:37
- * @LastEditTime: 2019-09-14 07:56:11
+ * @LastEditTime: 2019-09-15 08:01:28
  * @LastEditors: Please set LastEditors
  */
 #include <stdlib.h>
@@ -312,8 +312,8 @@ static int __rb_tree_remove_fixup (rb_tree_t* prb, rb_tree_node_t* px)
     // 这里的px很可能是NULL
     // 若为NULL 则 那个
     rb_tree_node_t* pw = _null(prb);
-    while (px != prb->_root && px->color == _black)
-    {
+    while (px != prb->_root && px->color == _black) {
+
         if (px == px->parent->left){
             // 如果px是左孩子。
             // 取pw为px的右兄弟。
@@ -394,68 +394,58 @@ static int __rb_tree_remove_fixup (rb_tree_t* prb, rb_tree_node_t* px)
     return 0;
 }
 
-static type_value_t __rb_tree_remove (rb_tree_t* prb, rb_tree_node_t* pz)
+static int __rb_tree_remove (rb_tree_t* prb, rb_tree_node_t* pz, type_value_t* rdata)
 {
-    if (pz != _null(prb))
-    {
+    if (pz != _null(prb)){
+        
         rb_tree_node_t *py = _null(prb);
         rb_tree_node_t *px = _null(prb);
-        if (pz->left == _null(prb) || pz->right == _null(prb))
-        {
+        if (pz->left == _null(prb) || pz->right == _null(prb)){
             py = pz;
-        }
-        else
-        {
+        } else {
             py = __tree_successor(prb, pz);
         }
 
-        if (py->left != _null(prb))
-        {
+        if (py->left != _null(prb)){
             px = py->left;
-        }
-        else
-        {
+        }else{
             px = py->right;
         }
 
         px->parent = py->parent;
 
-        if (py->parent == _null(prb))
-        {
+        if (py->parent == _null(prb)){
             prb->_root = px;
-        }
-        else
-        {
-            if (py == py->parent->left)
-            {
+        }else{
+
+            if (py == py->parent->left){
                 py->parent->left = px;
-            }
-            else
-            {
+            }else{
                 py->parent->right = px;
             }
         }
 
         // 交换两个的值
-        if (py != pz)
-        {
+        if (py != pz){
             type_value_t data = pz->node;
             pz->node = py->node;
             py->node = data;
         }
 
-        if (py->color == _black)
-        {
+        if (py->color == _black){
             __rb_tree_remove_fixup(prb, px);
         }
-        type_value_t ret_data = py->node;
-        //回收节点，返回拉进来的数据。
+
+        // 返回值。
+        if (rdata) {
+            *rdata = py->node;
+        }
         deallocate(pool(0), py);
         prb->_size--;
-        return ret_data;
+        return 0;
     }else{
-        // 空节点。返回空节点的node回去就好了
-        return pz->node;
+        // 空节点，返回-1;
+        return -1;
     }
 }
 /** tree function **/
@@ -514,13 +504,18 @@ static int _rb_tree_insert(container_t* container, iterator_t pos, type_value_t 
     return __rb_tree_insert(container, data);
 }
 
-static type_value_t _rb_tree_remove(container_t* container, iterator_t pos)
+static int _rb_tree_remove(container_t* container, iterator_t pos, type_value_t* rdata)
 {
     return __rb_tree_remove(container, iterator_reference(pos));
 }
 
+static unsigned int _rb_tree_size(container_t* container)
+{
+    return ((rb_tree_t*)container)->_size;
+}
+
 void init_rb_tree(rb_tree_t* tree, int(*insert_compare)(type_value_t, type_value_t)) {
-    initialize_container(tree,_rb_tree_first, _rb_tree_last, _rb_tree_find, _rb_tree_insert, _rb_tree_remove);
+    initialize_container(tree,_rb_tree_first, _rb_tree_last, _rb_tree_find, _rb_tree_insert, _rb_tree_remove, _rb_tree_size);
     return __init_rb_tree(tree, insert_compare);
 }
 

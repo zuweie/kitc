@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-09-11 16:01:14
+ * @LastEditTime: 2019-09-15 07:53:30
  * @LastEditors: Please set LastEditors
  */
 
@@ -86,27 +86,39 @@ static int _list_insert(container_t* container, iterator_t pos, type_value_t dat
     return 0;
 }
 
-static type_value_t _list_remove(container_t* container, iterator_t pos)
+static int _list_remove(container_t* container, iterator_t pos, type_value_t* rdata)
 {
     // 删除
+
+    list_t* list = container;
     list_node_t* pnode = iterator_reference(pos);
-    pnode->prev->next = pnode->next;
-    pnode->next->prev = pnode->prev;
 
-    type_value_t ret = iterator_dereference(pos);
-    
+    if (pnode != &list->_sentinel){
 
-    // 回收
-    deallocate(pool(0), pnode);
+        pnode->prev->next = pnode->next;
+        pnode->next->prev = pnode->prev;
 
-    list_t* plist = container;
-    plist->_size--;
-    return ret;
+        if (rdata) {
+            *rdata = iterator_dereference(pos);
+        }
+        
+        // 回收
+        deallocate(pool(0), pnode);
+        list->_size--;
+        return 0;
+    }
+
+    return -1;
+}
+
+static unsigned int _list_size(container_t* container) 
+{
+    return ((list_t*)(container))->_size;
 }
 
 void init_list(list_t* list) {
     
-    initialize_container(list, _list_first, _list_last, _list_find, _list_insert, _list_remove);
+    initialize_container(list, _list_first, _list_last, _list_find, _list_insert, _list_remove, _list_size);
     list_first(list) = list_head(list);
     list_last(list) = list_tail(list);
     list->_size = 0;

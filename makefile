@@ -21,18 +21,24 @@ mem_pool_headers :=
 mem_pool_sources :=
 mem_pool_dir     :=
 
+algor_headers :=
+algor_sources :=
+algor_dir     :=
+
 test_sources :=
 test_dir     :=
 
 include ./src/base/*.mk
 include ./src/mem_pool/*.mk
+include ./src/algor/*.mk
 include ./src/test/*.mk
 
 base_objects  	 := $(subst .c,.o,$(base_sources))
 mem_pool_objects := $(subst .c,.o,$(mem_pool_sources))
+algor_objects    := $(subst .c,.o,$(algor_dir))
 test_objects  	 := $(subst .c,.o,$(test_sources))
 
-INCLUDE_FLAGS   := $(addprefix -I, $(base_dir)) $(addprefix -I, $(mem_pool_dir)) 
+INCLUDE_FLAGS   := $(addprefix -I, $(base_dir)) $(addprefix -I, $(mem_pool_dir)) $(addprefix -I, $(algor_dir))
 PROGRAM_CFLAGS  := -lcunit -lm -g $(INCLUDE_FLAGS) 
 LIBS_CFLAGS     := -lm $(INCLUDE_FLAGS) 
 
@@ -60,18 +66,18 @@ RM  :=  rm
 .PHONY: all
 all: $(program)
 
-$(program): $(test_sources) $(base_sources) $(mem_pool_sources) 
+$(program): $(test_sources) $(base_sources) $(mem_pool_sources) $(algor_sources)
 	mkdir -p $(bin_dir)
 	$(CC) $(PROGRAM_CFLAGS) $^ -o $(bin_dir)/$@
 
 .PHONY: libs
 libs: $(libs)
 
-$(libs): $(base_sources) $(mem_pool_sources)
+$(libs): $(base_sources) $(mem_pool_sources) $(algor_sources)
 	mkdir -p $(export_header_dir)
 	mkdir -p $(lib_dir)
 	$(AR) -r $(lib_dir)/$@ $^
-	cp $(base_headers) $(mem_pool_headers) $(export_header_dir)
+	cp $(base_headers) $(mem_pool_headers) $(algor_headers) $(export_header_dir)
 
 .PHONY: clean
 clean:
