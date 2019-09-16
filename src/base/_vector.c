@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-08 00:02:36
- * @LastEditTime: 2019-09-15 17:38:49
+ * @LastEditTime: 2019-09-16 11:39:26
  * @LastEditors: Please set LastEditors
  */
 #include <string.h>
@@ -44,14 +44,14 @@ static iterator_t _vector_last (container_t* container)
     return _get_iter(vec->_data + vec->_size -1 );
 }
 
-static iterator_t _vector_find (container_t* container, type_value_t find, int (*compare)(type_value_t, type_value_t)) 
+static iterator_t _vector_search (container_t* container, iterator_t offset, type_value_t find, int (*compare)(type_value_t, type_value_t)) 
 {
     
-    iterator_t first = container_first(container);
-    iterator_t tail = iterator_next( container_last(container) );
+    iterator_t first = offset;
+    iterator_t tail = container_tail(container);
+
     for(; !iterator_equal(first, tail); first=iterator_next(first)) {
-        if (compare(iterator_dereference(first), find) == 0) 
-            return first;
+        if (compare(iterator_dereference(first), find) == 0) return first;
     }
     // 返回空指针。
     return _get_iter((void*)0);
@@ -99,7 +99,7 @@ static int _vector_insert (container_t* container, iterator_t pos, type_value_t 
         vec->_size++;
         return 0;
     }
-    return -;
+    return -1;
 }
 
 static int _vector_remove (container_t* container, iterator_t pos, type_value_t* rdata) 
@@ -136,7 +136,7 @@ static unsigned int _vector_size (container_t* container)
 /** container **/
 
 void init_vector(vector_t* vector) {
-    initialize_container(vector, _vector_first, _vector_last, _vector_find, _vector_insert, _vector_remove, _vector_size);
+    initialize_container(vector, _vector_first, _vector_last, _vector_search, _vector_insert, _vector_remove, _vector_size);
     vector->_size = 0;
     vector->_capacity = 0;
     return;

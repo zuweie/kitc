@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-09-15 17:38:03
+ * @LastEditTime: 2019-09-16 11:40:04
  * @LastEditors: Please set LastEditors
  */
 
@@ -55,10 +55,10 @@ static iterator_t _list_last (container_t* container)
     return _get_iter(list_last(plist));
 }
 
-static iterator_t _list_find (container_t* container, type_value_t find, int(compare)(type_value_t data1, type_value_t data2))
+static iterator_t _list_search (container_t* container, iterator_t offset, type_value_t find, int(compare)(type_value_t data1, type_value_t data2))
 {
-    iterator_t first = container_first(container);
-    iterator_t tail  = iterator_next( container_last(container) );
+    iterator_t first = offset;
+    iterator_t tail  = container_tail(container);
     for(;iterator_equal(first, tail); first = iterator_next(first)) {
         if (compare(iterator_dereference(first), find) == 0) {
             return first;

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-11 10:15:37
- * @LastEditTime: 2019-09-15 17:43:39
+ * @LastEditTime: 2019-09-16 11:42:06
  * @LastEditors: Please set LastEditors
  */
 #include <stdlib.h>
@@ -136,16 +136,16 @@ static int __tree_right_rotate(rb_tree_t* prb, rb_tree_node_t* px)
     return 0;
 }
 
-static rb_tree_node_t* __rb_tree_find(rb_tree_t* prb, rb_tree_node_t* pnode, type_value_t find, int(*compare)(type_value_t, type_value_t))
+static rb_tree_node_t* __rb_tree_search(rb_tree_t* prb, rb_tree_node_t* pnode, type_value_t find, int(*compare)(type_value_t, type_value_t))
 {
     if (pnode != _null(prb)) {
-        int result = compare(find,  pnode->node);
+        int result = compare(pnode->node, find);
         if (result == 0) {
             return pnode;
         }else if (result == 1) {
-            return __rb_tree_find(prb, pnode->right, find, compare);
+            return __rb_tree_search(prb, pnode->left, find, compare);
         }else{
-            return __rb_tree_find(prb, pnode->left, find, compare); 
+            return __rb_tree_search(prb, pnode->right, find, compare); 
         }
     }
     return pnode;
@@ -263,7 +263,7 @@ static int __rb_tree_insert (rb_tree_t* prb, type_value_t t)
         py = px;
         if (prb->_insert_compare(pz->node, px->node) == -1){
         	px = px->left;
-        }else if (prb->_insert_compare(pz->node, px->node) >= 0 ){
+        }else if (prb->_insert_compare(pz->node, px->node) == 1 ){
         	px = px->right;
         }else{
             return -1;
@@ -491,10 +491,10 @@ static iterator_t _rb_tree_last(container_t* container)
     return _get_iter(pnode, container);
 }
 
-static iterator_t _rb_tree_find(container_t* container, type_value_t find, int (*compare)(iterator_t, iterator_t)) 
+static iterator_t _rb_tree_search(container_t* container, iterator_t offset, type_value_t find, int (*compare)(iterator_t, iterator_t)) 
 {
     rb_tree_t* tree = container;
-    rb_tree_node_t* p = __rb_tree_find(tree, tree->_root, find, compare);
+    rb_tree_node_t* p = __rb_tree_search(tree, tree->_root, find, compare);
 
     if ( p == _null(tree)) {
         // 外部接口null 用 0;
@@ -524,7 +524,7 @@ static unsigned int _rb_tree_size(container_t* container)
 }
 
 void init_rb_tree(rb_tree_t* tree, int(*insert_compare)(type_value_t, type_value_t)) {
-    initialize_container(tree,_rb_tree_first, _rb_tree_last, _rb_tree_find, _rb_tree_insert, _rb_tree_remove, _rb_tree_size);
+    initialize_container(tree,_rb_tree_first, _rb_tree_last, _rb_tree_search, _rb_tree_insert, _rb_tree_remove, _rb_tree_size);
     return __init_rb_tree(tree, insert_compare);
 }
 

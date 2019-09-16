@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-14 07:54:01
+ * @LastEditTime: 2019-09-16 08:05:06
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -183,7 +183,7 @@ void test_rb_tree(void)
         
         iterator_t pos = container_find(&rbtree, get(i), compare_int);
 
-        int data = type_int (container_remove(&rbtree, pos) );
+        int data =  container_remove(&rbtree, pos, NULL);
         
         printf("\n delete %d \n", data);
 

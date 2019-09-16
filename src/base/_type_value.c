@@ -2,7 +2,7 @@
  * @Description: node
  * @Author: zuweie
  * @Date: 2019-09-03 13:29:23
- * @LastEditTime: 2019-09-12 10:40:42
+ * @LastEditTime: 2019-09-16 09:04:09
  * @LastEditors: Please set LastEditors
  */
 
@@ -44,26 +44,24 @@ void* type_pointer(type_value_t tv)
     return tv.pointer;
 }
 
-int compare_int(type_value_t v1, type_value_t v2) 
+int compare_int(type_value_t node, type_value_t find) 
 {
 
-    int vv1 = type_int(v1);
-    int vv2 = type_int(v2);
+    int vv1 = type_int(node);
+    int vv2 = type_int(find);
     
     if (vv1 == vv2) return 0;
     else if (vv1 > vv2) return 1;
     else return -1;
 }
 
-int compare_float(type_value_t v1, type_value_t v2)
+int compare_float(type_value_t node, type_value_t find)
 {
-    if (type_int(v1) == type_int(v2)) return 0;
-    else if (type_float(v1) > type_float(v2)) return 1;
+    if (type_int(node) == type_int(find)) return 0;
+    else if (type_float(node) > type_float(find)) return 1;
     else return -1;
 }
 
-int compare_pointer(type_value_t v1, type_value_t v2){
-    void* p1 = type_pointer(v1);
-    void* p2 = type_pointer(v2);
-    return p1 == p2;
+int compare_pointer(type_value_t node, type_value_t find){
+    return type_pointer(node) == type_pointer(find);
 }
