@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:14:04
- * @LastEditTime: 2019-09-16 12:01:49
+ * @LastEditTime: 2019-09-16 19:01:16
  * @LastEditors: Please set LastEditors
  */
 #include "_graph.h"
@@ -61,9 +61,9 @@ int graph_add_edge(graph_t* graph, int from, int to, float weight)
         vertex_t* vertex_to   = type_pointer( iterator_dereference(it_to) );
         vertex_t* vertex_from = type_pointer( iterator_dereference(it_from) );
 
-        iterator_t adj_pos = container_find( &vertex_from->adjacency, pointer_type(vertex_to), _find_adj);
+        iterator_t it_adj = container_find( &vertex_from->adjacency, pointer_type(vertex_to), _find_adj);
 
-        if (!iterator_valid(adj_pos)) {
+        if (!iterator_valid(it_adj)) {
             // 2 这个顶点没插过插一下。
             adjacency_node_t* node = _create_adjacency_node(vertex_to, weight);
             container_insert_tail(&vertex_from->adjacency, pointer_type(node));
@@ -75,11 +75,11 @@ int graph_add_edge(graph_t* graph, int from, int to, float weight)
 
 int grath_del_vertex(graph_t* graph, int vertex)
 {
-    iterator_t ver_pos = container_find(&graph->vertexes, int_type(vertex), _find_vertex);
+    iterator_t it_vertext = container_find(&graph->vertexes, int_type(vertex), _find_vertex);
     
-    if (iterator_valid(ver_pos)) {
+    if (iterator_valid(it_vertext)) {
         type_value_t r_vertex;
-        container_remove(&graph->vertexes, ver_pos, &r_vertex);
+        container_remove(&graph->vertexes, it_vertext, &r_vertex);
         vertex_t* pv = type_pointer(r_vertex);
 
         // 循环删除list
@@ -97,5 +97,18 @@ int grath_del_vertex(graph_t* graph, int vertex)
 
 int grath_del_edge(graph_t* graph, int from, int to)
 {
-    
+    iterator_t it_from = container_find(&graph->vertexes, int_type(from), _find_vertex);
+    iterator_t it_to   = container_find(&graph->vertexes, int_type(to), _find_vertex);
+
+    if (iterator_valid(it_from) && iterator_valid(it_to)) {
+        vertex_t* vertex_from = type_pointer(iterator_dereference(it_from));
+        type_value_t adj;
+        iterator_t it_adj = container_find(&vertex_from->adjacency, iterator_dereference(it_to), _find_adj);
+        if (container_remove(&vertex_from->adjacency, it_adj, &adj) != -1) {
+            adjacency_node_t* pa = type_pointer(adj);
+            deallocate(pool(0), pa);
+            return 0;
+        }
+    }
+    return -1;
 }
