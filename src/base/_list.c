@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-09-16 11:40:04
+ * @LastEditTime: 2019-09-17 13:41:37
  * @LastEditors: Please set LastEditors
  */
 
@@ -123,7 +123,7 @@ static unsigned int _list_size(container_t* container)
 
 void init_list(list_t* list) {
     
-    initialize_container(list, _list_first, _list_last, _list_find, _list_insert, _list_remove, _list_size);
+    initialize_container(list, _list_first, _list_last, _list_search, _list_insert, _list_remove, _list_size);
     list_first(list) = list_head(list);
     list_last(list) = list_tail(list);
     list->_size = 0;

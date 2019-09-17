@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:46
- * @LastEditTime: 2019-09-16 11:58:53
+ * @LastEditTime: 2019-09-17 10:47:16
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CONTAINER_H_
@@ -20,18 +20,14 @@
 #define container_search(container, offset, data, compare) (((container_t*)(container))->search(container, offset, data, compare))
 #define container_find(container, data, compare) container_search(container, container_first(container), data, compare)
 
-// 容器插入数据
+// 容器插入
 #define container_insert(container, iter, data) (((container_t*)(container))->insert(container, iter, data))
-// 插头
 #define container_insert_first(container, data) container_insert(container, container_first(container), data)
-// 插尾
 #define container_insert_tail(container, data) container_insert(container, container_tail(container), data)
 
 // 容器移除
 #define container_remove(container, iter, data) (((container_t*)(container))->remove(container, iter, data))
-// 容器头部移除
 #define container_remove_first(container, data) container_remove(container, container_first(container), data)
-// 容器尾部移除
 #define container_remove_last(container, data) container_remove(container, container_last(container), data)
 
 // 两个容器合并。
@@ -49,12 +45,12 @@
 #define container_size(container) (((container_t*)(container))->size(container))
 
 #define initialize_container(container, __first, __last, __search, __insert, __remove, __size) do { \
-    ((container_t*)container)->first = (__first);                                         \
-    ((container_t*)container)->last = (__last);                                           \
-    ((container_t*)container)->search = (__search);                                           \
+    ((container_t*)container)->first  = (__first);  \
+    ((container_t*)container)->last   = (__last);   \
+    ((container_t*)container)->search = (__search);                                       \
     ((container_t*)container)->insert = (__insert);                                       \
     ((container_t*)container)->remove = (__remove);                                       \
-    ((container_t*)container)->size = (__size);                                           \
+    ((container_t*)container)->size   = (__size);                                         \
 } while (0)
 
 typedef struct _container container_t;
