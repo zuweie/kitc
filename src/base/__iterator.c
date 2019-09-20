@@ -2,10 +2,10 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-10 11:00:17
- * @LastEditTime: 2019-09-15 17:37:54
+ * @LastEditTime: 2019-09-20 13:00:39
  * @LastEditors: Please set LastEditors
  */
-#include "_iterator.h"
+#include "__iterator.h"
 
 // 默认版本
 
@@ -38,21 +38,17 @@ static inline __iterator_valid(iterator_t it)
     return iterator_reference(it) != 0;
 }
 
-iterator_t get_iterator(void* __refer,
-    void* __attach,
-    iterator_t (*__next)(iterator_t),
-    iterator_t (*__prev)(iterator_t)) {
+iterator_t get_iterator(void* __refer, void* __attach, iterator_t (*__move)(iterator_t, int)) {
         
         iterator_t it = {
-            .dereference = __iterator_dereference,            
-            .next = __next,
-            .prev = __prev,
+            .dereference = __iterator_dereference,
+            .move = __move,
             .valid = __iterator_valid,
             .equal = __iterator_equal,
-            .attach = __attach,
+            .assign = __iterator_assign,
             .exchange = __iterator_exchange,
             .reference = __refer,
-            .assign = __iterator_assign,
+            .attach = __attach,
         };
 
         return it;

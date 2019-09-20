@@ -2,16 +2,16 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-11 10:15:37
- * @LastEditTime: 2019-09-16 11:42:06
+ * @LastEditTime: 2019-09-20 13:19:40
  * @LastEditors: Please set LastEditors
  */
 #include <stdlib.h>
-#include "_rb_tree.h"
+#include "__rb_tree.h"
 #include "_mem_pool.h"
 
 /** tree function **/
 
- static void __init_rb_tree (rb_tree_t* prb, int (insert_compare)(type_value_t, type_value_t)) 
+ static void __init_rb_tree (rb_tree_t* prb, int (*insert_compare)(type_value_t, type_value_t)) 
  {
     
     /** 初始化 _null 边界节点 **/
@@ -454,23 +454,22 @@ static int __rb_tree_remove (rb_tree_t* prb, rb_tree_node_t* pz, type_value_t* r
 
 static iterator_t _get_iter(void* refer, void* tree);
 
-static iterator_t _next(iterator_t it) 
-{
-   rb_tree_node_t* pnode = iterator_reference(it);
-   rb_tree_t* tree = iterator_attach(it);
-   return _get_iter(__tree_successor(tree, pnode), tree);
-}
-
-static iterator_t _prev (iterator_t it) 
+static iterator_t _move(iterator_t it, int step) 
 {
     rb_tree_node_t* pnode = iterator_reference(it);
-    rb_tree_t* tree = iterator_attach(it);
-    return _get_iter(__tree_predecessor(tree,pnode), tree);
+    rb_tree_t* tree       = iterator_attach(it);
+    while ((step=(step>0)?step--:step++) != 0)
+    {
+        /* code */
+        if (step>0) pnode = __tree_successor(tree, pnode);
+        else if (step < 0) pnode = __tree_predecessor(tree, pnode);
+    }
+    return _get_iter(pnode, tree);
 }
 
 static iterator_t _get_iter(void* refer, void* tree) 
 {
-    return get_iterator(refer, tree, _next, _prev);
+    return get_iterator(refer, tree, _move);
 }
 /** iterator function **/
 

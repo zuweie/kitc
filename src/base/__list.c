@@ -2,16 +2,16 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-09-17 13:41:37
+ * @LastEditTime: 2019-09-20 13:09:37
  * @LastEditors: Please set LastEditors
  */
 
 #include <stdlib.h>
 
-#include "_list.h"
-#include "_type_value.h"
-#include "_iterator.h"
-#include "_container.h"
+#include "__list.h"
+#include "__type_value.h"
+#include "__iterator.h"
+#include "__container.h"
 #include "_mem_pool.h"
 
 /** iter function **/
@@ -23,21 +23,20 @@ static iterator_t _get_iter (void* refer);
 //     return pnode->data;
 // }
 
-static iterator_t _next (iterator_t it) 
+static iterator_t _move(iterator_t it, int step)
 {
     list_node_t* pnode = iterator_reference(it);
-    return _get_iter(pnode->next);
+    while((step = (step > 0)? step--:step++) != 0) {
+        if (step > 0) pnode = pnode->next;
+        else if (step < 0) pnode = pnode->prev;
+    }
+    return _get_iter(pnode);
 }
 
-static iterator_t _prev (iterator_t it)
-{
-    list_node_t* pnode = iterator_reference(it);
-    return _get_iter(pnode->prev);
-}
 
 static iterator_t _get_iter(void *refer) 
 {
-    return get_iterator(refer, 0, _next, _prev);
+    return get_iterator(refer, 0, _move);
 }
 /** iter function **/
 

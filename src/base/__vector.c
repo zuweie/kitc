@@ -2,32 +2,26 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-08 00:02:36
- * @LastEditTime: 2019-09-16 11:39:26
+ * @LastEditTime: 2019-09-20 13:22:25
  * @LastEditors: Please set LastEditors
  */
 #include <string.h>
-#include "_vector.h"
-#include "_iterator.h"
-#include "_type_value.h"
+#include "__vector.h"
+#include "__iterator.h"
+#include "__type_value.h"
 #include "_mem_pool.h"
 
 /** iterator function **/
 static iterator_t _get_iter (void* refer);
 
-static iterator_t _next (iterator_t it) 
+static iterator_t _move (iterator_t it, int step) 
 {
-    type_value_t* pv = (type_value_t*) iterator_reference(it);
-    return _get_iter( pv + 1 );
-}
+    type_value_t* pv = iterator_reference(it);
 
-static iterator_t _prev (iterator_t it) 
-{
-    type_value_t* pv = (type_value_t*) iterator_reference(it);
-    return _get_iter( pv - 1 );
+    return _get_iter(pv + step);
 }
-
 static iterator_t _get_iter (void* refer) {
-    return get_iterator(refer, 0, _next, _prev);
+    return get_iterator(refer, 0, _move);
 }
 /** iterator function **/
 

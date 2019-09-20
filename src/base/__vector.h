@@ -8,8 +8,8 @@
 #ifndef _VECTOR_H_
 #define _VECTOR_H_
 
-#include "_container.h"
-#include "_type_value.h"
+#include "__container.h"
+#include "__type_value.h"
 
 #define ALLOC_CHUNK_SIZE 10
 

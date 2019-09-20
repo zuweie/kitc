@@ -2,37 +2,40 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:46
- * @LastEditTime: 2019-09-20 09:17:18
+ * @LastEditTime: 2019-09-20 12:09:56
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CONTAINER_H_
 #define _CONTAINER_H_
 
 
-#include "_type_value.h"
-#include "_iterator.h"
+#include "__type_value.h"
+#include "__iterator.h"
 
+// 容器位置
 #define container_first(container) (((container_t*)(container))->first(container))
 #define container_last(container) (((container_t*)(container))->last(container))
 #define container_head(container) iterator_prev(container_first(container))
 #define container_tail(container) iterator_next(container_last(container))
 
-#define container_search(container, offset, data, compare) (((container_t*)(container))->search(container, offset, data, compare))
-#define container_find(container, data, compare) container_search(container, container_first(container), data, compare)
+// 容器搜索
+#define container_search(container, offset, find, compare) (((container_t*)(container))->search(container, offset, find, compare))
+#define container_find(container, find, compare) container_search(container, container_first(container), find, compare)
 
 // 容器插入
 #define container_insert(container, iter, data) (((container_t*)(container))->insert(container, iter, data))
+#define container_insert_find(container, find, data, compare) container_insert(container, container_find(container, find, compare), data)
 #define container_insert_first(container, data) container_insert(container, container_first(container), data)
 #define container_insert_tail(container, data) container_insert(container, container_tail(container), data)
 
 // 容器移除
 #define container_remove(container, iter, rdata) (((container_t*)(container))->remove(container, iter, rdata))
 #define container_remove_find(container, find, rdata, compare) container_remove(container, container_find(container, find, compare), rdata) 
-#define container_remove_first(container, data) container_remove(container, container_first(container), data)
-#define container_remove_last(container, data) container_remove(container, container_last(container), data)
+#define container_remove_first(container, rdata) container_remove(container, container_first(container), rdata)
+#define container_remove_last(container, rdata) container_remove(container, container_last(container), rdata)
 
 // 容器测试
-#define container_has(container, data, compare) (iterator_valid(container_find(container, data, compare)))
+#define container_has(container, find, compare) (iterator_valid(container_find(container, find, compare)))
 
 // 两个容器合并。
 #define container_merge(container_1, container2) do { \
