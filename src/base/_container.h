@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:46
- * @LastEditTime: 2019-09-17 10:47:16
+ * @LastEditTime: 2019-09-20 09:17:18
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CONTAINER_H_
@@ -26,9 +26,13 @@
 #define container_insert_tail(container, data) container_insert(container, container_tail(container), data)
 
 // 容器移除
-#define container_remove(container, iter, data) (((container_t*)(container))->remove(container, iter, data))
+#define container_remove(container, iter, rdata) (((container_t*)(container))->remove(container, iter, rdata))
+#define container_remove_find(container, find, rdata, compare) container_remove(container, container_find(container, find, compare), rdata) 
 #define container_remove_first(container, data) container_remove(container, container_first(container), data)
 #define container_remove_last(container, data) container_remove(container, container_last(container), data)
+
+// 容器测试
+#define container_has(container, data, compare) (iterator_valid(container_find(container, data, compare)))
 
 // 两个容器合并。
 #define container_merge(container_1, container2) do { \
@@ -45,8 +49,8 @@
 #define container_size(container) (((container_t*)(container))->size(container))
 
 #define initialize_container(container, __first, __last, __search, __insert, __remove, __size) do { \
-    ((container_t*)container)->first  = (__first);  \
-    ((container_t*)container)->last   = (__last);   \
+    ((container_t*)container)->first  = (__first);                                        \
+    ((container_t*)container)->last   = (__last);                                         \
     ((container_t*)container)->search = (__search);                                       \
     ((container_t*)container)->insert = (__insert);                                       \
     ((container_t*)container)->remove = (__remove);                                       \
