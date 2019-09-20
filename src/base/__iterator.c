@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-10 11:00:17
- * @LastEditTime: 2019-09-20 13:00:39
+ * @LastEditTime: 2019-09-20 20:28:19
  * @LastEditors: Please set LastEditors
  */
 #include "__iterator.h"
@@ -25,7 +25,7 @@ static inline int __iterator_assign (iterator_t to, iterator_t from)
     return 0;
 }
 
-static inline __iterator_exchange (iterator_t t1, iterator_t t2) 
+static inline int __iterator_exchange (iterator_t t1, iterator_t t2) 
 {
     type_value_t tmp = iterator_dereference(t2);
     *((type_value_t*)iterator_reference(t2)) = iterator_dereference(t1);
@@ -33,7 +33,7 @@ static inline __iterator_exchange (iterator_t t1, iterator_t t2)
     return 0;
 }
 
-static inline __iterator_valid(iterator_t it) 
+static inline int __iterator_valid(iterator_t it) 
 {
     return iterator_reference(it) != 0;
 }

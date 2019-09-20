@@ -2,32 +2,17 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:14:04
- * @LastEditTime: 2019-09-20 12:35:09
+ * @LastEditTime: 2019-09-20 19:45:29
  * @LastEditors: Please set LastEditors
  */
 #include "_graph.h"
 #include "_mem_pool.h"
 
-
-int _find_vertex(type_value_t node, type_value_t find) {
-
-    vertex_t* ver1 = type_pointer(node);
-    int ver2 = type_int(find);    
-    return !(ver1->vertex_id = ver2);
-}
-
-int _find_adj (type_value_t node, type_value_t find) {
-    adjacency_node_t* adj = type_pointer(node);
-    vertex_t* ver         = type_pointer(find);
-    return !(adj->to == ver);
-}
-
-static vertex_t* _create_vertex(graph_t* graph, int id) 
+static vertex_t* _create_vertex(graph_t* graph, type_value_t vertex) 
 {
     vertex_t* v = allocate(pool(0), sizeof(vertex_t));
-    v->vertex_id = id;
+    v->vertex = vertex;
     init_set(&v->adjacency, graph->compare_adjnode);
-
     return v;
 }
 
@@ -46,17 +31,17 @@ int init_graph(graph_t* graph, int(*compare_vertex)(type_value_t, type_value_t),
     return 0;
 } 
 
-int graph_add_vertex(graph_t* graph, int vertex) 
+int graph_add_vertex(graph_t* graph, type_value_t vertex) 
 {
-    vertex_t* v = _create_vertex(vertex, graph->compare_adjnode);
+    vertex_t* v = _create_vertex(graph, vertex);
     // 值插屁股
     return set_insert(&v->adjacency, pointer_type(v));
 }
 
-int graph_add_edge(graph_t* graph, int from, int to, float weight)
+int graph_add_edge(graph_t* graph, type_value_t from, type_value_t to, float weight)
 {
-    iterator_t it_from = set_find(&graph->vertexes, int_type(from));
-    iterator_t it_to   = set_find(&graph->vertexes, int_type(to));
+    iterator_t it_from = find(&graph->vertexes, from);
+    iterator_t it_to   = find(&graph->vertexes, to);
     
     if (iterator_valid(it_from) && iterator_valid(it_to)) {
         
@@ -68,16 +53,16 @@ int graph_add_edge(graph_t* graph, int from, int to, float weight)
     return -1;
 }
 
-int graph_del_vertex(graph_t* graph, int vertex)
+int graph_del_vertex(graph_t* graph, type_value_t vertex)
 {
     
     type_value_t r_vertext;
-    if (set_remove(&graph->vertexes, int_type(vertex), &r_vertext) != -1) {
+    if (remove_find(&graph->vertexes, vertex, &r_vertext) != -1) {
         vertex_t* pv = type_pointer(r_vertext);
 
         type_value_t r_adj;
 
-        while( set_remove_last(&pv->adjacency, &r_adj) != -1 ) {
+        while( remove_last(&pv->adjacency, &r_adj) != -1 ) {
             deallocate(pool(0), type_pointer(r_adj));
         }
 
@@ -87,10 +72,10 @@ int graph_del_vertex(graph_t* graph, int vertex)
     return -1;
 }
 
-int graph_del_edge(graph_t* graph, int from, int to)
+int graph_del_edge(graph_t* graph, type_value_t from, type_value_t to)
 {
-    iterator_t it_from = set_find(&graph->vertexes, int_type(from));
-    iterator_t it_to   = set_find(&graph->vertexes, int_type(to));
+    iterator_t it_from = find(&graph->vertexes, from);
+    iterator_t it_to   = find(&graph->vertexes, to);
 
     if (iterator_valid(it_from) && iterator_valid(it_to)) {
 
@@ -98,10 +83,23 @@ int graph_del_edge(graph_t* graph, int from, int to)
         vertex_t* v_to   = type_pointer(iterator_dereference(it_to));
 
         type_value_t r_adj;
-        if (set_remove_find(&v_from->adjacency, pointer_type(v_to), &r_adj) != -1) {
+        if (remove_find(&v_from->adjacency, pointer_type(v_to), &r_adj) != -1) {
             deallocate(pool(0), type_pointer(r_adj));
             return 0;
         }
     }
     return -1;
+}
+
+void graph_set_vertex_data(iterator_t it, void* data) 
+{
+    vertex_t* vertex = type_pointer(iterator_dereference(it));
+    vertex->data = data;
+    return;
+}
+
+void* graph_get_vertex_data(iterator_t it) 
+{
+    vertex_t* vertex = type_pointer(iterator_dereference(it));
+    return vertex->data;
 }

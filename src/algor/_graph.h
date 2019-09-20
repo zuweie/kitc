@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:13:53
- * @LastEditTime: 2019-09-20 12:27:14
+ * @LastEditTime: 2019-09-20 15:20:20
  * @LastEditors: Please set LastEditors
  */
 #ifndef _GRAPH_H_
@@ -16,9 +16,9 @@
 typedef struct _vertex 
 {
     /* vertex id */
-    int vertex_id;
+    type_value_t vertex;
     /* other data here */
-    void* attach;
+    void* data;
     set_t adjacency;
 } vertex_t;
 
@@ -38,9 +38,11 @@ typedef struct _graph
 } graph_t;
 
 extern int init_graph(graph_t* graph, int(*)(type_value_t, type_value_t), int(*)(type_value_t, type_value_t));
-extern int graph_add_vertex(graph_t* graph, int vertex);
-extern int graph_add_edge(graph_t* graph, int from, int to, float weigth);
-extern int graph_del_vertex(graph_t* graph, int vertex);
-extern int graph_del_edge(graph_t* graph, int from, int to);
+extern int graph_add_vertex(graph_t* graph, type_value_t vertex);
+extern int graph_add_edge(graph_t* graph, type_value_t from, type_value_t to, float weigth);
+extern int graph_del_vertex(graph_t* graph, type_value_t vertex);
+extern int graph_del_edge(graph_t* graph, type_value_t from, type_value_t to);
 
+extern void graph_set_vertex_data(iterator_t it, void* data);
+extern void* graph_get_vertex_data(iterator_t it);
 #endif

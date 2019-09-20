@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-11 10:15:37
- * @LastEditTime: 2019-09-20 13:19:40
+ * @LastEditTime: 2019-09-20 22:21:06
  * @LastEditors: Please set LastEditors
  */
 #include <stdlib.h>
@@ -490,7 +490,7 @@ static iterator_t _rb_tree_last(container_t* container)
     return _get_iter(pnode, container);
 }
 
-static iterator_t _rb_tree_search(container_t* container, iterator_t offset, type_value_t find, int (*compare)(iterator_t, iterator_t)) 
+static iterator_t _rb_tree_search(container_t* container, iterator_t offset, type_value_t find, int (*compare)(type_value_t, type_value_t)) 
 {
     rb_tree_t* tree = container;
     rb_tree_node_t* p = __rb_tree_search(tree, tree->_root, find, compare);
@@ -523,7 +523,7 @@ static unsigned int _rb_tree_size(container_t* container)
 }
 
 void init_rb_tree(rb_tree_t* tree, int(*insert_compare)(type_value_t, type_value_t)) {
-    initialize_container(tree,_rb_tree_first, _rb_tree_last, _rb_tree_search, _rb_tree_insert, _rb_tree_remove, _rb_tree_size);
+    initialize_container(tree, _rb_tree_first, _rb_tree_last, _rb_tree_search, _rb_tree_insert, _rb_tree_remove, _rb_tree_size);
     return __init_rb_tree(tree, insert_compare);
 }
 
