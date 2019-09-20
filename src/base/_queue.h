@@ -2,21 +2,23 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 19:09:21
- * @LastEditTime: 2019-09-20 20:27:10
+ * @LastEditTime: 2019-09-21 00:53:07
  * @LastEditors: Please set LastEditors
  */
 #ifndef _QUEUE_H_
 #define _QUEUE_H_
 
-#include "__container.h"
+#include "_con.h"
+#include "__list.h"
 
 typedef struct _queue 
 {
-    container_t* container;
-    int (*compare) (type_value_t, type_value_t);
+    con_t container;
+    list_t engine;
+    
 } queue_t;
 
-extern void init_queue(queue_t*, container_t*, int (*compare)(type_value_t, type_value_t));
+extern void init_queue(queue_t*, int (*compare)(type_value_t, type_value_t));
 
 // 尾部插入
 extern int en_queue(queue_t*, type_value_t);

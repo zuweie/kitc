@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:14:04
- * @LastEditTime: 2019-09-20 19:45:29
+ * @LastEditTime: 2019-09-21 01:00:04
  * @LastEditors: Please set LastEditors
  */
 #include "_graph.h"
@@ -40,8 +40,8 @@ int graph_add_vertex(graph_t* graph, type_value_t vertex)
 
 int graph_add_edge(graph_t* graph, type_value_t from, type_value_t to, float weight)
 {
-    iterator_t it_from = find(&graph->vertexes, from);
-    iterator_t it_to   = find(&graph->vertexes, to);
+    iterator_t it_from = con_find(&graph->vertexes, from);
+    iterator_t it_to   = con_find(&graph->vertexes, to);
     
     if (iterator_valid(it_from) && iterator_valid(it_to)) {
         
@@ -57,12 +57,12 @@ int graph_del_vertex(graph_t* graph, type_value_t vertex)
 {
     
     type_value_t r_vertext;
-    if (remove_find(&graph->vertexes, vertex, &r_vertext) != -1) {
+    if (con_rm_find(&graph->vertexes, vertex, &r_vertext) != -1) {
         vertex_t* pv = type_pointer(r_vertext);
 
         type_value_t r_adj;
 
-        while( remove_last(&pv->adjacency, &r_adj) != -1 ) {
+        while( con_rm_last(&pv->adjacency, &r_adj) != -1 ) {
             deallocate(pool(0), type_pointer(r_adj));
         }
 
@@ -74,8 +74,8 @@ int graph_del_vertex(graph_t* graph, type_value_t vertex)
 
 int graph_del_edge(graph_t* graph, type_value_t from, type_value_t to)
 {
-    iterator_t it_from = find(&graph->vertexes, from);
-    iterator_t it_to   = find(&graph->vertexes, to);
+    iterator_t it_from = con_find(&graph->vertexes, from);
+    iterator_t it_to   = con_find(&graph->vertexes, to);
 
     if (iterator_valid(it_from) && iterator_valid(it_to)) {
 
@@ -83,7 +83,7 @@ int graph_del_edge(graph_t* graph, type_value_t from, type_value_t to)
         vertex_t* v_to   = type_pointer(iterator_dereference(it_to));
 
         type_value_t r_adj;
-        if (remove_find(&v_from->adjacency, pointer_type(v_to), &r_adj) != -1) {
+        if (con_rm_find(&v_from->adjacency, pointer_type(v_to), &r_adj) != -1) {
             deallocate(pool(0), type_pointer(r_adj));
             return 0;
         }

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-09-20 13:09:37
+ * @LastEditTime: 2019-09-21 02:10:00
  * @LastEditors: Please set LastEditors
  */
 
@@ -26,9 +26,10 @@ static iterator_t _get_iter (void* refer);
 static iterator_t _move(iterator_t it, int step)
 {
     list_node_t* pnode = iterator_reference(it);
-    while((step = (step > 0)? step--:step++) != 0) {
-        if (step > 0) pnode = pnode->next;
-        else if (step < 0) pnode = pnode->prev;
+   
+    for(int next = step; next; next = step > 0? --step:++step) {
+        if (next > 0) pnode = pnode->next;
+        else if (next < 0) pnode = pnode->prev;
     }
     return _get_iter(pnode);
 }
@@ -58,7 +59,7 @@ static iterator_t _list_search (container_t* container, iterator_t offset, type_
 {
     iterator_t first = offset;
     iterator_t tail  = container_tail(container);
-    for(;iterator_equal(first, tail); first = iterator_next(first)) {
+    for(;!iterator_equal(first, tail); first = iterator_next(first)) {
         if (compare(iterator_dereference(first), find) == 0) {
             return first;
         }

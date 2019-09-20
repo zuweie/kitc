@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-20 19:49:25
+ * @LastEditTime: 2019-09-21 02:14:04
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -12,6 +12,7 @@
 #include "__vector.h"
 #include "__list.h"
 #include "__rb_tree.h"
+#include "_set.h"
 
 #define TEST_DATA_SIZE 10000
 
@@ -202,6 +203,43 @@ void test_rb_tree(void)
     CU_ASSERT(1);
 }
 
+void test_set(void) {
+
+    set_t set;
+    init_set(&set, compare_int);
+
+    for(int i=0; i<10; ++i) {
+        if (con_ins_first(&set, get(i)) == 0) {
+            printf(" insert %d into set \n", type_int(get(i)));
+        }else{
+            printf(" insert %d fail \n", type_int(get(i)));
+        }
+    }    
+
+    printf("*************** print set memebers ****************************\n");
+
+    for(iterator_t it = con_first(&set); !iterator_equal(it, con_last(&set)); it = iterator_next(it)) {
+        printf(" %d \n", type_int(iterator_dereference(it)));
+    }
+    
+    type_value_t rdata;
+    con_rm_find(&set, get(1), &rdata);
+    
+    con_rm_find(&set, get(3), &rdata);
+
+    con_rm_find(&set, get(7), &rdata);
+
+    con_rm_find(&set, get(9), &rdata);
+
+    printf("*************** print set memebers 2****************************\n");
+
+    for(iterator_t it = con_first(&set); !iterator_equal(it, con_last(&set)); it = iterator_next(it)) {
+        printf(" %d \n", type_int(iterator_dereference(it)));
+    }
+
+    CU_ASSERT(1);
+}
+
 int main () 
 {
     printf("test unc what ");
@@ -226,12 +264,16 @@ int main ()
         return CU_get_error();
     }
     */
-
+    /*
     if (NULL == CU_add_test(pSuite, "test_rb_tree", test_rb_tree) ) {
         CU_cleanup_registry();
         return CU_get_error();
     }
-    
+    */
+    if (NULL == CU_add_test(pSuite, "test_set", test_set) ) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
     /*
     if (NULL == CU_add_test(pSuite, "test_list", test_list) ) {
         CU_cleanup_registry();
