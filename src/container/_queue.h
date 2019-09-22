@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 19:09:21
- * @LastEditTime: 2019-09-21 00:53:07
+ * @LastEditTime: 2019-09-22 09:28:43
  * @LastEditors: Please set LastEditors
  */
 #ifndef _QUEUE_H_
@@ -24,6 +24,6 @@ extern void init_queue(queue_t*, int (*compare)(type_value_t, type_value_t));
 extern int en_queue(queue_t*, type_value_t);
 
 // 头部输出
-extern int de_queue(queue_t*, type_value_t*);
+extern type_value_t de_queue(queue_t*);
 
 #endif

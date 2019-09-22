@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-09-21 02:10:00
+ * @LastEditTime: 2019-09-22 10:01:33
  * @LastEditors: Please set LastEditors
  */
 
@@ -64,38 +64,33 @@ static iterator_t _list_search (container_t* container, iterator_t offset, type_
             return first;
         }
     }
-    // 找不到返回空指针
-    return _get_iter((void*)0);
+    // 返回边界的指针
+    return first;
 }
 
 static int _list_insert(container_t* container, iterator_t pos, type_value_t data)
 {
-    if (iterator_valid(pos)){
-        
-        list_node_t *pnode = iterator_reference(pos);
-        list_node_t *pnew = allocate(pool(0), sizeof(list_node_t));
-        // 赋值 和 插入
+    list_node_t *pnode = iterator_reference(pos);
+    list_node_t *pnew = allocate(pool(0), sizeof(list_node_t));
+    // 赋值 和 插入
 
-        pnew->data = data;
-        pnew->prev = pnode->prev;
-        pnew->next = pnode;
+    pnew->data = data;
+    pnew->prev = pnode->prev;
+    pnew->next = pnode;
 
-        pnode->prev->next = pnew;
-        pnode->prev = pnew;
+    pnode->prev->next = pnew;
+    pnode->prev = pnew;
 
-        list_t *plist = container;
-        plist->_size++;
-        return 0;
-    }
-
-    return -1;
-
+    list_t *plist = container;
+    plist->_size++;
+    return 0;
 }
 
 static int _list_remove(container_t* container, iterator_t pos, type_value_t* rdata)
 {
     // 删除
-    if (iterator_valid(pos)){
+    // 边界的东西不能移除
+    if (!container_is_boundary(container, pos)){
 
         list_t* list = container;
         list_node_t* pnode = iterator_reference(pos);
@@ -127,7 +122,7 @@ void init_list(list_t* list) {
     list_first(list) = list_head(list);
     list_last(list) = list_tail(list);
     list->_size = 0;
-    list->_sentinel.data = int_type(111);      
+    list->_sentinel.data = int_type(-1);      
     return;
 }
 

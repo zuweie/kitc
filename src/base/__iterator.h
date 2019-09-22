@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:54
- * @LastEditTime: 2019-09-20 13:01:55
+ * @LastEditTime: 2019-09-22 10:06:09
  * @LastEditors: Please set LastEditors
  */
 #ifndef _ITERATOR_H_
@@ -20,13 +20,11 @@
 #define iterator_equal(iter1, iter2) (iter1.equal(iter1, iter2))
 #define iterator_assign(from, to) (from.assign(to, from))
 #define iterator_exchange(iter1, itert2) (iter1.exchange(iter1, iter2))
-#define iterator_valid(iter) (iter.valid(iter))
 
 typedef struct _iterator iterator_t;
 struct _iterator {
     type_value_t (*dereference) (iterator_t);
     iterator_t (*move)(iterator_t, int step);
-    int (*valid) (iterator_t);
     int (*equal) (iterator_t t1, iterator_t t2);
     int (*assign) (iterator_t t1, iterator_t t2);
     int (*exchange) (iterator_t t1, iterator_t t2);

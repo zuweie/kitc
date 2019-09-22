@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-08 00:02:36
- * @LastEditTime: 2019-09-20 13:22:25
+ * @LastEditTime: 2019-09-22 10:27:34
  * @LastEditors: Please set LastEditors
  */
 #include <string.h>
@@ -47,58 +47,53 @@ static iterator_t _vector_search (container_t* container, iterator_t offset, typ
     for(; !iterator_equal(first, tail); first=iterator_next(first)) {
         if (compare(iterator_dereference(first), find) == 0) return first;
     }
-    // 返回空指针。
-    return _get_iter((void*)0);
+    // 返回边界的指针
+    return first;
 }
 
 static int _vector_insert (container_t* container, iterator_t pos, type_value_t data) 
 {
-    if (iterator_valid(pos)) {
-        
-        vector_t *vec = container;
+    vector_t *vec = container;
 
-        // 检测一下是否满水？
-        if (vec->_size >= vec->_capacity){
-            // 注水
-            unsigned int require_size = vec->_size + ALLOC_CHUNK_SIZE;
-            type_value_t *new_block = allocate(pool(0), require_size);
+    // 检测一下是否满水？
+    if (vec->_size >= vec->_capacity){
+        // 注水
+        unsigned int require_size = vec->_size + ALLOC_CHUNK_SIZE;
+        type_value_t *new_block = allocate(pool(0), require_size);
 
-            if (new_block){
-                // copy 旧数据到新的内存
-                memcpy(new_block, vec->_data, vec->_size * sizeof(type_value_t));
-                // 释放旧的内存
-                deallocate(pool(0), vec->_data);
-                // 把新内存挂上去
-                vec->_data = new_block;
-                // 容量值变大。
-                vec->_capacity += ALLOC_CHUNK_SIZE;
-            }else{
-                return -1;
-            }
+        if (new_block){
+            // copy 旧数据到新的内存
+            memcpy(new_block, vec->_data, vec->_size * sizeof(type_value_t));
+            // 释放旧的内存
+            deallocate(pool(0), vec->_data);
+            // 把新内存挂上去
+            vec->_data = new_block;
+            // 容量值变大。
+            vec->_capacity += ALLOC_CHUNK_SIZE;
+        }else{
+            return -1;
         }
-
-        // 继续做插入动作。
-        iterator_t last = container_last(container);
-        iterator_t pos_prev = iterator_prev(pos);
-
-        // 挪位
-        for (; !iterator_equal(last, pos_prev); last = iterator_prev(last)){
-            iterator_t next = iterator_next(last);
-            iterator_assign(last, next);
-        }
-        // 插入
-        type_value_t *pt = iterator_reference(pos);
-        *pt = data;
-
-        vec->_size++;
-        return 0;
     }
-    return -1;
+
+    // 继续做插入动作。
+    iterator_t last = container_last(container);
+    iterator_t pos_prev = iterator_prev(pos);
+
+    // 挪位
+    for (; !iterator_equal(last, pos_prev); last = iterator_prev(last)){
+        iterator_t next = iterator_next(last);
+        iterator_assign(last, next);
+    }
+    // 插入
+    type_value_t *pt = iterator_reference(pos);
+    *pt = data;
+    vec->_size++;
+    return 0;
 }
 
 static int _vector_remove (container_t* container, iterator_t pos, type_value_t* rdata) 
 {
-    if (iterator_valid(pos)){
+    if (!container_is_boundary(container, pos)){
         
         vector_t *vec = container;
         type_value_t *pv = iterator_reference(pos);

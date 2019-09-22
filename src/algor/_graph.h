@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:13:53
- * @LastEditTime: 2019-09-20 15:20:20
+ * @LastEditTime: 2019-09-22 09:08:23
  * @LastEditors: Please set LastEditors
  */
 #ifndef _GRAPH_H_
@@ -34,7 +34,7 @@ typedef struct _graph
     /* data */
     set_t vertexes;
     int (*compare_adjnode)(type_value_t node, type_value_t find);
-    
+    int (*compare_vertex) (type_value_t node, type_value_t find);
 } graph_t;
 
 extern int init_graph(graph_t* graph, int(*)(type_value_t, type_value_t), int(*)(type_value_t, type_value_t));

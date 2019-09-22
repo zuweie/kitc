@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-11 10:07:38
- * @LastEditTime: 2019-09-20 10:30:17
+ * @LastEditTime: 2019-09-22 08:58:23
  * @LastEditors: Please set LastEditors
  */
 #ifndef _RB_TREE_H_
@@ -11,8 +11,8 @@
 #include "__type_value.h"
 #include "__container.h"
 
-#define _red 0
-#define _black 1
+#define _rb_red 0
+#define _rb_black 1
 
 #define _null(prb) (&((prb)->_null))
 

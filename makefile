@@ -17,6 +17,10 @@ base_headers :=
 base_sources :=
 base_dir :=
 
+container_headers :=
+container_sources :=
+container_dir :=
+
 mem_pool_headers :=
 mem_pool_sources :=
 mem_pool_dir     :=
@@ -30,15 +34,17 @@ test_dir     :=
 
 include ./src/base/*.mk
 include ./src/mem_pool/*.mk
+include ./src/container/*.mk
 include ./src/algor/*.mk
 include ./src/test/*.mk
 
 base_objects  	 := $(subst .c,.o,$(base_sources))
+container_objects := $(subst .c,.o,$(container_sources)) 
 mem_pool_objects := $(subst .c,.o,$(mem_pool_sources))
 algor_objects    := $(subst .c,.o,$(algor_dir))
 test_objects  	 := $(subst .c,.o,$(test_sources))
 
-INCLUDE_FLAGS   := $(addprefix -I, $(base_dir)) $(addprefix -I, $(mem_pool_dir)) $(addprefix -I, $(algor_dir))
+INCLUDE_FLAGS   := $(addprefix -I, $(base_dir)) $(addprefix -I, $(container_dir)) $(addprefix -I, $(mem_pool_dir)) $(addprefix -I, $(algor_dir))
 PROGRAM_CFLAGS  := -lcunit -lm -g $(INCLUDE_FLAGS) 
 LIBS_CFLAGS     := -lm $(INCLUDE_FLAGS) 
 

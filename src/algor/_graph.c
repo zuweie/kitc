@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:14:04
- * @LastEditTime: 2019-09-21 01:00:04
+ * @LastEditTime: 2019-09-22 11:23:27
  * @LastEditors: Please set LastEditors
  */
 #include "_graph.h"
@@ -28,6 +28,7 @@ int init_graph(graph_t* graph, int(*compare_vertex)(type_value_t, type_value_t),
 {
     init_set(&graph->vertexes, compare_vertex);
     graph->compare_adjnode = compare_adjnode;
+    graph->compare_vertex  = compare_vertex;
     return 0;
 } 
 
@@ -40,10 +41,10 @@ int graph_add_vertex(graph_t* graph, type_value_t vertex)
 
 int graph_add_edge(graph_t* graph, type_value_t from, type_value_t to, float weight)
 {
-    iterator_t it_from = con_find(&graph->vertexes, from);
-    iterator_t it_to   = con_find(&graph->vertexes, to);
+    it_t it_from = con_find(&graph->vertexes, from);
+    it_t it_to   = con_find(&graph->vertexes, to);
     
-    if (iterator_valid(it_from) && iterator_valid(it_to)) {
+    if (it_valid(it_from, &graph->vertexes) && it_valid(it_to, &graph->vertexes)) {
         
         vertex_t* v_from = type_pointer(iterator_dereference(it_from));
         vertex_t* v_to   = type_pointer(iterator_dereference(it_to));
@@ -74,10 +75,10 @@ int graph_del_vertex(graph_t* graph, type_value_t vertex)
 
 int graph_del_edge(graph_t* graph, type_value_t from, type_value_t to)
 {
-    iterator_t it_from = con_find(&graph->vertexes, from);
-    iterator_t it_to   = con_find(&graph->vertexes, to);
+    it_t it_from = con_find(&graph->vertexes, from);
+    it_t it_to   = con_find(&graph->vertexes, to);
 
-    if (iterator_valid(it_from) && iterator_valid(it_to)) {
+    if (it_valid(it_from, &graph->vertexes) && it_valid(it_to, &graph->vertexes)) {
 
         vertex_t* v_from = type_pointer(iterator_dereference(it_from));
         vertex_t* v_to   = type_pointer(iterator_dereference(it_to));
