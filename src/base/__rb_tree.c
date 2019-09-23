@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-11 10:15:37
- * @LastEditTime: 2019-09-22 10:43:05
+ * @LastEditTime: 2019-09-23 07:11:56
  * @LastEditors: Please set LastEditors
  */
 #include <stdlib.h>
@@ -458,7 +458,7 @@ static iterator_t _get_iter(void* refer, void* tree);
 static iterator_t _move(iterator_t it, int step) 
 {
     rb_tree_node_t* pnode = iterator_reference(it);
-    rb_tree_t* tree       = iterator_attach(it);
+    rb_tree_t* tree       = iterator_container(it);
     for (int next = step; next; next = step>0?--step:++step){
         /* code */
         if (next>0) pnode = __tree_successor(tree, pnode);

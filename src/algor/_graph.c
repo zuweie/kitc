@@ -2,10 +2,11 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:14:04
- * @LastEditTime: 2019-09-22 11:23:27
+ * @LastEditTime: 2019-09-23 08:07:02
  * @LastEditors: Please set LastEditors
  */
 #include "_graph.h"
+#include "_con.h"
 #include "_mem_pool.h"
 
 static vertex_t* _create_vertex(graph_t* graph, type_value_t vertex) 
@@ -44,10 +45,10 @@ int graph_add_edge(graph_t* graph, type_value_t from, type_value_t to, float wei
     it_t it_from = con_find(&graph->vertexes, from);
     it_t it_to   = con_find(&graph->vertexes, to);
     
-    if (it_valid(it_from, &graph->vertexes) && it_valid(it_to, &graph->vertexes)) {
+    if (it_valid(it_from) && it_valid(it_to)) {
         
-        vertex_t* v_from = type_pointer(iterator_dereference(it_from));
-        vertex_t* v_to   = type_pointer(iterator_dereference(it_to));
+        vertex_t* v_from = type_pointer(it_derefer(it_from));
+        vertex_t* v_to   = type_pointer(it_derefer(it_to));
 
         return set_insert(&v_from->adjacency, pointer_type(v_to));
     }
@@ -78,10 +79,10 @@ int graph_del_edge(graph_t* graph, type_value_t from, type_value_t to)
     it_t it_from = con_find(&graph->vertexes, from);
     it_t it_to   = con_find(&graph->vertexes, to);
 
-    if (it_valid(it_from, &graph->vertexes) && it_valid(it_to, &graph->vertexes)) {
+    if (it_valid(it_from) && it_valid(it_to)) {
 
-        vertex_t* v_from = type_pointer(iterator_dereference(it_from));
-        vertex_t* v_to   = type_pointer(iterator_dereference(it_to));
+        vertex_t* v_from = type_pointer(it_derefer(it_from));
+        vertex_t* v_to   = type_pointer(it_derefer(it_to));
 
         type_value_t r_adj;
         if (con_rm_find(&v_from->adjacency, pointer_type(v_to), &r_adj) != -1) {
@@ -94,13 +95,13 @@ int graph_del_edge(graph_t* graph, type_value_t from, type_value_t to)
 
 void graph_set_vertex_data(iterator_t it, void* data) 
 {
-    vertex_t* vertex = type_pointer(iterator_dereference(it));
+    vertex_t* vertex = type_pointer(it_derefer(it));
     vertex->data = data;
     return;
 }
 
 void* graph_get_vertex_data(iterator_t it) 
 {
-    vertex_t* vertex = type_pointer(iterator_dereference(it));
+    vertex_t* vertex = type_pointer(it_derefer(it));
     return vertex->data;
 }

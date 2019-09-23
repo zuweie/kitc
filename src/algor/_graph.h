@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:13:53
- * @LastEditTime: 2019-09-22 09:08:23
+ * @LastEditTime: 2019-09-23 07:28:28
  * @LastEditors: Please set LastEditors
  */
 #ifndef _GRAPH_H_
@@ -10,7 +10,6 @@
 
 
 #include "__type_value.h"
-#include "__list.h"
 #include "_set.h"
 
 typedef struct _vertex 

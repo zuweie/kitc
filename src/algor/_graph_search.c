@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 09:34:56
- * @LastEditTime: 2019-09-22 09:27:50
+ * @LastEditTime: 2019-09-23 07:27:32
  * @LastEditors: Please set LastEditors
  */
 #include "_graph_search.h"
@@ -32,9 +32,7 @@ int bfs(graph_t* graph, vertex_t* start) {
 
     while(con_size(&en_queue) != 0) {
         type_value_t rdata;
-        if (de_queue(&queue, &rdata)) {
-            
-        }
+        
     }
     return 0;
 }

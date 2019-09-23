@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-08 00:02:36
- * @LastEditTime: 2019-09-22 10:27:34
+ * @LastEditTime: 2019-09-23 08:02:13
  * @LastEditors: Please set LastEditors
  */
 #include <string.h>
@@ -12,16 +12,18 @@
 #include "_mem_pool.h"
 
 /** iterator function **/
-static iterator_t _get_iter (void* refer);
+static iterator_t _get_iter (void* refer, void* container);
 
 static iterator_t _move (iterator_t it, int step) 
 {
     type_value_t* pv = iterator_reference(it);
 
-    return _get_iter(pv + step);
+    //return _get_iter((pv + step), iterator_container(it));
+    return iterator_set_reference(it, (pv+step));
 }
-static iterator_t _get_iter (void* refer) {
-    return get_iterator(refer, 0, _move);
+
+static iterator_t _get_iter (void* refer, void* vec) {
+    return get_iterator(refer, vec, _move);
 }
 /** iterator function **/
 
@@ -29,13 +31,13 @@ static iterator_t _get_iter (void* refer) {
 static iterator_t _vector_first (container_t* container) 
 {
     vector_t* vec = container;
-    return _get_iter(vec->_data);
+    return _get_iter(vec->_data, vec);
 }
 
 static iterator_t _vector_last (container_t* container) 
 {
     vector_t* vec = container;
-    return _get_iter(vec->_data + vec->_size -1 );
+    return _get_iter((vec->_data + vec->_size -1), vec);
 }
 
 static iterator_t _vector_search (container_t* container, iterator_t offset, type_value_t find, int (*compare)(type_value_t, type_value_t)) 

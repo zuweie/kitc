@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 18:51:11
- * @LastEditTime: 2019-09-22 11:22:35
+ * @LastEditTime: 2019-09-23 07:24:02
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CON_H_
@@ -14,6 +14,7 @@
 /* container function */
 #define con_con(con) (((con_t*)(con))->_container)
 #define con_cmp(con) (((con_t*)(con))->_compare)
+#define con_set_cmp(con, cmp) do{ con_cmp(con) = cmp; }while(0)
 
 #define con_first(con) container_first(con_con(con))
 #define con_last(con) container_last(con_con(con))
@@ -47,28 +48,24 @@
 #define it_equal(iter1, iter2) iterator_equal(iter1, iter2)
 #define it_assign(from, to) iterator_assign(from, to)
 #define it_exchange(iter1, iter2) iterator_exchange(iter1, itert2)
-#define it_valid(iter, con) (!container_is_boundary(con_con(con), iter))
+#define it_valid(iter) iterator_valid(iter)
 
 // 遍历容器，
-#define con_travel(con, func) do {      \
+#define con_travel(con, func) do {        \
     it_t first = con_first(con);          \
     it_t tail  = con_tail(con);           \
     for(;!it_equal(first, tail); first = it_next(first) ) { \
-        func(it_refer(first));                                  \
-    }                                                        \
+        func(it_refer(first));                              \
+    }                                                       \
 }while(0)
 
-
-
-
-
 typedef struct _con {
+    
     container_t* _container;
     int (*_compare)(type_value_t, type_value_t);
 
 } con_t;
 
 typedef iterator_t it_t;
-
 
 #endif

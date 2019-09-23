@@ -72,7 +72,7 @@ RM  :=  rm
 .PHONY: all
 all: $(program)
 
-$(program): $(test_sources) $(base_sources) $(mem_pool_sources) $(algor_sources)
+$(program): $(test_sources) $(base_sources) $(container_sources) $(mem_pool_sources) $(algor_sources)
 	mkdir -p $(bin_dir)
 	$(CC) $(PROGRAM_CFLAGS) $^ -o $(bin_dir)/$@
 

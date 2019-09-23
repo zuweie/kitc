@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-09-22 10:01:33
+ * @LastEditTime: 2019-09-23 07:59:43
  * @LastEditors: Please set LastEditors
  */
 
@@ -15,7 +15,7 @@
 #include "_mem_pool.h"
 
 /** iter function **/
-static iterator_t _get_iter (void* refer);
+static iterator_t _get_iter (void* refer, void* list);
 
 // static type_value_t _dereference(iterator_t it) 
 // {
@@ -31,13 +31,13 @@ static iterator_t _move(iterator_t it, int step)
         if (next > 0) pnode = pnode->next;
         else if (next < 0) pnode = pnode->prev;
     }
-    return _get_iter(pnode);
+    return iterator_set_reference(it, pnode);
 }
 
 
-static iterator_t _get_iter(void *refer) 
+static iterator_t _get_iter(void *refer, void* list) 
 {
-    return get_iterator(refer, 0, _move);
+    return get_iterator(refer, list, _move);
 }
 /** iter function **/
 
@@ -46,13 +46,13 @@ static iterator_t _get_iter(void *refer)
 static iterator_t _list_first (container_t* container)
 {
     list_t* plist = container;
-    return _get_iter(list_first(plist));
+    return _get_iter(list_first(plist), plist);
 }
 
 static iterator_t _list_last (container_t* container)
 {
     list_t* plist = container;
-    return _get_iter(list_last(plist));
+    return _get_iter(list_last(plist), plist);
 }
 
 static iterator_t _list_search (container_t* container, iterator_t offset, type_value_t find, int(compare)(type_value_t data1, type_value_t data2))
