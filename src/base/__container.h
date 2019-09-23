@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:46
- * @LastEditTime: 2019-09-22 10:35:40
+ * @LastEditTime: 2019-09-23 15:17:15
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CONTAINER_H_
@@ -17,9 +17,6 @@
 #define container_last(container) (((container_t*)(container))->last((container_t*)(container)))
 #define container_head(container) iterator_prev(container_first(container))
 #define container_tail(container) iterator_next(container_last(container))
-#define container_is_head(container, iter) (iterator_reference(iter) == iterator_reference(container_head(container)))
-#define container_is_tail(container, iter) (iterator_reference(iter) == iterator_reference(container_tail(container)))
-#define container_is_boundary(container, iter) (container_is_tail(container, iter) || (container_is_head(container, iter)))
 
 // 容器搜索
 #define container_search(container, offset, find, compare) (((container_t*)(container))->search(((container_t*)(container)), offset, find, compare))
@@ -38,7 +35,7 @@
 #define container_remove_last(container, rdata) container_remove(container, container_last(container), rdata)
 
 // 容器测试
-#define container_has(container, find, compare) (!container_is_boundary(container, container_find(container, find, compare)))
+#define container_has(container, find, compare) (!iterator_is_boundary(container_find(container, find, compare)))
 
 // 两个容器合并。
 #define container_merge(container_1, container2) do { \

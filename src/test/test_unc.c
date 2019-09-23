@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-21 02:14:04
+ * @LastEditTime: 2019-09-23 23:46:02
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -119,20 +119,68 @@ void test_vector (void) {
     vector_t vet;
     init_vector(&vet);
     
-
-    for(int i=0; i<2; ++i) {
+    /*
+    for(int i=0; i<10; ++i) {
         container_insert(&vet, container_first(&vet), int_type((i+1)*10));
     }
-    
-    iterator_t first = container_first( &vet );
-    iterator_t tail = iterator_next( container_last(&vet) );
+    */
+    container_insert(&vet, container_tail(&vet), int_type(1));
+    container_insert(&vet, container_tail(&vet), int_type(2));
 
-    for(; !iterator_equal(first, tail); first = iterator_next(first)) {
-        int v = type_int( iterator_dereference(first) );
-        printf("\n %d \n", v);
+    for(iterator_t first = container_first(&vet); 
+        !iterator_equal(first, container_tail(&vet)); 
+        first=iterator_next(first)) {
+
+            printf("%d ", type_int(iterator_dereference(first)));
+
     }
     
-    CU_ASSERT(1);
+    printf("\n***********************\n");
+    
+    container_insert_find(&vet, int_type(2), int_type(3), compare_int);
+    container_insert_find(&vet, int_type(3), int_type(4), compare_int);
+    container_insert_find(&vet, int_type(5), int_type(9), compare_int);
+    container_insert_find(&vet, int_type(78), int_type(3), compare_int);
+    for(iterator_t first = container_first(&vet); 
+        !iterator_equal(first, container_tail(&vet)); 
+        first=iterator_next(first)) {
+
+            printf("%d ", type_int(iterator_dereference(first)));
+
+    }
+    printf("\n***********************\n");
+    int result = container_remove(&vet, container_tail(&vet), NULL);
+    
+    
+    for(iterator_t first = container_first(&vet); 
+        !iterator_equal(first, container_tail(&vet)); 
+        first=iterator_next(first)) {
+
+            printf("%d ", type_int(iterator_dereference(first)));
+
+    }
+
+    CU_ASSERT((result == -1));
+    printf("\n***********************\n");
+    result = container_remove_find(&vet, int_type(3), NULL, compare_int);
+    for(iterator_t first = container_first(&vet); 
+        !iterator_equal(first, container_tail(&vet)); 
+        first=iterator_next(first)) {
+
+            printf("%d ", type_int(iterator_dereference(first)));
+
+    }
+    CU_ASSERT((result == 0));
+    printf("\n***********************\n");
+    result = container_remove_find(&vet, int_type(10), NULL, compare_int);
+    for(iterator_t first = container_first(&vet); 
+        !iterator_equal(first, container_tail(&vet)); 
+        first=iterator_next(first)) {
+
+            printf("%d ", type_int(iterator_dereference(first)));
+
+    }
+    CU_ASSERT((result == 0));
 }
 
 void test_list (void) {
@@ -223,15 +271,24 @@ void test_set(void) {
     }
     
     type_value_t rdata;
+    printf("removing %d \n", type_int(get(1)));
     con_rm_find(&set, get(1), &rdata);
-    
+    printf("removed %d \n", type_int(rdata));
+
+    printf("removing %d \n", type_int(get(3)));
     con_rm_find(&set, get(3), &rdata);
+    printf("removed %d \n", type_int(rdata));
 
+    printf("removing %d \n", type_int(get(7)));
     con_rm_find(&set, get(7), &rdata);
-
+    printf("removed %d \n", type_int(rdata));
+    
+    
+    printf("removing %d \n", type_int(get(9)));
     con_rm_find(&set, get(9), &rdata);
-
-    printf("*************** print set memebers 2****************************\n");
+    printf("removed %d \n", type_int(rdata));
+    
+    printf("*************** print set memebers 2 ****************************\n");
 
     for(iterator_t it = con_first(&set); !iterator_equal(it, con_last(&set)); it = iterator_next(it)) {
         printf(" %d \n", type_int(iterator_dereference(it)));
@@ -258,22 +315,24 @@ int main ()
     } 
 
     
-    /*
+    
     if (NULL == CU_add_test(pSuite, "test_vector", test_vector) ) {
         CU_cleanup_registry();
         return CU_get_error();
     }
-    */
+    
     /*
     if (NULL == CU_add_test(pSuite, "test_rb_tree", test_rb_tree) ) {
         CU_cleanup_registry();
         return CU_get_error();
     }
     */
+    /*
     if (NULL == CU_add_test(pSuite, "test_set", test_set) ) {
         CU_cleanup_registry();
         return CU_get_error();
     }
+    */
     /*
     if (NULL == CU_add_test(pSuite, "test_list", test_list) ) {
         CU_cleanup_registry();

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-08 00:02:36
- * @LastEditTime: 2019-09-23 08:02:13
+ * @LastEditTime: 2019-09-23 23:33:18
  * @LastEditors: Please set LastEditors
  */
 #include <string.h>
@@ -53,66 +53,65 @@ static iterator_t _vector_search (container_t* container, iterator_t offset, typ
     return first;
 }
 
-static int _vector_insert (container_t* container, iterator_t pos, type_value_t data) 
+static int _vector_insert (container_t* container, iterator_t it, type_value_t data) 
 {
     vector_t *vec = container;
 
     // 检测一下是否满水？
     if (vec->_size >= vec->_capacity){
         // 注水
-        unsigned int require_size = vec->_size + ALLOC_CHUNK_SIZE;
-        type_value_t *new_block = allocate(pool(0), require_size);
+        unsigned int require_size = vec->_size + VEC_ALLOC_CHUNK_SIZE;
+        type_value_t *new_block = allocate(pool(0), require_size * sizeof(type_value_t));
 
-        if (new_block){
-            // copy 旧数据到新的内存
-            memcpy(new_block, vec->_data, vec->_size * sizeof(type_value_t));
-            // 释放旧的内存
-            deallocate(pool(0), vec->_data);
-            // 把新内存挂上去
-            vec->_data = new_block;
-            // 容量值变大。
-            vec->_capacity += ALLOC_CHUNK_SIZE;
-        }else{
+        if (new_block == NULL) {
             return -1;
         }
+        // 如果整个块都要新来，那么要重新计算it的位置
+        int offset = ((char*)iterator_reference(it)) - ((char*)iterator_reference(container_head(vec)));
+        // copy 旧数据到新的内存
+        memcpy(new_block, vec->_data, vec->_size * sizeof(type_value_t));
+        // 释放旧的内存
+        deallocate(pool(0), vec->_data);
+        // 把新内存挂上去
+        vec->_data = new_block;
+        // 容量值变大。
+        vec->_capacity += VEC_ALLOC_CHUNK_SIZE;
+
+        // 更新it的refer。
+        void *new_refer = ((char *)iterator_reference(container_head(vec))) + offset;
+        iterator_set_reference(it, new_refer);
     }
 
     // 继续做插入动作。
     iterator_t last = container_last(container);
-    iterator_t pos_prev = iterator_prev(pos);
+    iterator_t it_prev = iterator_prev(it);
 
     // 挪位
-    for (; !iterator_equal(last, pos_prev); last = iterator_prev(last)){
+    for (; !iterator_equal(last, it_prev); last = iterator_prev(last)){
         iterator_t next = iterator_next(last);
-        iterator_assign(last, next);
+        iterator_assign(next, last);
     }
     // 插入
-    type_value_t *pt = iterator_reference(pos);
+    type_value_t *pt = iterator_reference(it);
     *pt = data;
     vec->_size++;
     return 0;
 }
 
-static int _vector_remove (container_t* container, iterator_t pos, type_value_t* rdata) 
+static int _vector_remove (container_t* container, iterator_t it, type_value_t* rdata) 
 {
-    if (!container_is_boundary(container, pos)){
+    if (iterator_valid(it)){
         
         vector_t *vec = container;
-        type_value_t *pv = iterator_reference(pos);
-        type_value_t *head = iterator_reference(container_head(vec));
-        type_value_t *tail = iterator_reference(container_tail(vec));
-        iterator_t last = container_last(container);
 
-        if (rdata)
-        {
-            *rdata = iterator_dereference(pos);
+        if (rdata){
+            *rdata = iterator_dereference(it);
         }
 
         // 擦除
-        for (; !iterator_equal(pos, last); pos = iterator_next(pos))
-        {
-            iterator_t pos_next = iterator_next(pos);
-            iterator_assign(pos_next, pos);
+        for (it; !iterator_equal(it, container_last(vec)); it = iterator_next(it)){
+            iterator_t it_next = iterator_next(it);
+            iterator_assign(it, it_next);
         }
         vec->_size--;
         return 0;
@@ -127,8 +126,12 @@ static unsigned int _vector_size (container_t* container)
 /** container **/
 
 void init_vector(vector_t* vector) {
+    
     initialize_container(vector, _vector_first, _vector_last, _vector_search, _vector_insert, _vector_remove, _vector_size);
     vector->_size = 0;
-    vector->_capacity = 0;
+    vector->_capacity = VEC_ALLOC_CHUNK_SIZE;
+    // 先给水池注点水。
+    vector->_data = allocate(pool(0), VEC_ALLOC_CHUNK_SIZE*sizeof(type_value_t));
+    
     return;
 }
