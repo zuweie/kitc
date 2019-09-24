@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 09:34:56
- * @LastEditTime: 2019-09-24 13:49:11
+ * @LastEditTime: 2019-09-24 14:15:22
  * @LastEditors: Please set LastEditors
  */
 #include "_graph_search.h"
@@ -52,57 +52,64 @@ int bfs(graph_t* graph, vertex_t* start) {
     type_value_t rdata;
     while(de_queue(&queue,&rdata) != -1) {
 
-        vertex_t* pv = type_pointer(rdata);
-        bfs_node_t* pvbfs = pv->data;
+        vertex_t* pu = type_pointer(rdata);
+        bfs_node_t* pubfs = pu->data;
 
         // 遍历节点的邻居表。
-        for(it_t first = con_first(&pv->adjacency); 
-            !it_equal(first, con_tail(&pv->adjacency)); 
+        for(it_t first = con_first(&pu->adjacency); 
+            !it_equal(first, con_tail(&pu->adjacency)); 
             first=it_next(first)) {
 
-            adjacency_node_t* pa = type_pointer(it_derefer(first));
-            bfs_node_t* pabfs     = (pa->to->data);
+            adjacency_node_t* pv = type_pointer(it_derefer(first));
+            bfs_node_t* pvbfs     = (pv->to->data);
 
-            if (pabfs->color == _grp_whtie) {
-                pabfs->color = _grp_gray;
-                pabfs->distance = pvbfs->distance + 1;
-                pabfs->parent = pv;
+            if (pvbfs->color == _grp_whtie) {
+                pvbfs->color = _grp_gray;
+                pvbfs->distance = pvbfs->distance + 1;
+                pvbfs->parent = pu;
+                en_queue(&queue, pointer_type(pv->to));
             }
         }
-        pvbfs->color = _grp_black;
+        pubfs->color = _grp_black;
     }
     return 0;
 }
 
-static int _dfs_visit(vertex_t* v, int* time) 
+static int _dfs_visit(vertex_t* pu, int* time) 
 {
-    dfs_node_t* pvdfs = v->data;
-    pvdfs->color = _grp_gray;
-    pvdfs->d_time = *time + 1;
+    dfs_node_t* pudfs = pu->data;
+    pudfs->color = _grp_gray;
+    pudfs->d_time = *time + 1;
     // 访问邻接表
-    for(it_t first=con_first(&v->adjacency); !it_equal(first, con_tail(&v->adjacency)); first=it_next(first)) {
-        adjacency_node_t* pa = type_pointer(it_derefer(first));
-        dfs_node_t*       padfs = pa->to->data;
-        if (padfs->color == _grp_whtie) {
-            padfs->parent = v;
-            _dfs_visit(pa->to, time);
+    for(it_t first=con_first(&pu->adjacency); !it_equal(first, con_tail(&pu->adjacency)); first=it_next(first)) {
+        adjacency_node_t* pv = type_pointer(it_derefer(first));
+        dfs_node_t*       pvdfs = pv->to->data;
+        if (pvdfs->color == _grp_whtie) {
+            pvdfs->parent = pu;
+            _dfs_visit(pv->to, time);
         }
     }
-    pvdfs->color = _grp_black;
-    pvdfs->f_time = ++(*time);
+    pudfs->color = _grp_black;
+    pudfs->f_time = ++(*time);
     return 0;
 }
 
-int dfs(graph_t* graph, vertex_t* start) 
+int dfs(graph_t* graph) 
 {
     int time = 0;
     con_travel(&graph->vertexes, _bind_dfs_node);
+
     for(it_t first=con_first(&graph->vertexes); !it_equal(first, con_tail(&graph->vertexes)); first=it_next(first)) {
-        vertex_t*   pv = type_pointer(it_derefer(first));
-        dfs_node_t* pvdfs = pv->data;
-        if (pvdfs->color == _grp_whtie) {
-            _dfs_visit(pv, &time);
+        vertex_t*   pu = type_pointer(it_derefer(first));
+        dfs_node_t* pudfs = pu->data;
+        if (pudfs->color == _grp_whtie) {
+            _dfs_visit(pu, &time);
         }
     }
     return 0;
+}
+
+int grp_cleanup_search_info(graph_t* graph) 
+{
+    con_travel(&graph->vertexes, _del_fs_node);
 }

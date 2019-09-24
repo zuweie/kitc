@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 09:44:49
- * @LastEditTime: 2019-09-24 13:51:36
+ * @LastEditTime: 2019-09-24 14:14:32
  * @LastEditors: Please set LastEditors
  */
 #ifndef _GRAPH_SEARCH_H_
@@ -30,6 +30,7 @@ typedef struct _dfs_node {
 } dfs_node_t;
 
 extern int grp_bfs(graph_t* graph, vertex_t* start);
-extern int grp_dfs(graph_t* graph, vertex_t* start);
-extern int grp_clean_search_info(graph_t* graph);
+extern int grp_dfs(graph_t* graph);
+extern int grp_cleanup_search_info(graph_t* graph);
+
 #endif
