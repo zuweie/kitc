@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-08 00:02:36
- * @LastEditTime: 2019-09-24 11:01:00
+ * @LastEditTime: 2019-09-24 15:32:22
  * @LastEditors: Please set LastEditors
  */
 #include <string.h>
@@ -53,50 +53,55 @@ static iterator_t _vector_search (container_t* container, iterator_t offset, typ
     return first;
 }
 
-static int _vector_insert (container_t* container, iterator_t it, type_value_t data) 
+static int _vector_insert (container_t* container, iterator_t it, type_value_t data)
 {
-    vector_t *vec = container;
+    // head 的位置不能前插
+    if (!iterator_is_head(it)){
+        
+        vector_t *vec = container;
+        // 检测一下是否满水？
+        if (vec->_size >= vec->_capacity){
+            // 注水
+            unsigned int require_size = vec->_size + VEC_ALLOC_CHUNK_SIZE;
+            type_value_t *new_block = allocate(pool(0), require_size * sizeof(type_value_t));
 
-    // 检测一下是否满水？
-    if (vec->_size >= vec->_capacity){
-        // 注水
-        unsigned int require_size = vec->_size + VEC_ALLOC_CHUNK_SIZE;
-        type_value_t *new_block = allocate(pool(0), require_size * sizeof(type_value_t));
+            if (new_block == NULL){
+                return -1;
+            }
 
-        if (new_block == NULL) {
-            return -1;
+            // 如果整个块要是重新malloc的，那么要重新计算it的位置。
+            // 隐藏的bug：地址的差值可能会超过 long 的最大值。
+            long offset = ((char *)iterator_reference(it)) - ((char *)iterator_reference(container_head(vec)));
+            // copy 旧数据到新的内存
+            memcpy(new_block, vec->_data, vec->_size * sizeof(type_value_t));
+            // 释放旧的内存
+            deallocate(pool(0), vec->_data);
+            // 把新内存挂上去
+            vec->_data = new_block;
+            // 容量值变大。
+            vec->_capacity += VEC_ALLOC_CHUNK_SIZE;
+
+            // 更新it的refer。
+            void *new_refer = ((char *)iterator_reference(container_head(vec))) + offset;
+            iterator_set_reference(it, new_refer);
         }
-        // 如果整个块要是重新malloc的，那么要重新计算it的位置。 
-        // 隐藏的bug：地址的差值可能会超过 long 的最大值。
-        long offset = ((char*)iterator_reference(it)) - ((char*)iterator_reference(container_head(vec)));
-        // copy 旧数据到新的内存
-        memcpy(new_block, vec->_data, vec->_size * sizeof(type_value_t));
-        // 释放旧的内存
-        deallocate(pool(0), vec->_data);
-        // 把新内存挂上去
-        vec->_data = new_block;
-        // 容量值变大。
-        vec->_capacity += VEC_ALLOC_CHUNK_SIZE;
 
-        // 更新it的refer。
-        void *new_refer = ((char *)iterator_reference(container_head(vec))) + offset;
-        iterator_set_reference(it, new_refer);
+        // 继续做插入动作。
+        iterator_t last = container_last(container);
+        iterator_t it_prev = iterator_prev(it);
+
+        // 挪位
+        for (; !iterator_equal(last, it_prev); last = iterator_prev(last)){
+            iterator_t last_next = iterator_next(last);
+            iterator_assign(last_next, last);
+        }
+        // 插入
+        type_value_t *pt = iterator_reference(it);
+        *pt = data;
+        vec->_size++;
+        return 0;
     }
-
-    // 继续做插入动作。
-    iterator_t last = container_last(container);
-    iterator_t it_prev = iterator_prev(it);
-
-    // 挪位
-    for (; !iterator_equal(last, it_prev); last = iterator_prev(last)){
-        iterator_t next = iterator_next(last);
-        iterator_assign(next, last);
-    }
-    // 插入
-    type_value_t *pt = iterator_reference(it);
-    *pt = data;
-    vec->_size++;
-    return 0;
+    return -1;
 }
 
 static int _vector_remove (container_t* container, iterator_t it, type_value_t* rdata) 

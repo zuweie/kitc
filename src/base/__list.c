@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-09-24 10:54:07
+ * @LastEditTime: 2019-09-24 15:30:48
  * @LastEditors: Please set LastEditors
  */
 
@@ -70,20 +70,25 @@ static iterator_t _list_search (container_t* container, iterator_t offset, type_
 
 static int _list_insert(container_t* container, iterator_t pos, type_value_t data)
 {
-    list_node_t *pnode = iterator_reference(pos);
-    list_node_t *pnew = allocate(pool(0), sizeof(list_node_t));
-    // 赋值 和 插入
+    // head 的前面不能插
+    if (!iterator_is_head(pos)){
+        
+        list_node_t *pnode = iterator_reference(pos);
+        list_node_t *pnew = allocate(pool(0), sizeof(list_node_t));
+        // 赋值 和 插入
 
-    pnew->data = data;
-    pnew->prev = pnode->prev;
-    pnew->next = pnode;
+        pnew->data = data;
+        pnew->prev = pnode->prev;
+        pnew->next = pnode;
 
-    pnode->prev->next = pnew;
-    pnode->prev = pnew;
+        pnode->prev->next = pnew;
+        pnode->prev = pnew;
 
-    list_t *plist = container;
-    plist->_size++;
-    return 0;
+        list_t *plist = container;
+        plist->_size++;
+        return 0;
+    }
+    return -1;
 }
 
 static int _list_remove(container_t* container, iterator_t pos, type_value_t* rdata)
