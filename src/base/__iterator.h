@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:54
- * @LastEditTime: 2019-09-24 11:10:09
+ * @LastEditTime: 2019-09-25 00:33:06
  * @LastEditors: Please set LastEditors
  */
 #ifndef _ITERATOR_H_
@@ -17,6 +17,13 @@
 #define iterator_dereference(iter) (*((type_value_t*)iterator_reference(iter)))
 
 #define iterator_assign(to, from) (iterator_dereference(to)=iterator_dereference(from))
+
+#define iterator_exchange(t1, t2) do { \
+    type_value_t t = iterator_dereference(t1); \
+    iterator_assign(t1, t2);                   \
+    iterator_dereference(t2) = t;              \
+}while(0)
+
 #define iterator_move(iter, step) iter.move(iter, step)
 #define iterator_next(iter) iterator_move(iter, 1)
 #define iterator_prev(iter) iterator_move(iter, -1)

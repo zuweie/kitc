@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-23 23:46:02
+ * @LastEditTime: 2019-09-25 00:49:17
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -12,6 +12,7 @@
 #include "__vector.h"
 #include "__list.h"
 #include "__rb_tree.h"
+#include "__sort.h"
 #include "_set.h"
 
 #define TEST_DATA_SIZE 10000
@@ -187,25 +188,27 @@ void test_list (void) {
     list_t list;
     init_list(&list);
     for(int i=0; i<10; ++i) {
-        container_insert(&list, container_first(&list), float_type(i*(-0.01)));
+        container_insert(&list, container_first(&list), get(i));
     }
 
     iterator_t tail = container_tail(&list);
-    iterator_t first = container_first( &list );
+    iterator_t first = container_first(&list);
     
+    printf("\n********* before sort ***********\n");
     for(; !iterator_equal(first, tail); first = iterator_next(first)) {
-        float fv = type_float( iterator_dereference(first) );
-        printf("\n %f \n", fv);
+        int v = type_int( iterator_dereference(first) );
+        printf("\n %d \n", v);
     }
 
-    iterator_t head = container_head(&list);
-    iterator_t last = container_last(&list);
-
-    for(;!iterator_equal(last, head); last = iterator_prev(last)) 
-    {
-        float fv = type_float( iterator_dereference(last) );
-        printf("\n %f \n", fv);
+    quick_sort(container_first(&list), container_last(&list), compare_int);
+    tail = container_tail(&list);
+    first = container_first(&list);
+    printf("\n******** after sort ***************\n");
+    for(; !iterator_equal(first, tail); first = iterator_next(first)) {
+        int v = type_int( iterator_dereference(first) );
+        printf("\n %d \n", v);
     }
+
     CU_ASSERT(1);
 }
 
@@ -315,12 +318,12 @@ int main ()
     } 
 
     
-    
+    /*
     if (NULL == CU_add_test(pSuite, "test_vector", test_vector) ) {
         CU_cleanup_registry();
         return CU_get_error();
     }
-    
+    */
     /*
     if (NULL == CU_add_test(pSuite, "test_rb_tree", test_rb_tree) ) {
         CU_cleanup_registry();
@@ -333,12 +336,12 @@ int main ()
         return CU_get_error();
     }
     */
-    /*
+    
     if (NULL == CU_add_test(pSuite, "test_list", test_list) ) {
         CU_cleanup_registry();
         return CU_get_error();
     }
-    */
+    
     /*
     if (NULL == CU_add_test(pSuite, "test_mem_pool_maxslot", test_mem_pool_maxslot) ) {
         CU_cleanup_registry();

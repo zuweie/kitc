@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:40
- * @LastEditTime: 2019-09-20 12:11:02
+ * @LastEditTime: 2019-09-25 00:54:41
  * @LastEditors: Please set LastEditors
  */
 
@@ -11,8 +11,8 @@
 #include "__type_value.h"
 #include "__container.h"
 
-#define list_head(list) (&((list)->_sentinel))
-#define list_tail(list) (&((list)->_sentinel))
+#define list_head(list) (&(((list_t*)list)->_sentinel))
+#define list_tail(list) (&(((list_t*)list)->_sentinel))
 #define list_first(list) (list_head(list)->next)
 #define list_last(list)  (list_tail(list)->prev)
 

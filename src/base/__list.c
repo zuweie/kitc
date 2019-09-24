@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-09-24 15:30:48
+ * @LastEditTime: 2019-09-25 00:59:42
  * @LastEditors: Please set LastEditors
  */
 
@@ -43,15 +43,13 @@ static iterator_t _get_iter(void *refer, void* list)
 
 /** container function **/
 
-static iterator_t _list_first (container_t* container)
+static iterator_t _list_first (container_t* plist)
 {
-    list_t* plist = container;
     return _get_iter(list_first(plist), plist);
 }
 
-static iterator_t _list_last (container_t* container)
+static iterator_t _list_last (container_t* plist)
 {
-    list_t* plist = container;
     return _get_iter(list_last(plist), plist);
 }
 
@@ -71,7 +69,7 @@ static iterator_t _list_search (container_t* container, iterator_t offset, type_
 static int _list_insert(container_t* container, iterator_t pos, type_value_t data)
 {
     // head 的前面不能插
-    if (!iterator_is_head(pos)){
+    //if (!iterator_is_head(pos)){
         
         list_node_t *pnode = iterator_reference(pos);
         list_node_t *pnew = allocate(pool(0), sizeof(list_node_t));
@@ -87,8 +85,8 @@ static int _list_insert(container_t* container, iterator_t pos, type_value_t dat
         list_t *plist = container;
         plist->_size++;
         return 0;
-    }
-    return -1;
+    //}
+    //return -1;
 }
 
 static int _list_remove(container_t* container, iterator_t pos, type_value_t* rdata)
