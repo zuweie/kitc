@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-25 00:49:17
+ * @LastEditTime: 2019-09-25 01:27:20
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -187,7 +187,7 @@ void test_vector (void) {
 void test_list (void) {
     list_t list;
     init_list(&list);
-    for(int i=0; i<10; ++i) {
+    for(int i=0; i<40; ++i) {
         container_insert(&list, container_first(&list), get(i));
     }
 
@@ -197,7 +197,7 @@ void test_list (void) {
     printf("\n********* before sort ***********\n");
     for(; !iterator_equal(first, tail); first = iterator_next(first)) {
         int v = type_int( iterator_dereference(first) );
-        printf("\n %d \n", v);
+        printf("%d ", v);
     }
 
     quick_sort(container_first(&list), container_last(&list), compare_int);
@@ -206,7 +206,7 @@ void test_list (void) {
     printf("\n******** after sort ***************\n");
     for(; !iterator_equal(first, tail); first = iterator_next(first)) {
         int v = type_int( iterator_dereference(first) );
-        printf("\n %d \n", v);
+        printf("%d ", v);
     }
 
     CU_ASSERT(1);
