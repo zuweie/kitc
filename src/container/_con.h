@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 18:51:11
- * @LastEditTime: 2019-09-23 07:24:02
+ * @LastEditTime: 2019-09-24 13:34:29
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CON_H_
@@ -14,7 +14,7 @@
 /* container function */
 #define con_con(con) (((con_t*)(con))->_container)
 #define con_cmp(con) (((con_t*)(con))->_compare)
-#define con_set_cmp(con, cmp) do{ con_cmp(con) = cmp; }while(0)
+#define con_set_cmp(con, cmp) ((con_cmp(con)=cmp)?con:con)
 
 #define con_first(con) container_first(con_con(con))
 #define con_last(con) container_last(con_con(con))
@@ -52,11 +52,9 @@
 
 // 遍历容器，
 #define con_travel(con, func) do {        \
-    it_t first = con_first(con);          \
-    it_t tail  = con_tail(con);           \
-    for(;!it_equal(first, tail); first = it_next(first) ) { \
-        func(it_refer(first));                              \
-    }                                                       \
+    for(it_t first = con_first(con);      \
+        !it_equal(first, con_tail(con));  \
+        first = it_next(first) ) func(first) ; \
 }while(0)
 
 typedef struct _con {

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-08 00:02:36
- * @LastEditTime: 2019-09-24 10:54:33
+ * @LastEditTime: 2019-09-24 11:01:00
  * @LastEditors: Please set LastEditors
  */
 #include <string.h>
@@ -66,8 +66,9 @@ static int _vector_insert (container_t* container, iterator_t it, type_value_t d
         if (new_block == NULL) {
             return -1;
         }
-        // 如果整个块都要新来，那么要重新计算it的位置
-        unsigned int offset = ((char*)iterator_reference(it)) - ((char*)iterator_reference(container_head(vec)));
+        // 如果整个块要是重新malloc的，那么要重新计算it的位置。 
+        // 隐藏的bug：地址的差值可能会超过 long 的最大值。
+        long offset = ((char*)iterator_reference(it)) - ((char*)iterator_reference(container_head(vec)));
         // copy 旧数据到新的内存
         memcpy(new_block, vec->_data, vec->_size * sizeof(type_value_t));
         // 释放旧的内存

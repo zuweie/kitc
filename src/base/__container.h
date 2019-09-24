@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:46
- * @LastEditTime: 2019-09-23 15:17:15
+ * @LastEditTime: 2019-09-24 14:02:36
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CONTAINER_H_
@@ -49,7 +49,7 @@
     }                                                                       \
 }while(0)
 
-#define container_size(container) (((container_t*)(container))->size(container))
+#define container_size(container) (((container_t*)container)->size((container_t*)container))
 
 #define initialize_container(container, __first, __last, __search, __insert, __remove, __size) do { \
     ((container_t*)(container))->first  = (__first);                                        \
