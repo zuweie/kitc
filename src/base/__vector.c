@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-08 00:02:36
- * @LastEditTime: 2019-09-24 09:17:34
+ * @LastEditTime: 2019-09-24 10:54:33
  * @LastEditors: Please set LastEditors
  */
 #include <string.h>
@@ -100,7 +100,7 @@ static int _vector_insert (container_t* container, iterator_t it, type_value_t d
 
 static int _vector_remove (container_t* container, iterator_t it, type_value_t* rdata) 
 {
-    if (iterator_valid(it)){
+    if (!iterator_is_boundary(it)){
         
         vector_t *vec = container;
 

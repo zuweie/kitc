@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:54
- * @LastEditTime: 2019-09-23 23:00:36
+ * @LastEditTime: 2019-09-24 10:55:43
  * @LastEditors: Please set LastEditors
  */
 #ifndef _ITERATOR_H_
@@ -17,16 +17,16 @@
 #define iterator_dereference(iter) (*((type_value_t*)iterator_reference(iter)))
 #define iterator_assign(to, from) (iterator_dereference(to)=iterator_dereference(from))
 
-#define iterator_move(iter, step) (iter.move(iter, step))
+#define iterator_move(iter, step) iter.move(iter, step)
 #define iterator_next(iter) iterator_move(iter, 1)
 #define iterator_prev(iter) iterator_move(iter, -1)
 
 #define iterator_equal(iter1, iter2) (iterator_reference(iter1) == iterator_reference(iter2))
 
-#define iterator_is_head(iter) (iterator_equal(iter, container_head(iter.container)))
-#define iterator_is_tail(iter) (iterator_equal(iter, container_tail(iter.container)))
+#define iterator_is_head(iter) iterator_equal(iter, container_head(iter.container))
+#define iterator_is_tail(iter) iterator_equal(iter, container_tail(iter.container))
 #define iterator_is_boundary(iter) (iterator_is_tail(iter) || iterator_is_head(iter))
-#define iterator_valid(iter) (!iterator_is_boundary(iter))
+#define iterator_valid(iter) !iterator_is_boundary(iter)
 
 typedef struct _iterator iterator_t;
 struct _iterator {
