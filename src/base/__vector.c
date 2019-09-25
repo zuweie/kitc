@@ -2,14 +2,15 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-08 00:02:36
- * @LastEditTime: 2019-09-24 15:32:22
+ * @LastEditTime: 2019-09-25 08:57:24
  * @LastEditors: Please set LastEditors
  */
 #include <string.h>
 #include "__vector.h"
 #include "__iterator.h"
 #include "__type_value.h"
-#include "_mem_pool.h"
+#include "__mem_pool.h"
+#include "__sort.h"
 
 /** iterator function **/
 static iterator_t _get_iter (void* refer, void* container);
@@ -115,7 +116,7 @@ static int _vector_remove (container_t* container, iterator_t it, type_value_t* 
         }
 
         // 擦除
-        for (it; !iterator_equal(it, container_last(vec)); it = iterator_next(it)){
+        for (;!iterator_equal(it, container_last(vec));it = iterator_next(it)){
             iterator_t it_next = iterator_next(it);
             iterator_assign(it, it_next);
         }
@@ -123,6 +124,11 @@ static int _vector_remove (container_t* container, iterator_t it, type_value_t* 
         return 0;
     }
     return -1;
+}
+
+static int _vector_sort(container_t* container, int(*compare)(type_value_t, type_value_t)) 
+{
+    return quick_sort(container_first(container), container_last(container), compare);
 }
 
 static unsigned int _vector_size (container_t* container) 
@@ -133,7 +139,7 @@ static unsigned int _vector_size (container_t* container)
 
 void init_vector(vector_t* vector) {
     
-    initialize_container(vector, _vector_first, _vector_last, _vector_search, _vector_insert, _vector_remove, _vector_size);
+    initialize_container(vector, _vector_first, _vector_last, _vector_search, _vector_insert, _vector_remove,_vector_sort, _vector_size);
     vector->_size = 0;
     vector->_capacity = VEC_ALLOC_CHUNK_SIZE;
     // 先给水池注点水。

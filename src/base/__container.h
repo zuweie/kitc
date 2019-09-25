@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:46
- * @LastEditTime: 2019-09-24 14:02:36
+ * @LastEditTime: 2019-09-25 09:12:16
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CONTAINER_H_
@@ -37,6 +37,9 @@
 // 容器测试
 #define container_has(container, find, compare) (!iterator_is_boundary(container_find(container, find, compare)))
 
+// 排序
+#define container_sort(container, compare) ((container_t*)(container))->sort((container_t*)(container), compare)
+
 // 两个容器合并。
 #define container_merge(container_1, container2) do { \
     container_t* c1 = (container_t*)(container_1);    \
@@ -51,12 +54,13 @@
 
 #define container_size(container) (((container_t*)container)->size((container_t*)container))
 
-#define initialize_container(container, __first, __last, __search, __insert, __remove, __size) do { \
+#define initialize_container(container, __first, __last, __search, __insert, __remove, __sort, __size) do { \
     ((container_t*)(container))->first  = (__first);                                        \
     ((container_t*)(container))->last   = (__last);                                         \
     ((container_t*)(container))->search = (__search);                                       \
     ((container_t*)(container))->insert = (__insert);                                       \
     ((container_t*)(container))->remove = (__remove);                                       \
+    ((container_t*)(container))->sort   = (__sort);                                         \
     ((container_t*)(container))->size   = (__size);                                         \
 } while (0)
 
@@ -67,7 +71,8 @@ struct _container {
     iterator_t (*last) (container_t * container);   
     iterator_t (*search) (container_t* container, iterator_t offset, type_value_t find, int (*compare)(type_value_t, type_value_t)); 
     int (*insert) (container_t* container, iterator_t iter, type_value_t data); 
-    int (*remove) (container_t* container, iterator_t iter, type_value_t* rdata); 
+    int (*remove) (container_t* container, iterator_t iter, type_value_t* rdata);
+    int (*sort) (container_t* container, int(*compare)(type_value_t, type_value_t));
     unsigned int (*size) (container_t*);
 };
 

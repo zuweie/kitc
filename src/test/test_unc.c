@@ -2,12 +2,12 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-25 01:27:20
+ * @LastEditTime: 2019-09-25 09:13:04
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
 #include <CUnit/Basic.h>
-#include "_mem_pool.h"
+#include "__mem_pool.h"
 #include "__type_value.h"
 #include "__vector.h"
 #include "__list.h"
@@ -200,7 +200,9 @@ void test_list (void) {
         printf("%d ", v);
     }
 
-    quick_sort(container_first(&list), container_last(&list), compare_int);
+    //quick_sort(container_first(&list), container_last(&list), compare_int);
+    container_sort(&list, compare_int);
+    
     tail = container_tail(&list);
     first = container_first(&list);
     printf("\n******** after sort ***************\n");

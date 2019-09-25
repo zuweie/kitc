@@ -7,7 +7,7 @@
  */
 #include "_graph.h"
 #include "_con.h"
-#include "_mem_pool.h"
+#include "__mem_pool.h"
 
 static vertex_t* _create_vertex(graph_t* graph, type_value_t vertex) 
 {

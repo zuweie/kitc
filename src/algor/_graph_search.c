@@ -2,12 +2,12 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 09:34:56
- * @LastEditTime: 2019-09-24 14:15:22
+ * @LastEditTime: 2019-09-25 09:01:06
  * @LastEditors: Please set LastEditors
  */
 #include "_graph_search.h"
 #include "_queue.h"
-#include "_mem_pool.h"
+#include "__mem_pool.h"
 
 
 static void _bind_bfs_node(it_t it) 
@@ -109,7 +109,7 @@ int dfs(graph_t* graph)
     return 0;
 }
 
-int grp_cleanup_search_info(graph_t* graph) 
+void grp_cleanup_search_info(graph_t* graph) 
 {
     con_travel(&graph->vertexes, _del_fs_node);
 }

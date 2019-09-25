@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-09-25 00:59:42
+ * @LastEditTime: 2019-09-25 08:56:28
  * @LastEditors: Please set LastEditors
  */
 
@@ -12,8 +12,8 @@
 #include "__type_value.h"
 #include "__iterator.h"
 #include "__container.h"
-#include "_mem_pool.h"
-
+#include "__mem_pool.h"
+#include "__sort.h"
 /** iter function **/
 static iterator_t _get_iter (void* refer, void* list);
 
@@ -119,9 +119,14 @@ static unsigned int _list_size(container_t* container)
     return ((list_t*)container)->_size;
 }
 
+static int _list_sort(container_t* container, int(*compare)(type_value_t, type_value_t))
+{
+    return quick_sort(container_first(container), container_last(container), compare);
+}
+
 void init_list(list_t* list) {
     
-    initialize_container(list, _list_first, _list_last, _list_search, _list_insert, _list_remove, _list_size);
+    initialize_container(list, _list_first, _list_last, _list_search, _list_insert, _list_remove, _list_sort, _list_size);
     list_first(list) = list_head(list);
     list_last(list) = list_tail(list);
     list->_size = 0;

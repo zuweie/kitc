@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-24 23:53:53
- * @LastEditTime: 2019-09-25 01:18:52
+ * @LastEditTime: 2019-09-25 08:58:24
  * @LastEditors: Please set LastEditors
  */
 #include "__sort.h"
@@ -28,8 +28,13 @@ int quick_sort(iterator_t p, iterator_t r, int(*compare)(type_value_t, type_valu
 {
     if (!iterator_equal(p, r)) {
         iterator_t q = _partition(p, r, compare);
-        if (!iterator_equal(p,q)) quick_sort(p, iterator_prev(q), compare);
-        if (!iterator_equal(q,r)) quick_sort(iterator_next(q), r, compare);
+        
+        if (!iterator_equal(p,q)) 
+            quick_sort(p, iterator_prev(q), compare);
+
+        if (!iterator_equal(q,r)) 
+            quick_sort(iterator_next(q), r, compare);
+
     }
     return 0;
 }

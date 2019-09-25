@@ -2,12 +2,12 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-11 10:15:37
- * @LastEditTime: 2019-09-23 07:11:56
+ * @LastEditTime: 2019-09-25 09:00:46
  * @LastEditors: Please set LastEditors
  */
 #include <stdlib.h>
 #include "__rb_tree.h"
-#include "_mem_pool.h"
+#include "__mem_pool.h"
 
 /** tree function **/
 
@@ -511,9 +511,13 @@ static unsigned int _rb_tree_size(container_t* container)
 {
     return ((rb_tree_t*)container)->_size;
 }
-
+static int _rb_tree_sort(container_t* container, int(*compare)(type_value_t, type_value_t)) 
+{
+    // rb 树不能排序。
+    return 0;
+}
 void init_rb_tree(rb_tree_t* tree, int(*insert_compare)(type_value_t, type_value_t)) {
-    initialize_container(tree, _rb_tree_first, _rb_tree_last, _rb_tree_search, _rb_tree_insert, _rb_tree_remove, _rb_tree_size);
+    initialize_container(tree, _rb_tree_first, _rb_tree_last, _rb_tree_search, _rb_tree_insert, _rb_tree_remove, _rb_tree_sort, _rb_tree_size);
     return __init_rb_tree(tree, insert_compare);
 }
 

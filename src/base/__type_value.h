@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 13:29:13
- * @LastEditTime: 2019-09-24 10:22:46
+ * @LastEditTime: 2019-09-25 08:46:09
  * @LastEditors: Please set LastEditors
  */
 
@@ -22,7 +22,7 @@
 
 #define cmp_int(t1, t2) ((type_int(t1)==type_int(t2))?0:((type_int(t1)>type_int(t2)))?1:-1)
 #define cmp_flt(t1, t2) ((type_int(t1)==type_int(t2))?0:((type_float(t1)>type_float(t2))?1:-1))
-#define cmp_ptr(t1, t2) (!(type_point(t1)==type_point(t2)))
+#define cmp_ptr(t1, t2) (!(type_pointer(t1)==type_pointer(t2)))
 
 typedef unsigned int v_type;
 typedef union _type_value

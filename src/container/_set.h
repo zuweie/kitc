@@ -16,7 +16,7 @@ typedef struct _set {
     list_t engine;
 } set_t;
 
-extern void init_set(set_t*,int(*compare)(type_value_t, type_value_t));
-extern int set_insert(con_t*, type_value_t);
+void init_set(set_t*,int(*compare)(type_value_t, type_value_t));
+int set_insert(con_t*, type_value_t);
 
 #endif

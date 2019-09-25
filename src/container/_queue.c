@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 19:09:26
- * @LastEditTime: 2019-09-24 12:08:16
+ * @LastEditTime: 2019-09-25 08:47:08
  * @LastEditors: Please set LastEditors
  */
 #include "_queue.h"
@@ -21,5 +21,5 @@ int en_queue (queue_t* q, type_value_t data)
 
 int de_queue(queue_t* q, type_value_t* rdata) 
 {
-    return con_rm_first(q, &rdata);
+    return con_rm_first(q, rdata);
 }
