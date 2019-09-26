@@ -92,10 +92,10 @@ CFLAGS          =  -Wall
 # $^ : 依赖列表，例如
 # xx : xx.o yy.o zz.o ($^ == xx.o, yy.o zz.o)
 
-.PHONY: all
-all: $(program)
+.PHONY: test
+test: $(test)
 
-$(program): $(test_sources) $(base_sources) $(container_sources) $(mem_pool_sources) $(algor_sources)
+$(test): $(test_sources) $(base_sources) $(container_sources) $(mem_pool_sources) $(algor_sources)
 	mkdir -p $(bin_dir)
 	$(CC) $(INCLUDE_FLAGS) $(TEST_LINK_FLAGS) $(DEBUG_CFLAGS) $^ -o $(bin_dir)/$@
 

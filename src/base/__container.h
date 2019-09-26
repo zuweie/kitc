@@ -2,12 +2,13 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:46
- * @LastEditTime: 2019-09-26 07:15:55
+ * @LastEditTime: 2019-09-26 23:53:42
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CONTAINER_H_
 #define _CONTAINER_H_
 
+#include <stddef.h>
 
 #include "__type_value.h"
 #include "__iterator.h"
@@ -73,7 +74,7 @@ struct _container {
     int (*insert) (container_t* container, iterator_t iter, type_value_t data); 
     int (*remove) (container_t* container, iterator_t iter, type_value_t* rdata);
     int (*sort) (container_t* container, int(*compare)(type_value_t, type_value_t));
-    unsigned int (*size) (container_t*);
+    size_t (*size) (container_t*);
 };
 
 #endif

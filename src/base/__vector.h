@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:28:17
- * @LastEditTime: 2019-09-25 08:36:15
+ * @LastEditTime: 2019-09-26 23:48:14
  * @LastEditors: Please set LastEditors
  */
 #ifndef _VECTOR_H_
@@ -17,8 +17,8 @@ typedef struct _vector
 {
    container_t container;
    type_value_t* _data;
-   unsigned int _size;
-   unsigned int _capacity;
+   size_t _size;
+   size_t _capacity;
    
 } vector_t;
 

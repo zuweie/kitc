@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:40
- * @LastEditTime: 2019-09-25 08:35:25
+ * @LastEditTime: 2019-09-26 23:46:11
  * @LastEditors: Please set LastEditors
  */
 
@@ -29,7 +29,7 @@ typedef struct _list
 {
     container_t container;
     list_node_t _sentinel;
-    unsigned int _size;
+    size_t _size;
 } list_t;
 
 void init_list(list_t*);

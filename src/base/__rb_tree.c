@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-11 10:15:37
- * @LastEditTime: 2019-09-25 09:00:46
+ * @LastEditTime: 2019-09-26 23:47:02
  * @LastEditors: Please set LastEditors
  */
 #include <stdlib.h>
@@ -139,12 +139,15 @@ static int __tree_right_rotate(rb_tree_t* prb, rb_tree_node_t* px)
 static rb_tree_node_t* __rb_tree_search(rb_tree_t* prb, rb_tree_node_t* pnode, type_value_t find, int(*compare)(type_value_t, type_value_t))
 {
     if (pnode != _null(prb)) {
+        //int result = compare(pnode->node, find);
         int result = compare(pnode->node, find);
         if (result == 0) {
             return pnode;
         }else if (result == 1) {
+            // pnode->node > find, search it on pnode left side
             return __rb_tree_search(prb, pnode->left, find, compare);
         }else{
+            // pnode->node < find, search it on pnode right side
             return __rb_tree_search(prb, pnode->right, find, compare); 
         }
     }
@@ -267,6 +270,7 @@ static int __rb_tree_insert (rb_tree_t* prb, type_value_t t)
         }else if (prb->_insert_compare(pz->node, px->node) == 1 ){
         	px = px->right;
         }else{
+            // 不挂重复的。
             return -1;
         }
     }
@@ -493,6 +497,7 @@ static iterator_t _rb_tree_last(container_t* container)
 static iterator_t _rb_tree_search(container_t* container, iterator_t offset, type_value_t find, int (*compare)(type_value_t, type_value_t)) 
 {
     rb_tree_t* tree = container;
+    // rb tree 不用外来的比较接口，用内部的insert_compare接口来找位置。
     rb_tree_node_t* p = __rb_tree_search(tree, tree->_root, find, compare);
     _get_iter(p, container);
 }
@@ -507,7 +512,7 @@ static int _rb_tree_remove(container_t* container, iterator_t pos, type_value_t*
     return __rb_tree_remove(container, iterator_reference(pos), rdata);
 }
 
-static unsigned int _rb_tree_size(container_t* container)
+static size_t _rb_tree_size(container_t* container)
 {
     return ((rb_tree_t*)container)->_size;
 }

@@ -2,7 +2,7 @@
  * @Description: 一个简单的内存池模型
  * @Author: zuweie
  * @Date: 2019-09-03 17:13:11
- * @LastEditTime: 2019-09-25 09:01:38
+ * @LastEditTime: 2019-09-27 00:00:09
  * @LastEditors: Please set LastEditors
  */
 #ifndef _MEM_POOL_H_
@@ -19,7 +19,7 @@
 // 每次重新装到freelist时的内存块数量
 #define __REFILL_CHUNK_SIZE 2
 
-// 每块重此出去的内存,最大只能是4.多了会出事的啊。千万别乱来啊。
+// 存放内存槽信息的位数
 #define __SLOT_INFO_BYTES 1
 
 //此宏求i个byte的最大无符号值。

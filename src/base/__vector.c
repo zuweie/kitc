@@ -2,9 +2,10 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-08 00:02:36
- * @LastEditTime: 2019-09-25 08:57:24
+ * @LastEditTime: 2019-09-26 23:56:37
  * @LastEditors: Please set LastEditors
  */
+#include <stddef.h>
 #include <string.h>
 #include "__vector.h"
 #include "__iterator.h"
@@ -59,7 +60,7 @@ static int _vector_insert (container_t* container, iterator_t it, type_value_t d
     // head 的位置不能前插
     if (!iterator_is_head(it)){
         
-        vector_t *vec = container;
+        vector_t* vec = container;
         // 检测一下是否满水？
         if (vec->_size >= vec->_capacity){
             // 注水
@@ -72,7 +73,7 @@ static int _vector_insert (container_t* container, iterator_t it, type_value_t d
 
             // 如果整个块要是重新malloc的，那么要重新计算it的位置。
             // 隐藏的bug：地址的差值可能会超过 long 的最大值。
-            long offset = ((char *)iterator_reference(it)) - ((char *)iterator_reference(container_head(vec)));
+            ptrdiff_t offset = iterator_reference(it) - iterator_reference(container_head(vec));
             // copy 旧数据到新的内存
             memcpy(new_block, vec->_data, vec->_size * sizeof(type_value_t));
             // 释放旧的内存
@@ -83,7 +84,7 @@ static int _vector_insert (container_t* container, iterator_t it, type_value_t d
             vec->_capacity += VEC_ALLOC_CHUNK_SIZE;
 
             // 更新it的refer。
-            void *new_refer = ((char *)iterator_reference(container_head(vec))) + offset;
+            void *new_refer = iterator_reference(container_head(vec)) + offset;
             iterator_set_reference(it, new_refer);
         }
 
@@ -131,7 +132,7 @@ static int _vector_sort(container_t* container, int(*compare)(type_value_t, type
     return quick_sort(container_first(container), container_last(container), compare);
 }
 
-static unsigned int _vector_size (container_t* container) 
+static size_t _vector_size (container_t* container) 
 {
     return ((vector_t*)container)->_size;
 }

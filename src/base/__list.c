@@ -2,12 +2,11 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-09-25 08:56:28
+ * @LastEditTime: 2019-09-26 23:53:27
  * @LastEditors: Please set LastEditors
  */
 
 #include <stdlib.h>
-
 #include "__list.h"
 #include "__type_value.h"
 #include "__iterator.h"
@@ -114,7 +113,7 @@ static int _list_remove(container_t* container, iterator_t pos, type_value_t* rd
     return -1;
 }
 
-static unsigned int _list_size(container_t* container) 
+static size_t _list_size(container_t* container) 
 {
     return ((list_t*)container)->_size;
 }

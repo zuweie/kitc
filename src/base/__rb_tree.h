@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-11 10:07:38
- * @LastEditTime: 2019-09-25 08:35:57
+ * @LastEditTime: 2019-09-26 23:46:27
  * @LastEditors: Please set LastEditors
  */
 #ifndef _RB_TREE_H_
@@ -29,7 +29,7 @@ typedef struct _rb_tree {
     container_t container;
     rb_tree_node_t* _root;
     rb_tree_node_t _null;
-    unsigned int _size;
+    size_t _size;
     int (*_insert_compare) (type_value_t, type_value_t);
 }rb_tree_t;
 
