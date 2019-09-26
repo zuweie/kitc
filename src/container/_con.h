@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 18:51:11
- * @LastEditTime: 2019-09-24 15:22:34
+ * @LastEditTime: 2019-09-26 08:32:30
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CON_H_
@@ -36,7 +36,7 @@
 
 #define con_has(con, find) container_has(con_con(con), find, con_cmp(con))
 #define con_size(con) container_size(con_con(con))
-
+#define con_sort(con, cmp) container_sort(con_con(con), cmp);
 
 /* iterator_t function */
 #define it_refer(iter) iterator_reference(iter)

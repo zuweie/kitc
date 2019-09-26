@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:46
- * @LastEditTime: 2019-09-25 09:12:16
+ * @LastEditTime: 2019-09-26 07:15:55
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CONTAINER_H_
@@ -37,7 +37,7 @@
 // 容器测试
 #define container_has(container, find, compare) (!iterator_is_boundary(container_find(container, find, compare)))
 
-// 排序
+// 容器排序
 #define container_sort(container, compare) ((container_t*)(container))->sort((container_t*)(container), compare)
 
 // 两个容器合并。

@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-25 09:13:04
+ * @LastEditTime: 2019-09-25 12:16:05
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -185,10 +185,11 @@ void test_vector (void) {
 }
 
 void test_list (void) {
-    list_t list;
-    init_list(&list);
+    vector_t list;
+    init_vector(&list);
     for(int i=0; i<40; ++i) {
-        container_insert(&list, container_first(&list), get(i));
+        container_insert(&list, container_first(&list), int_type(8));
+        container_insert(&list, container_first(&list), float_type(2.3));
     }
 
     iterator_t tail = container_tail(&list);

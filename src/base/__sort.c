@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-24 23:53:53
- * @LastEditTime: 2019-09-25 08:58:24
+ * @LastEditTime: 2019-09-26 08:35:42
  * @LastEditors: Please set LastEditors
  */
 #include "__sort.h"
@@ -13,8 +13,7 @@ static iterator_t _partition (iterator_t p, iterator_t r, int(*compare)(type_val
     iterator_t i = iterator_prev(p);
 
     for(;!iterator_equal(p,r);p=iterator_next(p)) {
-        if (compare(iterator_dereference(p),x) == -1 
-        || compare(iterator_dereference(p),x) == 0) {
+        if (compare(iterator_dereference(p),x) != 1) {
             // p <= x
             i = iterator_next(i);
             iterator_exchange(i, p);

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 17:13:19
- * @LastEditTime: 2019-09-25 09:00:57
+ * @LastEditTime: 2019-09-25 12:44:42
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -46,7 +46,6 @@ void* allocate(pool_t *palloc, size_t x)
 
 	if (ENABLE_ALLOC && POOL_FREELIST_INDEX(POOL_ATTACH_SLOT_INFO_SIZE(x)) < __FREELIST_SIZE)
 	{
-
 		pool_node_t *volatile *my_free_list;
 		pool_node_t *result;
 
@@ -68,7 +67,6 @@ void* allocate(pool_t *palloc, size_t x)
 	}
 	else
 	{
-
 		// 如果大于 __FREELIST_SIZE 那个值，那么回收的时候即可判断是直接从内存找来的。
 
 		pool_node_t *result = malloc(POOL_ATTACH_SLOT_INFO_SIZE(x));
@@ -85,20 +83,17 @@ void* allocate(pool_t *palloc, size_t x)
 // 接受的指针必须是从allocate出来的～～～否则后果难料啊。
 void deallocate(pool_t *palloc, void *p)
 {
-	if (p)
-	{
+	if (p){
 		pool_node_t *q = (pool_node_t *)POOL_RECOVER_POINTER(p);
 		size_t slot = get_node_slot(q);
-		if (ENABLE_ALLOC && slot < __FREELIST_SIZE)
-		{
+		if (ENABLE_ALLOC && slot < __FREELIST_SIZE){
 			// 这里是头部插入。
 			pool_node_t *volatile *my_free_list;
 			my_free_list = palloc->free_list + slot;
 			q->free_list_link = *my_free_list;
 			*my_free_list = q;
 		}
-		else
-		{
+		else{
 			// 直接free
 			free(q);
 		}
