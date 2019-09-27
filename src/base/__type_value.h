@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 13:29:13
- * @LastEditTime: 2019-09-27 08:50:05
+ * @LastEditTime: 2019-09-27 08:56:01
  * @LastEditors: Please set LastEditors
  */
 
@@ -17,9 +17,9 @@
 #define type_double(t)  (*((double*)t.type_value))
 #define type_pointer(t) (t.pointer)
 
-#define int_type(v) _int_type(v)
-#define float_type(v) _flv_type(v)
-#define double_type(v) _2flv_type(v)
+#define int_type(v)     _int_type(v)
+#define float_type(v)   _flv_type(v)
+#define double_type(v)  _2flv_type(v)
 #define pointer_type(v) _ptr_type(v)
 
 #define cmp_int(t1, t2) ((type_int(t1)==type_int(t2))?0:((type_int(t1)>type_int(t2)))?1:-1)
