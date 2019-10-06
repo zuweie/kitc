@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 17:13:19
- * @LastEditTime: 2019-09-25 12:44:42
+ * @LastEditTime: 2019-10-06 11:46:35
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -11,6 +11,8 @@
 
 static int _refill(pool_t *palloc, size_t n);
 static char* _chunk_alloc(pool_t *palloc, size_t size, int *nobjs);
+static inline void _set_node_slot(pool_node_t *p, unsigned int slot);
+static inline unsigned int _get_node_slot(pool_node_t *p);
 
 // 全局的 pool变量。
 static pool_t POOL_INSTANCE;
@@ -61,7 +63,7 @@ void* allocate(pool_t *palloc, size_t x)
 		{
 			// 把slot第一个指针指向下个块，这个块就返回出去。给用户用了
 			*my_free_list = result->free_list_link;
-			set_node_slot(result, POOL_FREELIST_INDEX(POOL_ATTACH_SLOT_INFO_SIZE(x)));
+			_set_node_slot(result, POOL_FREELIST_INDEX(POOL_ATTACH_SLOT_INFO_SIZE(x)));
 			return POOL_EXPORT_POINTER(result);
 		}
 	}
@@ -72,7 +74,7 @@ void* allocate(pool_t *palloc, size_t x)
 		pool_node_t *result = malloc(POOL_ATTACH_SLOT_INFO_SIZE(x));
 		if (result)
 		{
-			set_node_slot(result, __MAX_FREELIST_SIZE);
+			_set_node_slot(result, __MAX_FREELIST_SIZE);
 			return POOL_EXPORT_POINTER(result);
 		}
 		//
@@ -85,7 +87,7 @@ void deallocate(pool_t *palloc, void *p)
 {
 	if (p){
 		pool_node_t *q = (pool_node_t *)POOL_RECOVER_POINTER(p);
-		size_t slot = get_node_slot(q);
+		size_t slot = _get_node_slot(q);
 		if (ENABLE_ALLOC && slot < __FREELIST_SIZE){
 			// 这里是头部插入。
 			pool_node_t *volatile *my_free_list;
@@ -136,7 +138,8 @@ size_t size_of_slot(int slot)
 }
 #endif
 
-void set_node_slot(pool_node_t *p, unsigned int slot)
+static inline
+void _set_node_slot(pool_node_t *p, unsigned int slot)
 {
 	for (int i = __SLOT_INFO_BYTES - 1, j = 0; i >= 0; --i, ++j)
 	{
@@ -145,7 +148,8 @@ void set_node_slot(pool_node_t *p, unsigned int slot)
 	return;
 }
 
-unsigned int get_node_slot(pool_node_t *p)
+static inline
+unsigned int _get_node_slot(pool_node_t *p)
 {
 	unsigned int slot = 0;
 	for (int i = 0, j = __SLOT_INFO_BYTES - 1; i < __SLOT_INFO_BYTES; ++i, --j)
@@ -206,7 +210,7 @@ static int _refill(pool_t *palloc, size_t n)
  *  4 再递归调用自己看看内存池还有没有。
  */
 
-static char *_chunk_alloc(pool_t *palloc, size_t size, int *nobjs)
+static char* _chunk_alloc(pool_t *palloc, size_t size, int *nobjs)
 {
 	char *result;
 	size_t total_bytes = size * (*nobjs);

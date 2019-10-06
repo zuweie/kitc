@@ -2,7 +2,7 @@
  * @Description: 一个简单的内存池模型
  * @Author: zuweie
  * @Date: 2019-09-03 17:13:11
- * @LastEditTime: 2019-09-27 00:00:09
+ * @LastEditTime: 2019-10-06 11:41:19
  * @LastEditors: Please set LastEditors
  */
 #ifndef _MEM_POOL_H_
@@ -76,9 +76,10 @@ int alloc_init(pool_t *);
 void *allocate(pool_t *, size_t n);
 void deallocate(pool_t *, void *p);
 pool_t *instance(int *);
+/*
 void set_node_slot(pool_node_t* node, unsigned int);
 unsigned int get_node_slot(pool_node_t* p);
-
+*/
 #if ALLOC_DEBUG
 void inspect_pool(pool_t *);
 size_t size_of_slot(int slot);
