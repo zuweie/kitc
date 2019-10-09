@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:28:17
- * @LastEditTime: 2019-09-26 23:48:14
+ * @LastEditTime: 2019-10-09 11:01:11
  * @LastEditors: Please set LastEditors
  */
 #ifndef _VECTOR_H_
@@ -22,6 +22,6 @@ typedef struct _vector
    
 } vector_t;
 
-void init_vector(vector_t*);
+void init_vector(vector_t*, pool_t*);
 
 #endif

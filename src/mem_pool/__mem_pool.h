@@ -2,7 +2,7 @@
  * @Description: 一个简单的内存池模型
  * @Author: zuweie
  * @Date: 2019-09-03 17:13:11
- * @LastEditTime: 2019-10-06 11:41:19
+ * @LastEditTime: 2019-10-09 11:01:50
  * @LastEditors: Please set LastEditors
  */
 #ifndef _MEM_POOL_H_
@@ -39,7 +39,7 @@
 // 保留一位用作内存数超出最大size的标志位
 #define __MAX_BYTES ( (__MAX_FREELIST_SIZE - 1) * __ALIGN )
 
-#define __FREELIST_SIZE (__MAX_BYTES) / (__ALIGN)
+#define __FREELIST_SIZE ((__MAX_BYTES) / (__ALIGN))
 
 #define POOL_ROUND_UP(x) (((x) + __ALIGN - 1) & ~(__ALIGN - 1))
 #define POOL_FREELIST_INDEX(x) (((x) + __ALIGN - 1) / __ALIGN - 1)
@@ -50,7 +50,7 @@
 #define POOL_EXPORT_POINTER(p) ((char *)p + __SLOT_INFO_BYTES)
 #define POOL_RECOVER_POINTER(p) ((char *)p - __SLOT_INFO_BYTES)
 
-#define pool(x) instance(x)
+#define g_pool(x) pool_instance(x)
 
 typedef union _pool_node 
 {
@@ -63,19 +63,30 @@ typedef union _pool_node
 
 } pool_node_t;
 
+
+typedef struct _chunk_node
+{
+	void* chunk;
+	struct _chunk_node* next;
+} chunk_node_t;
+
 typedef struct _pool
 {
 	char *start_free;
 	char *end_free;
 	size_t heap_size;
 	pool_node_t *volatile free_list[__FREELIST_SIZE];
+	chunk_node_t chunk_link;
 
 } pool_t;
 
 int alloc_init(pool_t *);
 void *allocate(pool_t *, size_t n);
 void deallocate(pool_t *, void *p);
-pool_t *instance(int *);
+int alloc_destroy(pool_t*);
+
+pool_t* pool_instance(int *);
+
 /*
 void set_node_slot(pool_node_t* node, unsigned int);
 unsigned int get_node_slot(pool_node_t* p);

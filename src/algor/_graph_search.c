@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 09:34:56
- * @LastEditTime: 2019-09-25 09:01:06
+ * @LastEditTime: 2019-10-09 11:15:03
  * @LastEditors: Please set LastEditors
  */
 #include "_graph_search.h"
@@ -12,7 +12,7 @@
 
 static void _bind_bfs_node(it_t it) 
 {
-    bfs_node_t* pn = allocate(pool(0), sizeof(bfs_node_t));
+    bfs_node_t* pn = allocate(g_pool(0), sizeof(bfs_node_t));
     pn->color = _grp_whtie;
     pn->distance = -1;
     pn->parent = NULL;
@@ -23,7 +23,7 @@ static void _bind_bfs_node(it_t it)
 
 static void _bind_dfs_node(it_t it) 
 {
-    dfs_node_t* pn = allocate(pool(0), sizeof(dfs_node_t));
+    dfs_node_t* pn = allocate(g_pool(0), sizeof(dfs_node_t));
     pn->color = _grp_whtie;
     pn->parent = NULL;
     pn->d_time = -1;
@@ -36,7 +36,7 @@ static void _bind_dfs_node(it_t it)
 static void _del_fs_node (it_t it) 
 {
     vertex_t* vertex = type_pointer(it_derefer(it));
-    deallocate(pool(0), vertex->data);
+    deallocate(g_pool(0), vertex->data);
     vertex->data = NULL;
 }
 

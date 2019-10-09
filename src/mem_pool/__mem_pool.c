@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 17:13:19
- * @LastEditTime: 2019-10-06 11:46:35
+ * @LastEditTime: 2019-10-09 10:25:36
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -17,7 +17,7 @@ static inline unsigned int _get_node_slot(pool_node_t *p);
 // 全局的 pool变量。
 static pool_t POOL_INSTANCE;
 
-pool_t *instance(int *ret)
+pool_t* pool_instance(int *ret)
 {
 
 	ret ? *ret = 1 : 0;
@@ -38,7 +38,31 @@ int alloc_init(pool_t *palloc)
 	palloc->start_free = 0;
 	palloc->end_free = 0;
 	palloc->heap_size = 0;
+	palloc->chunk_link.chunk = 0;
+	palloc->chunk_link.next = NULL;
 	return 0;
+}
+
+int alloc_destroy (pool_t* palloc) 
+{
+	chunk_node_t* first = palloc->chunk_link.next;
+
+	while(first) {
+		// 释放所有申请的内存块,不管外面有没有人在用。
+		free(first->chunk);
+		chunk_node_t* node = first;
+		first = first->next;
+		free(node);
+	}
+
+	// 把alloc所有参数变成原始状态。
+	memset(palloc->free_list, 0, sizeof(palloc->free_list));
+	palloc->start_free = 0;
+	palloc->end_free = 0;
+	palloc->heap_size = 0;
+	palloc->chunk_link.chunk = 0;
+	palloc->chunk_link.next = NULL;
+
 }
 
 void* allocate(pool_t *palloc, size_t x)
@@ -70,7 +94,6 @@ void* allocate(pool_t *palloc, size_t x)
 	else
 	{
 		// 如果大于 __FREELIST_SIZE 那个值，那么回收的时候即可判断是直接从内存找来的。
-
 		pool_node_t *result = malloc(POOL_ATTACH_SLOT_INFO_SIZE(x));
 		if (result)
 		{
@@ -252,7 +275,6 @@ static char* _chunk_alloc(pool_t *palloc, size_t size, int *nobjs)
 
 			// 分析说明：
 			// 1 ((pool_node_t *) (palloc->start_free)) 这个其实就是将水池剩下的chunk变成(pool_node_t)
-			// TODO: 在每个内存快的头加入slot的信息，说明是第几个块的。
 
 			// 2 *my_free_list 原来是第一个 pool_node_t 对象的。现在赋值给新来的 chunk了。
 			// 也就是新来的chunk的next指针(free_list_link) 指向了原来旧的chunk
@@ -265,7 +287,15 @@ static char* _chunk_alloc(pool_t *palloc, size_t size, int *nobjs)
 		// 收编完了就开始向系统申请加水，将水加在内存池里面。然后再递归调用。返回适合的chunk
 
 		palloc->start_free = (char *)malloc(bytes_to_get);
-
+		
+		// 把申请到的内存的地址存起来,方便以后统一释放。
+		if (palloc->start_free) {
+			chunk_node_t *pchunk_node = malloc(sizeof(chunk_node_t));
+			pchunk_node->next = palloc->chunk_link.next;
+			pchunk_node->chunk = palloc->start_free;
+			palloc->chunk_link.next = pchunk_node;
+		}
+		
 		if (0 == palloc->start_free)
 		{
 			// 当想系统申请内存失败的时候，将freelist其他还未用的内存拿回来，然后看看能不能组成一块，返回给用户。
@@ -292,10 +322,13 @@ static char* _chunk_alloc(pool_t *palloc, size_t size, int *nobjs)
 			palloc->end_free = 0;
 			return (char *)0;
 		}
-
 		// 申请到内存,下次多申请一点
 		palloc->heap_size += bytes_to_get;
 		palloc->end_free = palloc->start_free + bytes_to_get;
 		return (_chunk_alloc(palloc, size, nobjs));
 	}
 }
+
+
+
+

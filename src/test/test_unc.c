@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-09-27 07:28:17
+ * @LastEditTime: 2019-10-09 11:14:00
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -40,9 +40,9 @@ static type_value_t get(int i) {
 void
 test_mem_instance(void) {
     int ret = 0;
-    pool_t * alloc = pool(&ret);
+    pool_t * alloc = g_pool(&ret);
     CU_ASSERT(ret == 0);
-    alloc = pool(&ret);
+    alloc = g_pool(&ret);
     CU_ASSERT(ret == 1);
 }
 
@@ -118,7 +118,7 @@ test_mem_pool_maxslot (void)
 
 void test_vector (void) {
     vector_t vet;
-    init_vector(&vet);
+    init_vector(&vet, g_pool(0));
     
     /*
     for(int i=0; i<10; ++i) {
@@ -127,7 +127,7 @@ void test_vector (void) {
     */
     container_insert(&vet, container_tail(&vet), int_type(1));
     container_insert(&vet, container_tail(&vet), int_type(2));
-
+    
     for(iterator_t first = container_first(&vet); 
         !iterator_equal(first, container_tail(&vet)); 
         first=iterator_next(first)) {
@@ -187,7 +187,7 @@ void test_vector (void) {
 void test_list (void) {
 
     list_t list;
-    init_list(&list);
+    init_list(&list, g_pool(0));
 
     printf("\n********** size fo type_value_t %d *********************\n", sizeof(type_value_t));
 
@@ -214,14 +214,17 @@ void test_list (void) {
         int v = type_int( iterator_dereference(first) );
         printf("%d ", v);
     }
-
+    printf("\n************ inspact pool *******************\n");
+    inspect_pool(g_pool(0));
+    
+    alloc_destroy(g_pool(0));
     CU_ASSERT(1);
 }
 
 void test_rb_tree(void) 
 {
     rb_tree_t rbtree;
-    init_rb_tree(&rbtree, compare_int);
+    init_rb_tree(&rbtree, compare_int, g_pool(0));
     for(int i=0; i<TEST_DATA_SIZE; ++i) {
         container_insert(&rbtree, rb_tree_null(&rbtree), get(i));
     }

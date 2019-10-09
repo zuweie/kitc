@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:14:04
- * @LastEditTime: 2019-09-23 08:07:02
+ * @LastEditTime: 2019-10-09 11:14:45
  * @LastEditors: Please set LastEditors
  */
 #include "_graph.h"
@@ -11,7 +11,7 @@
 
 static vertex_t* _create_vertex(graph_t* graph, type_value_t vertex) 
 {
-    vertex_t* v = allocate(pool(0), sizeof(vertex_t));
+    vertex_t* v = allocate(g_pool(0), sizeof(vertex_t));
     v->vertex = vertex;
     init_set(&v->adjacency, graph->compare_adjnode);
     return v;
@@ -65,10 +65,10 @@ int graph_del_vertex(graph_t* graph, type_value_t vertex)
         type_value_t r_adj;
 
         while( con_rm_last(&pv->adjacency, &r_adj) != -1 ) {
-            deallocate(pool(0), type_pointer(r_adj));
+            deallocate(g_pool(0), type_pointer(r_adj));
         }
 
-        deallocate(pool(0), pv);
+        deallocate(g_pool(0), pv);
         return 0;
     }
     return -1;
@@ -86,7 +86,7 @@ int graph_del_edge(graph_t* graph, type_value_t from, type_value_t to)
 
         type_value_t r_adj;
         if (con_rm_find(&v_from->adjacency, pointer_type(v_to), &r_adj) != -1) {
-            deallocate(pool(0), type_pointer(r_adj));
+            deallocate(g_pool(0), type_pointer(r_adj));
             return 0;
         }
     }

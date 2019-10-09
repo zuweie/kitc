@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 13:29:13
- * @LastEditTime: 2019-09-27 08:56:01
+ * @LastEditTime: 2019-10-09 10:08:46
  * @LastEditors: Please set LastEditors
  */
 
@@ -24,6 +24,7 @@
 
 #define cmp_int(t1, t2) ((type_int(t1)==type_int(t2))?0:((type_int(t1)>type_int(t2)))?1:-1)
 #define cmp_flt(t1, t2) ((type_int(t1)==type_int(t2))?0:((type_float(t1)>type_float(t2))?1:-1))
+#define cmp_dbl(t1, t2) ((type_int(t1)==type_int(t2))?0:((type_double(t1)>type_double(t2))?1:-1))
 #define cmp_ptr(t1, t2) (!(type_pointer(t1)==type_pointer(t2)))
 
 typedef long long v_type;
@@ -72,6 +73,12 @@ static inline
 int compare_float(type_value_t t1, type_value_t t2) 
 {
    return cmp_flt(t1, t2);
+}
+
+static inline
+int compare_double(type_value_t t1, type_value_t t2) 
+{
+   return cmp_dbl(t1, t2);
 }
 
 static inline 
