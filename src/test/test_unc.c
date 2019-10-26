@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-10-09 11:14:00
+ * @LastEditTime: 2019-10-09 16:59:50
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -217,7 +217,7 @@ void test_list (void) {
     printf("\n************ inspact pool *******************\n");
     inspect_pool(g_pool(0));
     
-    alloc_destroy(g_pool(0));
+    alloc_free(g_pool(0));
     CU_ASSERT(1);
 }
 

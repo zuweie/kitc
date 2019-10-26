@@ -2,7 +2,7 @@
  * @Description: 一个简单的内存池模型
  * @Author: zuweie
  * @Date: 2019-09-03 17:13:11
- * @LastEditTime: 2019-10-09 11:01:50
+ * @LastEditTime: 2019-10-09 16:53:12
  * @LastEditors: Please set LastEditors
  */
 #ifndef _MEM_POOL_H_
@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 #define ALLOC_DEBUG 1
-#define ENABLE_ALLOC 1
+//#define ENABLE_ALLOC 1
 
 // 申请内存最少为8个byte。
 #define __ALIGN 8
@@ -81,9 +81,9 @@ typedef struct _pool
 } pool_t;
 
 int alloc_init(pool_t *);
-void *allocate(pool_t *, size_t n);
+void* allocate(pool_t *, size_t n);
 void deallocate(pool_t *, void *p);
-int alloc_destroy(pool_t*);
+int alloc_free(pool_t*);
 
 pool_t* pool_instance(int *);
 

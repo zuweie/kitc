@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 17:13:19
- * @LastEditTime: 2019-10-09 10:25:36
+ * @LastEditTime: 2019-10-09 16:59:19
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -43,25 +43,19 @@ int alloc_init(pool_t *palloc)
 	return 0;
 }
 
-int alloc_destroy (pool_t* palloc) 
+int alloc_free (pool_t* palloc) 
 {
 	chunk_node_t* first = palloc->chunk_link.next;
 
 	while(first) {
-		// 释放所有申请的内存块,不管外面有没有人在用。
+		// 释放所有申请的内存块,不管外面有没有在用。
 		free(first->chunk);
 		chunk_node_t* node = first;
 		first = first->next;
 		free(node);
 	}
 
-	// 把alloc所有参数变成原始状态。
-	memset(palloc->free_list, 0, sizeof(palloc->free_list));
-	palloc->start_free = 0;
-	palloc->end_free = 0;
-	palloc->heap_size = 0;
-	palloc->chunk_link.chunk = 0;
-	palloc->chunk_link.next = NULL;
+	return alloc_init(palloc);
 
 }
 
@@ -70,33 +64,28 @@ void* allocate(pool_t *palloc, size_t x)
 	// 多加一个info的空位放置块信息。
 	//x += __NODE_INFO_BYTES;
 
-	if (ENABLE_ALLOC && POOL_FREELIST_INDEX(POOL_ATTACH_SLOT_INFO_SIZE(x)) < __FREELIST_SIZE)
-	{
+	if (palloc && POOL_FREELIST_INDEX(POOL_ATTACH_SLOT_INFO_SIZE(x)) < __FREELIST_SIZE){
 		pool_node_t *volatile *my_free_list;
 		pool_node_t *result;
 
 		my_free_list = palloc->free_list + POOL_FREELIST_INDEX(POOL_ATTACH_SLOT_INFO_SIZE(x));
 		result = *my_free_list;
 
-		if (result == 0)
-		{
+		if (result == 0){
 			// 重新填充 free list
 			return (_refill(palloc, POOL_ROUND_UP(POOL_ATTACH_SLOT_INFO_SIZE(x))) == 0) ? allocate(palloc, x) : result;
-		}
-		else
-		{
+
+		}else{
 			// 把slot第一个指针指向下个块，这个块就返回出去。给用户用了
 			*my_free_list = result->free_list_link;
 			_set_node_slot(result, POOL_FREELIST_INDEX(POOL_ATTACH_SLOT_INFO_SIZE(x)));
 			return POOL_EXPORT_POINTER(result);
 		}
-	}
-	else
-	{
+	}else{
 		// 如果大于 __FREELIST_SIZE 那个值，那么回收的时候即可判断是直接从内存找来的。
 		pool_node_t *result = malloc(POOL_ATTACH_SLOT_INFO_SIZE(x));
-		if (result)
-		{
+
+		if (result){
 			_set_node_slot(result, __MAX_FREELIST_SIZE);
 			return POOL_EXPORT_POINTER(result);
 		}
@@ -111,14 +100,13 @@ void deallocate(pool_t *palloc, void *p)
 	if (p){
 		pool_node_t *q = (pool_node_t *)POOL_RECOVER_POINTER(p);
 		size_t slot = _get_node_slot(q);
-		if (ENABLE_ALLOC && slot < __FREELIST_SIZE){
+		if (palloc && slot < __FREELIST_SIZE){
 			// 这里是头部插入。
 			pool_node_t *volatile *my_free_list;
 			my_free_list = palloc->free_list + slot;
 			q->free_list_link = *my_free_list;
 			*my_free_list = q;
-		}
-		else{
+		}else{
 			// 直接free
 			free(q);
 		}

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 13:29:13
- * @LastEditTime: 2019-10-09 10:08:46
+ * @LastEditTime: 2019-10-26 20:06:51
  * @LastEditors: Please set LastEditors
  */
 
@@ -12,9 +12,17 @@
 #define set_type_val(t, v) (((*((v_type*)t.type_value))=(*((v_type*)(&(v)))))?t:t)
 #define set_type_ptr(t, p) ((t.pointer=p)?t:t)
 
+#define type_v(vt,t) (*((vt*)t.type_value))
+
+/*
 #define type_int(t)     (*((int*)t.type_value))
 #define type_float(t)   (*((float*)t.type_value))
 #define type_double(t)  (*((double*)t.type_value))
+#define type_pointer(t) (t.pointer)
+*/
+#define type_int(t) type_v(int, t)
+#define type_float(t) type_v(float, t)
+#define type_double(t) type_v(double, t)
 #define type_pointer(t) (t.pointer)
 
 #define int_type(v)     _int_type(v)
@@ -61,7 +69,6 @@ type_value_t _ptr_type(void* p)
    type_value_t tv;
    return set_type_ptr(tv, p);
 }
-
 
 static inline 
 int compare_int(type_value_t t1, type_value_t t2) 
