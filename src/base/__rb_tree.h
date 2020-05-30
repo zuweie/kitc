@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-11 10:07:38
- * @LastEditTime: 2019-10-09 11:01:23
+ * @LastEditTime: 2020-05-29 14:23:57
  * @LastEditors: Please set LastEditors
  */
 #ifndef _RB_TREE_H_
@@ -33,7 +33,10 @@ typedef struct _rb_tree {
     int (*_insert_compare) (type_value_t, type_value_t);
 }rb_tree_t;
 
-void init_rb_tree(rb_tree_t*, int(*insert_compare)(type_value_t, type_value_t), pool_t*);
+container_t* rb_tree_create(int(*insert_compare)(type_value_t, type_value_t));
+
+int rb_tree_destroy(container_t*);
+
 iterator_t rb_tree_root(rb_tree_t*);
 iterator_t rb_tree_null(rb_tree_t*);
 #endif

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 17:13:19
- * @LastEditTime: 2019-10-09 16:59:19
+ * @LastEditTime: 2020-05-29 17:12:58
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -15,6 +15,7 @@ static inline void _set_node_slot(pool_node_t *p, unsigned int slot);
 static inline unsigned int _get_node_slot(pool_node_t *p);
 
 // 全局的 pool变量。
+/*
 static pool_t POOL_INSTANCE;
 
 pool_t* pool_instance(int *ret)
@@ -31,6 +32,7 @@ pool_t* pool_instance(int *ret)
 
 	return p_instance;
 }
+*/
 
 int alloc_init(pool_t *palloc)
 {
@@ -43,10 +45,16 @@ int alloc_init(pool_t *palloc)
 	return 0;
 }
 
-int alloc_free (pool_t* palloc) 
+pool_t* alloc_create(void* data) {
+	pool_t* pool = (pool_t*) malloc(sizeof(pool_t));
+	alloc_init(pool);
+	return pool;
+}
+
+int alloc_destroy (pool_t* palloc) 
 {
 	chunk_node_t* first = palloc->chunk_link.next;
-
+	// 清除所有的申请的内存块
 	while(first) {
 		// 释放所有申请的内存块,不管外面有没有在用。
 		free(first->chunk);
@@ -55,8 +63,8 @@ int alloc_free (pool_t* palloc)
 		free(node);
 	}
 
-	return alloc_init(palloc);
-
+	free(palloc);
+	return 0;
 }
 
 void* allocate(pool_t *palloc, size_t x)

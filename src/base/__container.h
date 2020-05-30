@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:46
- * @LastEditTime: 2019-10-09 10:56:38
+ * @LastEditTime: 2020-05-30 07:59:13
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CONTAINER_H_
@@ -13,6 +13,9 @@
 #include "__type_value.h"
 #include "__iterator.h"
 #include "__mem_pool.h"
+
+#define container_create(label, ...) label##_create(__VA_ARGS__)
+#define container_destroy(label, ...) label##_destroy(__VA_ARGS__)
 
 // 容器位置
 #define container_first(container) (((container_t*)(container))->first((container_t*)(container)))
@@ -43,7 +46,7 @@
 #define container_sort(container, compare) ((container_t*)(container))->sort((container_t*)(container), compare)
 
 // 容器的内存池
-#define container_pool(container) (((container_t*)(container))->pool)
+#define container_mem_pool(container) (((container_t*)(container))->mem_pool)
 
 // 两个容器合并。
 #define container_merge(container_1, container2) do { \
@@ -57,9 +60,9 @@
     }                                                                       \
 }while(0)
 
-#define container_size(container) (((container_t*)container)->size((container_t*)container))
+#define container_size(container) (((container_t*)(container))->size((container_t*)container))
 
-#define initialize_container(container, __first, __last, __search, __insert, __remove, __sort, __size, __pool) do { \
+#define initialize_container(container, __first, __last, __search, __insert, __remove, __sort, __size, __mem_pool) do { \
     ((container_t*)(container))->first  = (__first);                                        \
     ((container_t*)(container))->last   = (__last);                                         \
     ((container_t*)(container))->search = (__search);                                       \
@@ -67,7 +70,7 @@
     ((container_t*)(container))->remove = (__remove);                                       \
     ((container_t*)(container))->sort   = (__sort);                                         \
     ((container_t*)(container))->size   = (__size);                                         \
-    ((container_t*)(container))->pool   = (__pool);                                         \
+    ((container_t*)(container))->mem_pool = (__mem_pool);                                   \
 } while (0)
 
 typedef struct _container container_t;
@@ -80,7 +83,7 @@ struct _container {
     int (*remove) (container_t* container, iterator_t iter, type_value_t* rdata);
     int (*sort) (container_t* container, int(*compare)(type_value_t, type_value_t));
     size_t (*size) (container_t*);
-    pool_t* pool;
+    pool_t* mem_pool;
 };
 
 #endif

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:28:17
- * @LastEditTime: 2019-10-09 11:01:11
+ * @LastEditTime: 2020-05-29 13:49:59
  * @LastEditors: Please set LastEditors
  */
 #ifndef _VECTOR_H_
@@ -11,7 +11,7 @@
 #include "__container.h"
 #include "__type_value.h"
 
-#define VEC_ALLOC_CHUNK_SIZE 100
+#define VEC_ALLOC_CHUNK_SIZE 128
 
 typedef struct _vector
 {
@@ -22,6 +22,6 @@ typedef struct _vector
    
 } vector_t;
 
-void init_vector(vector_t*, pool_t*);
-
+container_t* vector_create();
+int vector_destroy(container_t*);
 #endif

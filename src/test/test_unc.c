@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2019-10-09 16:59:50
+ * @LastEditTime: 2020-05-30 08:11:44
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -37,6 +37,7 @@ static void init_test_data()
 static type_value_t get(int i) {
     return test_data[i];
 }
+/*
 void
 test_mem_instance(void) {
     int ret = 0;
@@ -45,7 +46,7 @@ test_mem_instance(void) {
     alloc = g_pool(&ret);
     CU_ASSERT(ret == 1);
 }
-
+*/
 void 
 test_mem_attr(void) {
     CU_ASSERT(__FREELIST_SIZE == 16);
@@ -80,8 +81,8 @@ test_mem_attr(void) {
 void test_mem_pool_inspect (void) {
     // 这个他妈的是戏肉啊。
     CU_ASSERT(1);
-    pool_t pool;
-    alloc_init(&pool);
+    pool_t* pool = alloc_create(0);
+    //alloc_init(&pool);
     //inspect_pool(&pool);
     // char* test1 = allocate(&pool, 25);
     // char* test2 = allocate(&pool, 8);
@@ -89,8 +90,8 @@ void test_mem_pool_inspect (void) {
     // char* test4 = allocate(&pool, 17);
     // char* test5 = allocate(&pool, 25);
     // char* test6 = allocate(&pool, 33);
-    char* test7 = allocate(&pool, 2031);
-    inspect_pool(&pool);
+    char* test7 = allocate(pool, 2031);
+    inspect_pool(pool);
 
     // memset(test1, 0, 25);
     // memset(test2, 0, 8);
@@ -105,8 +106,9 @@ void test_mem_pool_inspect (void) {
     // deallocate(&pool, test4);
     // deallocate(&pool, test5);
     // deallocate(&pool, test6);
-    deallocate(&pool, test7);
-    inspect_pool(&pool);
+    deallocate(pool, test7);
+    inspect_pool(pool);
+    alloc_destroy(pool);
 }
 
 void 
@@ -117,19 +119,13 @@ test_mem_pool_maxslot (void)
 }
 
 void test_vector (void) {
-    vector_t vet;
-    init_vector(&vet, g_pool(0));
+    vector_t* vet = container_create(vector);
+
+    container_insert(vet, container_tail(vet), int_type(1));
+    container_insert(vet, container_tail(vet), int_type(2));
     
-    /*
-    for(int i=0; i<10; ++i) {
-        container_insert(&vet, container_first(&vet), int_type((i+1)*10));
-    }
-    */
-    container_insert(&vet, container_tail(&vet), int_type(1));
-    container_insert(&vet, container_tail(&vet), int_type(2));
-    
-    for(iterator_t first = container_first(&vet); 
-        !iterator_equal(first, container_tail(&vet)); 
+    for(iterator_t first = container_first(vet); 
+        !iterator_equal(first, container_tail(vet)); 
         first=iterator_next(first)) {
 
             printf("%d ", type_int(iterator_dereference(first)));
@@ -138,23 +134,23 @@ void test_vector (void) {
     
     printf("\n***********************\n");
     
-    container_insert_find(&vet, int_type(2), int_type(3), compare_int);
-    container_insert_find(&vet, int_type(3), int_type(4), compare_int);
-    container_insert_find(&vet, int_type(5), int_type(9), compare_int);
-    container_insert_find(&vet, int_type(78), int_type(3), compare_int);
-    for(iterator_t first = container_first(&vet); 
-        !iterator_equal(first, container_tail(&vet)); 
+    container_insert_find(vet, int_type(2), int_type(3), compare_int);
+    container_insert_find(vet, int_type(3), int_type(4), compare_int);
+    container_insert_find(vet, int_type(5), int_type(9), compare_int);
+    container_insert_find(vet, int_type(78), int_type(3), compare_int);
+    for(iterator_t first = container_first(vet); 
+        !iterator_equal(first, container_tail(vet)); 
         first=iterator_next(first)) {
 
             printf("%d ", type_int(iterator_dereference(first)));
 
     }
     printf("\n***********************\n");
-    int result = container_remove(&vet, container_tail(&vet), NULL);
+    int result = container_remove(vet, container_tail(vet), NULL);
     
     
-    for(iterator_t first = container_first(&vet); 
-        !iterator_equal(first, container_tail(&vet)); 
+    for(iterator_t first = container_first(vet); 
+        !iterator_equal(first, container_tail(vet)); 
         first=iterator_next(first)) {
 
             printf("%d ", type_int(iterator_dereference(first)));
@@ -163,9 +159,9 @@ void test_vector (void) {
 
     CU_ASSERT((result == -1));
     printf("\n***********************\n");
-    result = container_remove_find(&vet, int_type(3), NULL, compare_int);
-    for(iterator_t first = container_first(&vet); 
-        !iterator_equal(first, container_tail(&vet)); 
+    result = container_remove_find(vet, int_type(3), NULL, compare_int);
+    for(iterator_t first = container_first(vet); 
+        !iterator_equal(first, container_tail(vet)); 
         first=iterator_next(first)) {
 
             printf("%d ", type_int(iterator_dereference(first)));
@@ -173,30 +169,32 @@ void test_vector (void) {
     }
     CU_ASSERT((result == 0));
     printf("\n***********************\n");
-    result = container_remove_find(&vet, int_type(10), NULL, compare_int);
-    for(iterator_t first = container_first(&vet); 
-        !iterator_equal(first, container_tail(&vet)); 
+    result = container_remove_find(vet, int_type(10), NULL, compare_int);
+    for(iterator_t first = container_first(vet); 
+        !iterator_equal(first, container_tail(vet)); 
         first=iterator_next(first)) {
 
             printf("%d ", type_int(iterator_dereference(first)));
 
     }
+    container_destroy(vector, vet);
     CU_ASSERT((result == 0));
+
 }
 
 void test_list (void) {
 
-    list_t list;
-    init_list(&list, g_pool(0));
+    list_t* list = container_create(list);
+    //init_list(list, g_pool(0));
 
     printf("\n********** size fo type_value_t %d *********************\n", sizeof(type_value_t));
 
     for(int i=0; i<40; ++i) {
-        container_insert(&list, container_first(&list), get(i));
+        container_insert(list, container_first(list), get(i));
     }
 
-    iterator_t tail = container_tail(&list);
-    iterator_t first = container_first(&list);
+    iterator_t tail = container_tail(list);
+    iterator_t first = container_first(list);
     
     printf("\n********* before sort ***********\n");
     for(; !iterator_equal(first, tail); first = iterator_next(first)) {
@@ -204,35 +202,36 @@ void test_list (void) {
         printf("%d ", v);
     }
 
-    //quick_sort(container_first(&list), container_last(&list), compare_int);
-    container_sort(&list, compare_int);
+    //quick_sort(container_first(list), container_last(list), compare_int);
+    container_sort(list, compare_int);
     
-    tail = container_tail(&list);
-    first = container_first(&list);
+    tail = container_tail(list);
+    first = container_first(list);
     printf("\n******** after sort ***************\n");
     for(; !iterator_equal(first, tail); first = iterator_next(first)) {
         int v = type_int( iterator_dereference(first) );
         printf("%d ", v);
     }
     printf("\n************ inspact pool *******************\n");
-    inspect_pool(g_pool(0));
+    inspect_pool(container_mem_pool(list));
     
-    alloc_free(g_pool(0));
+    container_destroy(list, list);
     CU_ASSERT(1);
 }
 
 void test_rb_tree(void) 
 {
-    rb_tree_t rbtree;
-    init_rb_tree(&rbtree, compare_int, g_pool(0));
+    rb_tree_t* rbtree = container_create(rb_tree, compare_int);
+    
+    //init_rb_tree(rbtree, compare_int, g_pool(0));
     for(int i=0; i<TEST_DATA_SIZE; ++i) {
-        container_insert(&rbtree, rb_tree_null(&rbtree), get(i));
+        container_insert(rbtree, rb_tree_null(rbtree), get(i));
     }
 
     /** 展示 **/
-    printf("\n size of tree: %d ", rbtree._size);
-    iterator_t first = container_first(&rbtree);
-    iterator_t tail = iterator_next( container_last(&rbtree) );
+    printf("\n size of tree: %d ", rbtree->_size);
+    iterator_t first = container_first(rbtree);
+    iterator_t tail = iterator_next( container_last(rbtree) );
     for(;!iterator_equal(first, tail); first = iterator_next(first))
     {
         int v = type_int( iterator_dereference(first) );
@@ -242,29 +241,29 @@ void test_rb_tree(void)
     /** 删除 **/
     for(int i=0; i<TEST_DATA_SIZE/2; ++i) {
         
-        iterator_t pos = container_find(&rbtree, get(i), compare_int);
+        iterator_t pos = container_find(rbtree, get(i), compare_int);
 
-        int data =  container_remove(&rbtree, pos, NULL);
+        int data =  container_remove(rbtree, pos, NULL);
         
         printf("\n delete %d \n", data);
 
     }
 
     /** 展示 **/
-    printf("\n size of tree: %d ", rbtree._size);
-    first = container_first(&rbtree);
-    tail = iterator_next( container_last(&rbtree) );
+    printf("\n size of tree: %d ", container_size(rbtree));
+    first = container_first(rbtree);
+    tail = iterator_next( container_last(rbtree) );
     for(;!iterator_equal(first, tail); first = iterator_next(first))
     {
         int v = type_int( iterator_dereference(first) );
         printf("\n %d \n", v);
     }
-
+    container_destroy(rb_tree, rbtree);
     CU_ASSERT(1);
 }
 
 void test_set(void) {
-
+    /*
     set_t set;
     init_set(&set, compare_int);
 
@@ -305,7 +304,7 @@ void test_set(void) {
     for(iterator_t it = con_first(&set); !iterator_equal(it, con_last(&set)); it = iterator_next(it)) {
         printf(" %d \n", type_int(iterator_dereference(it)));
     }
-
+    */
     CU_ASSERT(1);
 }
 

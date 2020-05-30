@@ -2,7 +2,7 @@
  * @Description: 一个简单的内存池模型
  * @Author: zuweie
  * @Date: 2019-09-03 17:13:11
- * @LastEditTime: 2019-10-09 16:53:12
+ * @LastEditTime: 2020-05-29 17:13:14
  * @LastEditors: Please set LastEditors
  */
 #ifndef _MEM_POOL_H_
@@ -50,7 +50,7 @@
 #define POOL_EXPORT_POINTER(p) ((char *)p + __SLOT_INFO_BYTES)
 #define POOL_RECOVER_POINTER(p) ((char *)p - __SLOT_INFO_BYTES)
 
-#define g_pool(x) pool_instance(x)
+/*#define g_pool(x) pool_instance(x)*/
 
 typedef union _pool_node 
 {
@@ -80,12 +80,13 @@ typedef struct _pool
 
 } pool_t;
 
+pool_t* alloc_create(void*);
+int alloc_destroy(pool_t*);
 int alloc_init(pool_t *);
 void* allocate(pool_t *, size_t n);
 void deallocate(pool_t *, void *p);
-int alloc_free(pool_t*);
 
-pool_t* pool_instance(int *);
+/* pool_t* pool_instance(int *); */
 
 /*
 void set_node_slot(pool_node_t* node, unsigned int);

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-11 10:15:37
- * @LastEditTime: 2019-10-09 11:09:48
+ * @LastEditTime: 2020-05-30 08:09:47
  * @LastEditors: Please set LastEditors
  */
 #include <stdlib.h>
@@ -246,7 +246,7 @@ static int __rb_tree_insert_fixup (rb_tree_t* prb, rb_tree_node_t* pz)
 }
 
 static rb_tree_node_t* __rb_tree_create_node (rb_tree_t* prb, type_value_t t) {
-    rb_tree_node_t* pnode = allocate(container_pool(prb), sizeof (rb_tree_node_t));
+    rb_tree_node_t* pnode = allocate(container_mem_pool(prb), sizeof (rb_tree_node_t));
     pnode->parent = _null(prb);
     pnode->left   = _null(prb);
     pnode->right  = _null(prb);
@@ -445,7 +445,7 @@ static int __rb_tree_remove (rb_tree_t* prb, rb_tree_node_t* pz, type_value_t* r
         if (rdata) {
             *rdata = py->node;
         }
-        deallocate(container_pool(prb), py);
+        deallocate(container_mem_pool(prb), py);
         prb->_size--;
         return 0;
     }else{
@@ -521,11 +521,18 @@ static int _rb_tree_sort(container_t* container, int(*compare)(type_value_t, typ
     // rb 树不能排序。
     return 0;
 }
-void init_rb_tree(rb_tree_t* tree, int(*insert_compare)(type_value_t, type_value_t), pool_t* _pool) {
-    initialize_container(tree, _rb_tree_first, _rb_tree_last, _rb_tree_search, _rb_tree_insert, _rb_tree_remove, _rb_tree_sort, _rb_tree_size, _pool);
-    return __init_rb_tree(tree, insert_compare);
+container_t* rb_tree_create(int(*insert_compare)(type_value_t, type_value_t)) {
+    container_t* tree = (rb_tree_t*) malloc( sizeof(rb_tree_t) );
+    pool_t* _mem_pool = alloc_create(0);
+    initialize_container(tree, _rb_tree_first, _rb_tree_last, _rb_tree_search, _rb_tree_insert, _rb_tree_remove, _rb_tree_sort, _rb_tree_size, _mem_pool);
+    __init_rb_tree(tree, insert_compare);
+    return tree;
 }
-
+int rb_tree_destroy(container_t* tree) {
+    alloc_destroy(container_mem_pool(tree));
+    free(tree);
+    return 0;
+}
 iterator_t rb_tree_root(rb_tree_t* tree) {
     return _get_iter(tree->_root, tree);
 }

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 15:07:45
- * @LastEditTime: 2019-10-09 11:17:07
+ * @LastEditTime: 2020-05-30 07:56:24
  * @LastEditors: Please set LastEditors
  */
 
@@ -69,7 +69,7 @@ static int _list_insert(container_t* container, iterator_t pos, type_value_t dat
 {
 
     list_node_t *pnode = iterator_reference(pos);
-    list_node_t *pnew = allocate(container_pool(container), sizeof(list_node_t));
+    list_node_t *pnew = allocate(container_mem_pool(container), sizeof(list_node_t));
     // 赋值 和 插入
 
     pnew->data = data;
@@ -101,7 +101,7 @@ static int _list_remove(container_t* container, iterator_t pos, type_value_t* rd
         }
         
         // 回收
-        deallocate(container_pool(container), pnode);
+        deallocate(container_mem_pool(container), pnode);
         list->_size--;
         return 0;
     }
@@ -119,13 +119,20 @@ static int _list_sort(container_t* container, int(*compare)(type_value_t, type_v
     return quick_sort(container_first(container), container_last(container), compare);
 }
 
-void init_list(list_t* list, pool_t* _pool) {
+container_t* list_create() {
     
-    initialize_container(list, _list_first, _list_last, _list_search, _list_insert, _list_remove, _list_sort, _list_size, _pool);
+    list_t* list = (list_t*) malloc( sizeof(list_t));
+    pool_t* _mem_pool = alloc_create(0);
+    initialize_container(list, _list_first, _list_last, _list_search, _list_insert, _list_remove, _list_sort, _list_size, _mem_pool);
     list_first(list) = list_head(list);
     list_last(list) = list_tail(list);
     list->_size = 0;
     list->_sentinel.data = int_type(-1);      
-    return;
+    return list;
 }
 
+int list_destroy(container_t* list) {
+    alloc_destroy(container_mem_pool(list));
+    free(list);
+    return 0;
+}

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 18:51:11
- * @LastEditTime: 2019-09-26 08:32:30
+ * @LastEditTime: 2020-05-28 00:41:18
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CON_H_
@@ -12,6 +12,7 @@
 
 
 /* container function */
+
 #define con_con(con) (((con_t*)con)->_container)
 #define con_cmp(con) (((con_t*)con)->_compare)
 #define con_set_cmp(con, cmp) ((con_cmp(con)=cmp)?con:con)
