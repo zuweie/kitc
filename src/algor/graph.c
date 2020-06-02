@@ -2,50 +2,51 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:14:04
- * @LastEditTime: 2019-10-09 11:14:45
+ * @LastEditTime: 2020-06-02 16:51:05
  * @LastEditors: Please set LastEditors
  */
-#include "_graph.h"
-#include "_con.h"
-#include "__mem_pool.h"
+#include "graph.h"
+#include "con.h"
+#include "tv.h"
+//#include "__mem_pool.h"
 
-static vertex_t* _create_vertex(graph_t* graph, type_value_t vertex) 
+static vertex_t* _create_vertex(Graph* graph, tv vertex) 
 {
-    vertex_t* v = allocate(g_pool(0), sizeof(vertex_t));
+    vertex_t* v =(vertex_t*) malloc (sizeof (vertex_t));
     v->vertex = vertex;
-    init_set(&v->adjacency, graph->compare_adjnode);
+    initSet(&v->adjacency, graph->compare_adjnode);
     return v;
 }
 
 static adjacency_node_t* _create_adjacency_node(vertex_t* to, float weight) 
 {
-    adjacency_node_t* node = allocate(pool(0), sizeof(adjacency_node_t));
+    adjacency_node_t* node = (adjacency_node_t*) malloc (sizeof(adjacency_node_t)); //allocate(pool(0), sizeof(adjacency_node_t));
     node->to = to;
     node->weight = weight;
     return node;
 }
 
-int init_graph(graph_t* graph, int(*compare_vertex)(type_value_t, type_value_t), int(*compare_adjnode)(type_value_t, type_value_t)) 
+int Graph_init(Graph* graph, int(*compare_vertex)(type_value_t, type_value_t), int(*compare_adjnode)(type_value_t, type_value_t)) 
 {
-    init_set(&graph->vertexes, compare_vertex);
+    initSet(&graph->vertexes, compare_vertex);
     graph->compare_adjnode = compare_adjnode;
     graph->compare_vertex  = compare_vertex;
     return 0;
 } 
 
-int graph_add_vertex(graph_t* graph, type_value_t vertex) 
+int Graph_addVertex(Graph* graph, type_value_t vertex) 
 {
     vertex_t* v = _create_vertex(graph, vertex);
     // 值插屁股
-    return set_insert(&v->adjacency, pointer_type(v));
+    return insertSet(&v->adjacency, pointer_type(v));
 }
 
-int graph_add_edge(graph_t* graph, type_value_t from, type_value_t to, float weight)
+int graph_add_edge(Graph* graph, tv from, tv to, float weight)
 {
-    it_t it_from = con_find(&graph->vertexes, from);
-    it_t it_to   = con_find(&graph->vertexes, to);
+    it ifrom = cfind(&graph->vertexes, from);
+    it ito   = cfind(&graph->vertexes, to);
     
-    if (it_valid(it_from) && it_valid(it_to)) {
+    if (ivalid(ifrom) && ivalid(ito)) {
         
         vertex_t* v_from = type_pointer(it_derefer(it_from));
         vertex_t* v_to   = type_pointer(it_derefer(it_to));

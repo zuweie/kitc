@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:54
- * @LastEditTime: 2019-09-25 00:33:06
+ * @LastEditTime: 2020-05-30 22:29:14
  * @LastEditors: Please set LastEditors
  */
 #ifndef _ITERATOR_H_
@@ -46,9 +46,9 @@ static inline
 iterator_t get_iterator(void* __refer, void* __container, iterator_t (*__move)(iterator_t, int))
 {
     iterator_t it = {
+        .move      = (__move),
         .reference = (__refer),
-        .container = (__container),
-        .move      = (__move)
+        .container = (__container)
     };
     return it;
 }
