@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-19 16:06:57
- * @LastEditTime: 2020-06-03 14:01:18
+ * @LastEditTime: 2020-06-03 18:50:09
  * @LastEditors: Please set LastEditors
  */
 #include <stdlib.h>
@@ -12,8 +12,8 @@
 int Set_insert(Set* set, tv data) 
 {
     // 保证只有一个 data
-    if (!ivalid(cfind(set, data))) {
-        return caddFirst(set, data);
+    if (!It_valid(Set_find(set, data))) {
+        return Set_add(set, data);
     }
     return -1;
 }

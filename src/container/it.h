@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-05-30 08:54:21
- * @LastEditTime: 2020-06-03 15:39:01
+ * @LastEditTime: 2020-06-03 19:06:36
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /kitc/src/container/iterator.h
@@ -12,18 +12,18 @@
 #include "__iterator.h"
 typedef iterator_t it;
 /* iterator_t function */
-#define IT_ref(iter) iterator_reference(iter)
-#define IT_dref(iter) iterator_dereference(iter)
-#define IT_move(it) iterator_move(iter, step)
-#define IT_next(iter) iterator_next(iter)
-#define IT_prev(iter) iterator_prev(iter)
-#define IT_equal(iter1, iter2) iterator_equal(iter1, iter2)
-#define IT_assign(from, to) iterator_assign(from, to)
-#define IT_exchange(iter1, iter2) iterator_exchange(iter1, itert2)
+#define It_ref(iter) iterator_reference(iter)
+#define It_dref(iter) iterator_dereference(iter)
+#define It_move(it) iterator_move(iter, step)
+#define It_next(iter) iterator_next(iter)
+#define It_prev(iter) iterator_prev(iter)
+#define It_equal(iter1, iter2) iterator_equal(iter1, iter2)
+#define It_assign(from, to) iterator_assign(from, to)
+#define It_exchange(iter1, iter2) iterator_exchange(iter1, itert2)
 //#define ivalid(iter) iterator_valid(iter)
-#define IT_valid(it) _ivalid(it)
+#define It_valid(it) _it_valid(it)
 static inline 
-int _ivalid(it iter) 
+int _it_valid(it iter) 
 {
     it pos = iter;
     return iterator_valid(pos);

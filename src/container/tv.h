@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-06-02 06:50:22
- * @LastEditTime: 2020-06-03 15:40:06
+ * @LastEditTime: 2020-06-03 18:45:06
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /kitc/src/container/tv.h
@@ -27,6 +27,6 @@ typedef type_value_t tv;
 #define cmpi(tv1, tv2) compare_int(tv1, tv2)
 #define cmpf(tv1, tv2) compare_float(tv1, tv2)
 #define cmpd(tv1, tv2) compare_double(tv1, tv2)
-#define cmpp(tv1, tv2) compare_pointer(tv1, tv2)
+#define cmpptr(tv1, tv2) compare_pointer(tv1, tv2)
 
 #endif

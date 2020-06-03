@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 09:34:56
- * @LastEditTime: 2020-06-03 14:10:00
+ * @LastEditTime: 2020-06-03 19:05:58
  * @LastEditors: Please set LastEditors
  */
 #include "graph_search.h"
@@ -17,7 +17,7 @@ static void _bind_bfs_node(it pos)
     pn->distance = -1;
     pn->parent = NULL;
 
-    vertex_t* vertex = t2p(idref(pos));
+    vertex_t* vertex = t2p(It_dref(pos));
     vertex->data = pn;
 }
 
@@ -30,13 +30,13 @@ static void _bind_dfs_node(it pos)
     pn->d_time = -1;
     pn->f_time = -1;
 
-    vertex_t* vertex = t2p(idref(pos));
+    vertex_t* vertex = t2p(It_dref(pos));
     vertex->data = pn;
 }
 
 static void _del_fs_node (it pos) 
 {
-    vertex_t* vertex = t2p(idref(pos));
+    vertex_t* vertex = t2p(It_dref(pos));
     //deallocate(g_pool(0), vertex->data);
     free (vertex->data);
     vertex->data = NULL;
@@ -44,7 +44,7 @@ static void _del_fs_node (it pos)
 
 int bfs(Graph* graph, vertex_t* start) {
 
-    ctravel(&graph->vertexes, _bind_bfs_node);
+    CN_travel(&graph->vertexes, _bind_bfs_node);
     // 2 做广度优先遍历
     // 
     Queue queue;
@@ -58,11 +58,11 @@ int bfs(Graph* graph, vertex_t* start) {
         bfs_node_t* pubfs = pu->data;
 
         // 遍历节点的邻居表。
-        for(it first = cfirst(&pu->adjacency); 
-            !iequal(first, ctail(&pu->adjacency)); 
-            first=inext(first)) {
+        for(it first = CN_first(&pu->adjacency); 
+            !It_equal(first, CN_tail(&pu->adjacency)); 
+            first=It_next(first)) {
 
-            adjacency_node_t* pv = t2p(idref(first));
+            adjacency_node_t* pv = t2p(It_dref(first));
             bfs_node_t* pvbfs     = (pv->to->data);
 
             if (pvbfs->color == _grp_whtie) {
@@ -84,8 +84,8 @@ static int _dfs_visit(vertex_t* pu, int* time)
     pudfs->color = _grp_gray;
     pudfs->d_time = *time + 1;
     // 访问邻接表
-    for(it first=cfirst(&pu->adjacency); !iequal(first, ctail(&pu->adjacency)); first=inext(first)) {
-        adjacency_node_t* pv = t2p(idref(first));
+    for(it first=CN_first(&pu->adjacency); !It_equal(first, CN_tail(&pu->adjacency)); first=It_next(first)) {
+        adjacency_node_t* pv = t2p(It_dref(first));
         dfs_node_t*       pvdfs = (dfs_node_t*)pv->to->data;
         if (pvdfs->color == _grp_whtie) {
             pvdfs->parent = pu;
@@ -100,10 +100,10 @@ static int _dfs_visit(vertex_t* pu, int* time)
 int dfs(Graph* graph) 
 {
     int time = 0;
-    ctravel(&graph->vertexes, _bind_dfs_node);
+    CN_travel(&graph->vertexes, _bind_dfs_node);
 
-    for(it first=cfirst(&graph->vertexes); !iequal(first, ctail(&graph->vertexes)); first=inext(first)) {
-        vertex_t*   pu = t2p(idref(first));
+    for(it first=CN_first(&graph->vertexes); !It_equal(first, CN_tail(&graph->vertexes)); first=It_next(first)) {
+        vertex_t*   pu = t2p(It_dref(first));
         dfs_node_t* pudfs = pu->data;
         if (pudfs->color == _grp_whtie) {
             _dfs_visit(pu, &time);
@@ -114,5 +114,5 @@ int dfs(Graph* graph)
 
 void grp_cleanup_search_info(Graph* graph) 
 {
-    ctravel(&graph->vertexes, _del_fs_node);
+    CN_travel(&graph->vertexes, _del_fs_node);
 }

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 18:51:11
- * @LastEditTime: 2020-06-03 15:52:26
+ * @LastEditTime: 2020-06-03 19:02:39
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CON_H_
@@ -28,20 +28,22 @@
 // 头部插入
 #define CN_add_first(con, data) CN_insert(cc(con), CN_first(cc(con)), data)
 // 尾部插入
-#define CN_add_tail(con, data) cinsert(cc(con), ctail(cc(con)), data)
+#define CN_add_tail(con, data) CN_insert(cc(con), CN_tail(cc(con)), data)
+
+#define CN_add_found 
 
 #define CN_remove(con, it, rdata) container_remove(cc(con), it, rdata)
 // 头部移除
-#define CN_rm_first(con, rdata) cremove(cc(con), cfirst(cc(con)), rdata)
+#define CN_rm_first(con, rdata) CN_remove(cc(con), CN_first(cc(con)), rdata)
 // 尾部移除
-#define CN_rm_last(con, rdata) cremove(cc(con), clast(cc(con)), rdata)
+#define CN_rm_last(con, rdata) CN_remove(cc(con), CN_last(cc(con)), rdata)
+// 移除特定目标
+#define CN_rm_target(con, find, ret) _cn_rm_target(con, find, ret)
 
 //#define chas(con, find) container_has(cc(con), find, ccmp(con))
 #define CN_size(con) container_size(cc(con))
 #define CN_sort(con, cmp) container_sort(cc(con), cmp)
 
-#define CN_rm_find(con, find, ret) _crmfind(con, find, ret)
-#define CN_add_find(con, find, data) _caddfind(con, find, data)
 
 #define CN_init(con, label, cmp) do {       \
     cc(con) = container_create(label);   \
@@ -56,9 +58,9 @@
 
 // 遍历容器，
 #define CN_travel(con, handle) do {           \
-    for(it first = cfirst(con);              \
-        !iequal(first, ctail(con));          \
-        first = inext(first) ){handle(first);} \
+    for(it first = CN_first(con);              \
+        !It_equal(first, CN_tail(con));          \
+        first = It_next(first) ){handle(first);} \
 }while(0)
 
 typedef struct _con{
@@ -67,23 +69,13 @@ typedef struct _con{
     int (*_compare)(type_value_t, type_value_t);
 
 } Container;
-static inline
-int _crmfind (Container* con, tv find, tv* ret) 
-{
-    it pos = CN_find(con, find);
-    if (ivalid(pos)) {
-        return CN_remove(con, pos, ret);
-    }else {
-        return -1;
-    }
-}
 
-static inline 
-int _caddfind (Container* con, tv find, tv data) 
+static inline
+int _cn_rm_target (Container* con, tv target, tv* ret) 
 {
-    it pos = CN_find (con, find);
-    if (ivalid(pos)) {
-        return CN_insert(con, pos, data);
+    it pos = CN_find(con, target);
+    if (It_valid(pos)) {
+        return CN_remove(con, pos, ret);
     }else {
         return -1;
     }
