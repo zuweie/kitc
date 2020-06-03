@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-03 13:29:13
- * @LastEditTime: 2019-10-28 08:30:19
+ * @LastEditTime: 2020-06-03 11:11:41
  * @LastEditors: Please set LastEditors
  */
 
@@ -16,7 +16,6 @@
 #define type_int(t) type_v(int, t)
 #define type_float(t) type_v(float, t)
 #define type_double(t) type_v(double, t)
-
 #define type_pointer(t) (t.pointer)
 
 #define int_type(v)     _int_type(v)

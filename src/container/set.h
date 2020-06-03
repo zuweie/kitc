@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-19 16:06:51
- * @LastEditTime: 2020-06-02 15:57:39
+ * @LastEditTime: 2020-06-03 13:46:12
  * @LastEditors: Please set LastEditors
  */
 #ifndef _SET_H_
@@ -12,8 +12,10 @@
 
 typedef Container Set;
 
-void initSet(Set*,int(*compare)(tv, tv));
-void uninitSet();
-int insertSet(Set*, tv);
+#define Set_init(set, compare) cinit(set, list, compare)
+#define Set_free(set) cfree(set, list)
+#define Set_rmTarget(set, target, rdata) crmFind(set, target, rdata)
+#define Set_rmLast(set, rdata) crmLast(set, rdata)
+int Set_insert(Set*, tv);
 
 #endif

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:14:04
- * @LastEditTime: 2020-06-02 16:51:05
+ * @LastEditTime: 2020-06-03 14:12:50
  * @LastEditors: Please set LastEditors
  */
 #include "graph.h"
@@ -12,97 +12,119 @@
 
 static vertex_t* _create_vertex(Graph* graph, tv vertex) 
 {
+    // 生成一个顶点
     vertex_t* v =(vertex_t*) malloc (sizeof (vertex_t));
     v->vertex = vertex;
-    initSet(&v->adjacency, graph->compare_adjnode);
+    Set_init(&v->adjacency, graph->compare_adjnode);
     return v;
 }
-
+static int _free_vertex(vertex_t* vertex) {
+    Set_free(&vertex->adjacency);
+    free(vertex);
+    return 0;
+}
 static adjacency_node_t* _create_adjacency_node(vertex_t* to, float weight) 
 {
-    adjacency_node_t* node = (adjacency_node_t*) malloc (sizeof(adjacency_node_t)); //allocate(pool(0), sizeof(adjacency_node_t));
+    // 生成邻接表的节点
+    adjacency_node_t* node = (adjacency_node_t*) malloc (sizeof(adjacency_node_t)); 
     node->to = to;
     node->weight = weight;
     return node;
 }
-
-int Graph_init(Graph* graph, int(*compare_vertex)(type_value_t, type_value_t), int(*compare_adjnode)(type_value_t, type_value_t)) 
+static int _free_adjacency_node (adjacency_node_t* pnode) 
 {
-    initSet(&graph->vertexes, compare_vertex);
+    free(pnode);
+}
+
+int Graph_init(Graph* graph, int(*compare_vertex)(tv, tv), int(*compare_adjnode)(tv, tv)) 
+{
+    // 初始化图
+    Set_init(&graph->vertexes, compare_vertex);
     graph->compare_adjnode = compare_adjnode;
     graph->compare_vertex  = compare_vertex;
     return 0;
 } 
 
-int Graph_addVertex(Graph* graph, type_value_t vertex) 
+int Graph_free(Graph* graph) 
 {
-    vertex_t* v = _create_vertex(graph, vertex);
-    // 值插屁股
-    return insertSet(&v->adjacency, pointer_type(v));
+    Set_free(&graph->vertexes);
+    graph->compare_adjnode = NULL;
+    graph->compare_vertex = NULL;
+    return 0;
 }
 
-int graph_add_edge(Graph* graph, tv from, tv to, float weight)
+int Graph_addVertex(Graph* graph, tv vertex) 
 {
+    // 生成一个定点加入图中
+    vertex_t* v = _create_vertex(graph, vertex);
+    return Set_insert(&v->adjacency, pointer_type(v));
+}
+
+int Graph_addEdge(Graph* graph, tv from, tv to, float weight)
+{
+    // 首先得找一下 开始点 到 终结点 是不是在图中。
     it ifrom = cfind(&graph->vertexes, from);
     it ito   = cfind(&graph->vertexes, to);
     
     if (ivalid(ifrom) && ivalid(ito)) {
         
-        vertex_t* v_from = type_pointer(it_derefer(it_from));
-        vertex_t* v_to   = type_pointer(it_derefer(it_to));
+        vertex_t* v_from = t2p(idref(ifrom));
+        vertex_t* v_to   = t2p(idref(ito));
 
-        return set_insert(&v_from->adjacency, pointer_type(v_to));
+        return Set_insert(&v_from->adjacency, p2t(v_to));
     }
     return -1;
 }
 
-int graph_del_vertex(graph_t* graph, type_value_t vertex)
+int Graph_delVertex(Graph* graph, tv vertex)
 {
     
-    type_value_t r_vertext;
-    if (con_rm_find(&graph->vertexes, vertex, &r_vertext) != -1) {
-        vertex_t* pv = type_pointer(r_vertext);
+    tv r_vertext;
+    if ( Set_rmTarget(&graph->vertexes, vertex, &r_vertext) != -1) {
+        vertex_t* pv = t2p(r_vertext);
 
-        type_value_t r_adj;
+        tv r_adj;
 
-        while( con_rm_last(&pv->adjacency, &r_adj) != -1 ) {
-            deallocate(g_pool(0), type_pointer(r_adj));
+        while( Set_rmLast(&pv->adjacency, &r_adj) != -1 ) {
+            //deallocate(g_pool(0), type_pointer(r_adj));
+            _free_adjacency_node(t2p(r_adj));
         }
 
-        deallocate(g_pool(0), pv);
+        _free_vertex(pv);
         return 0;
     }
     return -1;
 }
 
-int graph_del_edge(graph_t* graph, type_value_t from, type_value_t to)
+int Graph_delEdge(Graph* graph, tv from, tv to)
 {
-    it_t it_from = con_find(&graph->vertexes, from);
-    it_t it_to   = con_find(&graph->vertexes, to);
+    it ifrom = cfind(&graph->vertexes, from);
+    it ito   = cfind(&graph->vertexes, to);
 
-    if (it_valid(it_from) && it_valid(it_to)) {
+    if (ivalid(ifrom) && ivalid(ito)) {
 
-        vertex_t* v_from = type_pointer(it_derefer(it_from));
-        vertex_t* v_to   = type_pointer(it_derefer(it_to));
+        vertex_t* v_from = t2p(idref(ifrom));
+        vertex_t* v_to   = t2p(idref(ito));
 
-        type_value_t r_adj;
-        if (con_rm_find(&v_from->adjacency, pointer_type(v_to), &r_adj) != -1) {
-            deallocate(g_pool(0), type_pointer(r_adj));
+        tv r_adj;
+        if (Set_rmTarget(&v_from->adjacency, p2t(v_to), &r_adj) != -1) {
+            //deallocate(g_pool(0), type_pointer(r_adj));
+            _free_adjacency_node(t2p(r_adj));
             return 0;
         }
     }
     return -1;
 }
 
-void graph_set_vertex_data(iterator_t it, void* data) 
+void graph_set_vertex_data(it pos, void* data) 
 {
-    vertex_t* vertex = type_pointer(it_derefer(it));
+    vertex_t* vertex = t2p(idref(pos));
     vertex->data = data;
     return;
 }
 
-void* graph_get_vertex_data(iterator_t it) 
+void* graph_get_vertex_data(it pos) 
 {
-    vertex_t* vertex = type_pointer(it_derefer(it));
+    vertex_t* vertex = t2p(idref(pos));
     return vertex->data;
 }

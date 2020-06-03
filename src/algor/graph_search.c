@@ -2,76 +2,79 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 09:34:56
- * @LastEditTime: 2019-10-09 11:15:03
+ * @LastEditTime: 2020-06-03 14:10:00
  * @LastEditors: Please set LastEditors
  */
-#include "_graph_search.h"
-#include "_queue.h"
-#include "__mem_pool.h"
+#include "graph_search.h"
+#include "queue.h"
+#include "tv.h"
 
-
-static void _bind_bfs_node(it_t it) 
+static void _bind_bfs_node(it pos) 
 {
-    bfs_node_t* pn = allocate(g_pool(0), sizeof(bfs_node_t));
+    //bfs_node_t* pn = allocate(g_pool(0), sizeof(bfs_node_t));
+    bfs_node_t* pn = (bfs_node_t*)malloc(sizeof(bfs_node_t));
     pn->color = _grp_whtie;
     pn->distance = -1;
     pn->parent = NULL;
 
-    vertex_t* vertex = type_pointer(it_derefer(it));
+    vertex_t* vertex = t2p(idref(pos));
     vertex->data = pn;
 }
 
-static void _bind_dfs_node(it_t it) 
+static void _bind_dfs_node(it pos) 
 {
-    dfs_node_t* pn = allocate(g_pool(0), sizeof(dfs_node_t));
+    //dfs_node_t* pn = allocate(g_pool(0), sizeof(dfs_node_t));
+    dfs_node_t* pn = (dfs_node_t*) malloc (sizeof(dfs_node_t));
     pn->color = _grp_whtie;
     pn->parent = NULL;
     pn->d_time = -1;
     pn->f_time = -1;
 
-    vertex_t* vertex = type_pointer(it_derefer(it));
+    vertex_t* vertex = t2p(idref(pos));
     vertex->data = pn;
 }
 
-static void _del_fs_node (it_t it) 
+static void _del_fs_node (it pos) 
 {
-    vertex_t* vertex = type_pointer(it_derefer(it));
-    deallocate(g_pool(0), vertex->data);
+    vertex_t* vertex = t2p(idref(pos));
+    //deallocate(g_pool(0), vertex->data);
+    free (vertex->data);
     vertex->data = NULL;
 }
 
-int bfs(graph_t* graph, vertex_t* start) {
+int bfs(Graph* graph, vertex_t* start) {
 
-    con_travel(&graph->vertexes, _bind_bfs_node);
+    ctravel(&graph->vertexes, _bind_bfs_node);
     // 2 做广度优先遍历
     // 
-    queue_t queue;
-    init_queue(&queue, graph->compare_vertex);
+    Queue queue;
+    Queue_init(&queue, graph->compare_vertex);
     
-    en_queue(&queue, pointer_type(start));
-    type_value_t rdata;
-    while(de_queue(&queue,&rdata) != -1) {
+    Queue_offer(&queue, p2t(start));
+    tv rdata;
+    while(Queue_poll(&queue,&rdata) != -1) {
 
-        vertex_t* pu = type_pointer(rdata);
+        vertex_t* pu = t2p(rdata);
         bfs_node_t* pubfs = pu->data;
 
         // 遍历节点的邻居表。
-        for(it_t first = con_first(&pu->adjacency); 
-            !it_equal(first, con_tail(&pu->adjacency)); 
-            first=it_next(first)) {
+        for(it first = cfirst(&pu->adjacency); 
+            !iequal(first, ctail(&pu->adjacency)); 
+            first=inext(first)) {
 
-            adjacency_node_t* pv = type_pointer(it_derefer(first));
+            adjacency_node_t* pv = t2p(idref(first));
             bfs_node_t* pvbfs     = (pv->to->data);
 
             if (pvbfs->color == _grp_whtie) {
                 pvbfs->color = _grp_gray;
                 pvbfs->distance = pvbfs->distance + 1;
                 pvbfs->parent = pu;
-                en_queue(&queue, pointer_type(pv->to));
+                Queue_offer(&queue, p2t(pv->to));
             }
         }
         pubfs->color = _grp_black;
     }
+    Queue_free(&queue);
     return 0;
 }
 
@@ -81,9 +84,9 @@ static int _dfs_visit(vertex_t* pu, int* time)
     pudfs->color = _grp_gray;
     pudfs->d_time = *time + 1;
     // 访问邻接表
-    for(it_t first=con_first(&pu->adjacency); !it_equal(first, con_tail(&pu->adjacency)); first=it_next(first)) {
-        adjacency_node_t* pv = type_pointer(it_derefer(first));
-        dfs_node_t*       pvdfs = pv->to->data;
+    for(it first=cfirst(&pu->adjacency); !iequal(first, ctail(&pu->adjacency)); first=inext(first)) {
+        adjacency_node_t* pv = t2p(idref(first));
+        dfs_node_t*       pvdfs = (dfs_node_t*)pv->to->data;
         if (pvdfs->color == _grp_whtie) {
             pvdfs->parent = pu;
             _dfs_visit(pv->to, time);
@@ -94,13 +97,13 @@ static int _dfs_visit(vertex_t* pu, int* time)
     return 0;
 }
 
-int dfs(graph_t* graph) 
+int dfs(Graph* graph) 
 {
     int time = 0;
-    con_travel(&graph->vertexes, _bind_dfs_node);
+    ctravel(&graph->vertexes, _bind_dfs_node);
 
-    for(it_t first=con_first(&graph->vertexes); !it_equal(first, con_tail(&graph->vertexes)); first=it_next(first)) {
-        vertex_t*   pu = type_pointer(it_derefer(first));
+    for(it first=cfirst(&graph->vertexes); !iequal(first, ctail(&graph->vertexes)); first=inext(first)) {
+        vertex_t*   pu = t2p(idref(first));
         dfs_node_t* pudfs = pu->data;
         if (pudfs->color == _grp_whtie) {
             _dfs_visit(pu, &time);
@@ -109,7 +112,7 @@ int dfs(graph_t* graph)
     return 0;
 }
 
-void grp_cleanup_search_info(graph_t* graph) 
+void grp_cleanup_search_info(Graph* graph) 
 {
-    con_travel(&graph->vertexes, _del_fs_node);
+    ctravel(&graph->vertexes, _del_fs_node);
 }

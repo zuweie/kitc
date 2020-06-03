@@ -2,13 +2,13 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 09:44:49
- * @LastEditTime: 2019-09-25 08:45:18
+ * @LastEditTime: 2020-06-03 12:34:09
  * @LastEditors: Please set LastEditors
  */
 #ifndef _GRAPH_SEARCH_H_
 #define _GRAPH_SEARCH_H_
-#include "_graph.h"
-#include "__iterator.h"
+#include "graph.h"
+#include "it.h"
 
 typedef enum _grp_color {
     _grp_whtie = 0,
@@ -29,8 +29,8 @@ typedef struct _dfs_node {
     vertex_t* parent;
 } dfs_node_t;
 
-int grp_bfs(graph_t* graph, vertex_t* start);
-int grp_dfs(graph_t* graph);
-void grp_cleanup_search_info(graph_t* graph);
+int grp_bfs(Graph* graph, vertex_t* start);
+int grp_dfs(Graph* graph);
+void grp_cleanup_search_info(Graph* graph);
 
 #endif

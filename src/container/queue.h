@@ -2,24 +2,23 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 19:09:21
- * @LastEditTime: 2020-06-02 15:59:53
+ * @LastEditTime: 2020-06-03 14:11:58
  * @LastEditors: Please set LastEditors
  */
 #ifndef _QUEUE_H_
 #define _QUEUE_H_
 
 #include "con.h"
-#include "tv.h"
 
 typedef Container Queue;
 
-void initQueue(Queue*, int (*compare)(tv, tv));
-void uninitQueue(Queue*);
+#define Queue_init(queue, compare) cinit(queue, list, compare)
+#define Queue_free(queue) cfree(queue, list)
 
 // 尾部插入
-int enQueue(Queue*, tv);
+#define Queue_offer(queue, tv) caddTail(queue, tv)
 
 // 头部输出
-int deQueue(Queue*, tv*);
+#define Queue_poll(queue, rdata) crmFirst(queue, rdata)
 
 #endif

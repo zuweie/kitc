@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-06-02 06:50:22
- * @LastEditTime: 2020-06-02 07:20:10
+ * @LastEditTime: 2020-06-02 17:17:25
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /kitc/src/container/tv.h
@@ -14,15 +14,15 @@
 
 typedef type_value_t tv;
 
-#define ty(t) type_int(t)
-#define tyf(t) type_float(t)
-#define tyd(t) type_double(t)
-#define typ(t) type_pointer(t)
+#define t2i(t) type_int(t)
+#define t2f(t) type_float(t)
+#define t2d(t) type_double(t)
+#define t2p(t) type_pointer(t)
 
-#define ity(v) int_type(v)
-#define fty(v) float_type(v)
-#define dty(v) double_type(v)
-#define pty(v) pointer_type(v)
+#define i2t(v) int_type(v)
+#define f2t(v) float_type(v)
+#define d2t(v) double_type(v)
+#define p2t(v) pointer_type(v)
 
 #define cmpi(tv1, tv2) compare_int(tv1, tv2)
 #define cmpf(tv1, tv2) compare_float(tv1, tv2)

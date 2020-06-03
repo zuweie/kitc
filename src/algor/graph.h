@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:13:53
- * @LastEditTime: 2020-06-02 16:31:36
+ * @LastEditTime: 2020-06-03 13:36:58
  * @LastEditors: Please set LastEditors
  */
 #ifndef _GRAPH_H_
@@ -37,11 +37,12 @@ typedef struct _graph
 } Graph;
 
 int Graph_init(Graph* graph, int(*)(tv, tv), int(*)(tv, tv));
+int Graph_free(Graph* graph);
 int Graph_addVertex(Graph* graph, tv vertex);
 int Graph_addEdge(Graph* graph, tv from, tv to, float weigth);
 int Graph_delVertex(Graph* graph, tv vertex);
 int Graph_delEdge(Graph* graph, tv from, tv to);
 
-void graph_set_vertex_data(iterator_t it, void* data);
-void* graph_get_vertex_data(iterator_t it);
+void graph_set_vertex_data(it pos, void* data);
+void* graph_get_vertex_data(it pos);
 #endif
