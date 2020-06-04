@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 09:34:56
- * @LastEditTime: 2020-06-03 19:05:58
+ * @LastEditTime: 2020-06-04 11:42:17
  * @LastEditors: Please set LastEditors
  */
 #include "graph_search.h"
@@ -58,12 +58,12 @@ int bfs(Graph* graph, vertex_t* start) {
         bfs_node_t* pubfs = pu->data;
 
         // 遍历节点的邻居表。
-        for(it first = CN_first(&pu->adjacency); 
-            !It_equal(first, CN_tail(&pu->adjacency)); 
+        for(it first = CN_first(&pu->links); 
+            !It_equal(first, CN_tail(&pu->links)); 
             first=It_next(first)) {
 
-            adjacency_node_t* pv = t2p(It_dref(first));
-            bfs_node_t* pvbfs     = (pv->to->data);
+            link_node_t* pv    = t2p(It_dref(first));
+            bfs_node_t* pvbfs  = (pv->to->data);
 
             if (pvbfs->color == _grp_whtie) {
                 pvbfs->color = _grp_gray;
@@ -84,9 +84,10 @@ static int _dfs_visit(vertex_t* pu, int* time)
     pudfs->color = _grp_gray;
     pudfs->d_time = *time + 1;
     // 访问邻接表
-    for(it first=CN_first(&pu->adjacency); !It_equal(first, CN_tail(&pu->adjacency)); first=It_next(first)) {
-        adjacency_node_t* pv = t2p(It_dref(first));
-        dfs_node_t*       pvdfs = (dfs_node_t*)pv->to->data;
+    for(it first=CN_first(&pu->links); !It_equal(first, CN_tail(&pu->links)); first=It_next(first)) {
+        link_node_t* pv   = t2p(It_dref(first));
+        dfs_node_t* pvdfs = (dfs_node_t*)pv->to->data;
+
         if (pvdfs->color == _grp_whtie) {
             pvdfs->parent = pu;
             _dfs_visit(pv->to, time);
