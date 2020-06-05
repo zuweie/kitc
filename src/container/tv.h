@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-06-02 06:50:22
- * @LastEditTime: 2020-06-03 18:45:06
+ * @LastEditTime: 2020-06-04 22:51:45
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /kitc/src/container/tv.h
@@ -14,6 +14,7 @@
 
 typedef type_value_t tv;
 
+#define t2v(vt, t) type_v(vt, t)
 #define t2i(t) type_int(t)
 #define t2f(t) type_float(t)
 #define t2d(t) type_double(t)

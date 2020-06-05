@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-05-30 08:54:21
- * @LastEditTime: 2020-06-03 19:06:36
+ * @LastEditTime: 2020-06-04 22:54:23
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /kitc/src/container/iterator.h
@@ -10,6 +10,7 @@
 #ifndef _IT_H_
 #define _IT_H_
 #include "__iterator.h"
+#include "tv.h"
 typedef iterator_t it;
 /* iterator_t function */
 #define It_ref(iter) iterator_reference(iter)
@@ -20,6 +21,13 @@ typedef iterator_t it;
 #define It_equal(iter1, iter2) iterator_equal(iter1, iter2)
 #define It_assign(from, to) iterator_assign(from, to)
 #define It_exchange(iter1, iter2) iterator_exchange(iter1, itert2)
+
+#define It_getV(it, vt) t2v(vt, It_dref(it))
+#define It_geti(it) It_getV(int, It_dref(it))
+#define It_getf(it) It_getV(float, It_dref(it))
+#define It_getd(it) It_getV(double, It_dref(it))
+#define It_getptr(it) t2p(It_dref(it))
+
 //#define ivalid(iter) iterator_valid(iter)
 #define It_valid(it) _it_valid(it)
 static inline 

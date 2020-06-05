@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 18:51:11
- * @LastEditTime: 2020-06-03 19:02:39
+ * @LastEditTime: 2020-06-05 08:33:05
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CON_H_
@@ -12,8 +12,8 @@
 #include "tv.h"
 
 /* container function */
-#define cc(con) (((Container*)con)->_container)
-#define ccmp(con) (((Container*)con)->_compare)
+#define cc(con) (((Container*)(con))->_container)
+#define ccmp(con) (((Container*)(con))->_compare)
 //#define setCmp(con, cmp) ((Cmp(con)=cmp)?con:con)
 
 #define CN_first(con) container_first(cc(con))
@@ -21,22 +21,20 @@
 #define CN_head(con) container_head(cc(con))
 #define CN_tail(con) container_tail(cc(con))
 
-#define CN_search(con,offset,find) container_search(cc(con), offset, find, ccmp(con))
-#define CN_find(con,find) CN_search(cc(con), CN_first(cc(con)), find)
+#define CN_search(con,offset,find) (ccmp(con)?container_search(cc(con), offset, find, ccmp(con)):CN_tail(con))
+#define CN_find(con,find) CN_search(con, CN_first(con), find)
 
 #define CN_insert(con, it, data) container_insert(cc(con), it, data)
 // 头部插入
-#define CN_add_first(con, data) CN_insert(cc(con), CN_first(cc(con)), data)
+#define CN_add_first(con, data) CN_insert(con, CN_first(con), data)
 // 尾部插入
-#define CN_add_tail(con, data) CN_insert(cc(con), CN_tail(cc(con)), data)
-
-#define CN_add_found 
+#define CN_add_tail(con, data) CN_insert(con, CN_tail(con), data)
 
 #define CN_remove(con, it, rdata) container_remove(cc(con), it, rdata)
 // 头部移除
-#define CN_rm_first(con, rdata) CN_remove(cc(con), CN_first(cc(con)), rdata)
+#define CN_rm_first(con, rdata) CN_remove(con, CN_first(con), rdata)
 // 尾部移除
-#define CN_rm_last(con, rdata) CN_remove(cc(con), CN_last(cc(con)), rdata)
+#define CN_rm_last(con, rdata) CN_remove(con, CN_last(con), rdata)
 // 移除特定目标
 #define CN_rm_target(con, find, ret) _cn_rm_target(con, find, ret)
 
@@ -44,6 +42,7 @@
 #define CN_size(con) container_size(cc(con))
 #define CN_sort(con, cmp) container_sort(cc(con), cmp)
 
+#define CN_has(con, find) It_valid( CN_find(con, find) )
 
 #define CN_init(con, label, cmp) do {       \
     cc(con) = container_create(label);   \

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 09:44:49
- * @LastEditTime: 2020-06-03 12:34:09
+ * @LastEditTime: 2020-06-04 13:17:00
  * @LastEditors: Please set LastEditors
  */
 #ifndef _GRAPH_SEARCH_H_
@@ -19,14 +19,14 @@ typedef enum _grp_color {
 typedef struct _bfs_node {
     int distance;
     grp_color_t color;
-    vertex_t* parent;
+    vertex_t* pi;
 }bfs_node_t; 
 
 typedef struct _dfs_node {
     int d_time;
     int f_time;
     grp_color_t color;
-    vertex_t* parent;
+    vertex_t* pi;
 } dfs_node_t;
 
 int grp_bfs(Graph* graph, vertex_t* start);

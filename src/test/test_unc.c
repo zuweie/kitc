@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2020-06-02 15:33:24
+ * @LastEditTime: 2020-06-05 23:41:47
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -14,9 +14,13 @@
 #include "__rb_tree.h"
 #include "__sort.h"
 #include "set.h"
+#include "cn.h"
+#include "it.h"
+#include "tv.h"
+#include "graph.h"
 
 #define TEST_DATA_SIZE 10000
-
+#define PRINTF_ELEM(it) printf("%d ", t2i(It_dref(it)))
 int suite_success_init(void) {
     return 0;
 }
@@ -37,16 +41,47 @@ static void init_test_data()
 static type_value_t get(int i) {
     return test_data[i];
 }
-/*
-void
-test_mem_instance(void) {
-    int ret = 0;
-    pool_t * alloc = g_pool(&ret);
-    CU_ASSERT(ret == 0);
-    alloc = g_pool(&ret);
-    CU_ASSERT(ret == 1);
+
+static CN_inspect (Container* con) {
+    
+    printf(" ********* inspection of container *****************\n");
+    /*
+    for (it first = CN_first(con); !It_equal(first, CN_tail); first = It_next(first)) {
+        printf("%d ", t2i(It_dref(first));
+    }
+    */
+    CN_travel(con, PRINTF_ELEM);
+
+    printf("\n");
 }
-*/
+
+int Graph_inspect(Graph* graph) 
+{
+    for (it i = CN_first(&graph->vertexes); !It_equal(i, CN_tail(&graph->vertexes)); i = It_next(i)) {
+        vertex_t* pv = t2p(It_dref(i));
+        printf("vertex: %d \n", t2i(pv->vertex_id));
+        printf("links to vertex: ");
+
+        for (it j = CN_first(&pv->edges); !It_equal(j, CN_tail(&pv->edges)); j = It_next(j)) {
+            edge_t* pnode = It_getptr(j);//t2p(It_dref(j));
+            printf("%d ", t2i(pnode->to->vertex_id));
+        }
+        printf("\n\n");
+    }
+}
+
+int find_vertex(tv v1, tv v2) 
+{
+    vertex_t* pv = t2p(v1);
+    return compare_int(pv->vertex_id, v2);
+}
+
+int find_edge (tv v1, tv v2) 
+{
+    edge_t* pl = t2p(v1);
+    return compare_int(pl->to->vertex_id, v2);
+}
+
 void 
 test_mem_attr(void) {
     CU_ASSERT(__FREELIST_SIZE == 16);
@@ -263,12 +298,15 @@ void test_rb_tree(void)
 }
 
 void test_set(void) {
-    /*
-    set_t set;
-    init_set(&set, compare_int);
+    
+    Set set2;
+    Set_init(&set2, compare_int);
+
+    Set set;
+    Set_init(&set, compare_int);
 
     for(int i=0; i<10; ++i) {
-        if (con_ins_first(&set, get(i)) == 0) {
+        if (Set_insert(&set, get(i)) == 0) {
             printf(" insert %d into set \n", type_int(get(i)));
         }else{
             printf(" insert %d fail \n", type_int(get(i)));
@@ -277,34 +315,98 @@ void test_set(void) {
 
     printf("*************** print set memebers ****************************\n");
 
-    for(iterator_t it = con_first(&set); !iterator_equal(it, con_last(&set)); it = iterator_next(it)) {
-        printf(" %d \n", type_int(iterator_dereference(it)));
-    }
+    CN_inspect(&set);
     
     type_value_t rdata;
-    printf("removing %d \n", type_int(get(1)));
-    con_rm_find(&set, get(1), &rdata);
-    printf("removed %d \n", type_int(rdata));
+    printf("removing %d \n", t2i(get(1)));
+    CN_rm_target(&set, get(1), &rdata);
+    printf("removed %d \n", t2i(rdata));
 
-    printf("removing %d \n", type_int(get(3)));
-    con_rm_find(&set, get(3), &rdata);
-    printf("removed %d \n", type_int(rdata));
+    printf("removing %d \n", t2i(get(3)));
+    CN_rm_target(&set, get(3), &rdata);
+    printf("removed %d \n", t2i(rdata));
 
-    printf("removing %d \n", type_int(get(7)));
-    con_rm_find(&set, get(7), &rdata);
-    printf("removed %d \n", type_int(rdata));
+    printf("removing %d \n", t2i(get(7)));
+    CN_rm_target(&set, get(7), &rdata);
+    printf("removed %d \n", t2i(rdata));
     
     
-    printf("removing %d \n", type_int(get(9)));
-    con_rm_find(&set, get(9), &rdata);
-    printf("removed %d \n", type_int(rdata));
+    printf("removing %d \n", t2i(get(9)));
+    CN_rm_target(&set, get(9), &rdata);
+    printf("removed %d \n", t2i(rdata));
     
-    printf("*************** print set memebers 2 ****************************\n");
 
-    for(iterator_t it = con_first(&set); !iterator_equal(it, con_last(&set)); it = iterator_next(it)) {
-        printf(" %d \n", type_int(iterator_dereference(it)));
+    CN_inspect(&set);
+
+    printf("insert %d \n", t2i(get(2)));
+    CN_inspect(&set);
+
+    CU_ASSERT(1);
+}
+
+void test_graph () 
+{
+
+    // 生成一个定点加入图中
+    Graph graph;
+    Graph_init(&graph, find_vertex, find_edge);
+    // 添加定点
+    for(int i=0; i<10; ++i) {
+        Graph_addVertex(&graph, get(i));
     }
-    */
+
+    // 添加边
+    vertex_t* from = Graph_getVertex(&graph, get(3));
+    vertex_t* to   = Graph_getVertex(&graph, get(5));
+
+    if (from && to) {
+        Graph_addEdge(&graph, from, to, 0.0);
+    }
+
+    from = Graph_getVertex(&graph, get(5));
+    to   = Graph_getVertex(&graph, get(8));
+
+    if (from && to) {
+        Graph_addEdge(&graph, from , to, 0.0);
+    }
+
+    from = Graph_getVertex(&graph, get(5));
+    to   = Graph_getVertex(&graph, get(2));
+    if (from && to) {
+        Graph_addEdge(&graph, from , to, 0.0);
+    }
+    from = Graph_getVertex(&graph, get(5));
+    to   = Graph_getVertex(&graph, get(3));
+    if (from && to) {
+        Graph_addEdge(&graph, from , to, 0.0);
+    }
+    from = Graph_getVertex(&graph, get(5));
+    to   = Graph_getVertex(&graph, get(4));
+    if (from && to) {
+        Graph_addEdge(&graph, from , to, 0.0);
+    }
+    from = Graph_getVertex(&graph, get(5));
+    to   = Graph_getVertex(&graph, get(6));
+
+    if (from && to) {
+        Graph_addEdge(&graph, from , to, 0.0);
+    }
+
+    from = Graph_getVertex(&graph, get(6));
+    to   = Graph_getVertex(&graph, get(8));
+
+    if (from && to) {
+        Graph_addEdge(&graph, from, to, 0.0);
+    }
+
+    printf("\n\n");
+    Graph_inspect(&graph);
+
+    printf("delete edge %d %d \n\n", t2i(get(6)), t2i(get(8)));
+    Graph_delEdge(from, to);
+    printf("\n\n");
+    Graph_inspect(&graph);
+    Graph_free(&graph);
     CU_ASSERT(1);
 }
 
@@ -345,7 +447,23 @@ int main ()
     }
     */
     
+    /*
     if (NULL == CU_add_test(pSuite, "test_list", test_list) ) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+    */
+
+    /*
+    if (NULL == CU_add_test(pSuite, "test_set", test_set))
+    {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+    */
+    
+    if (NULL == CU_add_test(pSuite, "test_graph", test_graph))
+    {
         CU_cleanup_registry();
         return CU_get_error();
     }
