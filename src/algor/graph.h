@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:13:53
- * @LastEditTime: 2020-06-05 23:13:47
+ * @LastEditTime: 2020-06-07 09:37:48
  * @LastEditors: Please set LastEditors
  */
 #ifndef _GRAPH_H_
@@ -17,7 +17,7 @@ typedef struct _vertex
     /* vertex id */
     tv vertex_id;
     /* other data here */
-    void* data;
+    void* exploring;
     Set edges;
 } vertex_t;
 

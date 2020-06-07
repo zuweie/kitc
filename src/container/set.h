@@ -2,13 +2,14 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-19 16:06:51
- * @LastEditTime: 2020-06-04 13:51:40
+ * @LastEditTime: 2020-06-06 10:20:23
  * @LastEditors: Please set LastEditors
  */
 #ifndef _SET_H_
 #define _SET_H_
 
 #include "cn.h"
+#include "__list.h"
 
 typedef Container Set;
 

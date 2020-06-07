@@ -2,13 +2,12 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:14:04
- * @LastEditTime: 2020-06-05 23:13:30
+ * @LastEditTime: 2020-06-06 10:21:06
  * @LastEditors: Please set LastEditors
  */
 #include "graph.h"
 #include "cn.h"
 #include "tv.h"
-#include "__list.h"
 
 static vertex_t* _create_vertex(Graph* graph, tv vertex) 
 {

@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2020-06-05 23:41:47
+ * @LastEditTime: 2020-06-07 13:10:16
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -18,9 +18,18 @@
 #include "it.h"
 #include "tv.h"
 #include "graph.h"
+#include "graph_search.h"
 
 #define TEST_DATA_SIZE 10000
-#define PRINTF_ELEM(it) printf("%d ", t2i(It_dref(it)))
+#define PRINTF_TV_ON_INT(tv) printf("%d ", t2i(tv))
+#define PRINTF_TV_ON_CHAR(tv) printf("%c ", t2i(tv))
+#define PRINTF_IT_ON_INT(it) PRINTF_TV_ON_CHAR(It_dref(it))
+#define PRINTF_IT_ON_CHAR(it) PRINTF_TV_ON_CHAR(It_dref(it))
+#define PRINTF_IT_ON_VERTEX_CHAR(it) do{ \
+    vertex_t* v = It_getptr(it); \
+    PRINTF_TV_ON_CHAR(v->vertex_id);\
+    printf(" -- %d -> ", ((bfs_explor_t*)v->exploring)->distance);\
+    }while(0) 
 int suite_success_init(void) {
     return 0;
 }
@@ -30,7 +39,6 @@ int suite_success_clean(void) {
 }
 
 static type_value_t test_data[TEST_DATA_SIZE];
-
 static void init_test_data()
 {
     for(int i=0; i<TEST_DATA_SIZE; ++i) {
@@ -38,37 +46,41 @@ static void init_test_data()
     }
     return;
 }
-static type_value_t get(int i) {
+static tv get(int i) {
     return test_data[i];
 }
-
-static CN_inspect (Container* con) {
-    
-    printf(" ********* inspection of container *****************\n");
-    /*
-    for (it first = CN_first(con); !It_equal(first, CN_tail); first = It_next(first)) {
-        printf("%d ", t2i(It_dref(first));
-    }
-    */
-    CN_travel(con, PRINTF_ELEM);
-
-    printf("\n");
-}
-
-int Graph_inspect(Graph* graph) 
-{
-    for (it i = CN_first(&graph->vertexes); !It_equal(i, CN_tail(&graph->vertexes)); i = It_next(i)) {
-        vertex_t* pv = t2p(It_dref(i));
-        printf("vertex: %d \n", t2i(pv->vertex_id));
-        printf("links to vertex: ");
-
-        for (it j = CN_first(&pv->edges); !It_equal(j, CN_tail(&pv->edges)); j = It_next(j)) {
-            edge_t* pnode = It_getptr(j);//t2p(It_dref(j));
-            printf("%d ", t2i(pnode->to->vertex_id));
-        }
-        printf("\n\n");
+static tv getcc(int i) {
+    char* abc = "abcdefghijklmnopqrstuvwxyz";
+    if (i<26 && i >=0) {
+        return i2t(abc[i]);
+    }else {
+        char e = 'E';
+        return i2t(e);
     }
 }
+
+
+#define CN_inspect(con, type)  do{ \
+    printf(" ********* inspection of container *****************\n"); \
+    CN_travel(con, PRINTF_IT_ON_##type); \
+    printf("\n"); \
+}while(0)
+
+
+#define Graph_inspect(graph, printer) do{ \
+    for (it i = CN_first( &((graph)->vertexes) ); !It_equal(i, CN_tail( &((graph)->vertexes) ) ); i = It_next(i)) { \
+        vertex_t* pv = It_getptr(i); \
+        printf("vertex: "); \
+        printer(pv->vertex_id); \
+        printf("------> "); \
+        for (it j = CN_first(&pv->edges); !It_equal(j, CN_tail(&pv->edges)); j = It_next(j)) { \
+            edge_t* pnode = It_getptr(j); \
+            printer(pnode->to->vertex_id); \
+        }\
+        printf("\n\n"); \
+    } \
+}while(0)
+
 
 int find_vertex(tv v1, tv v2) 
 {
@@ -76,7 +88,7 @@ int find_vertex(tv v1, tv v2)
     return compare_int(pv->vertex_id, v2);
 }
 
-int find_edge (tv v1, tv v2) 
+int find_edge(tv v1, tv v2) 
 {
     edge_t* pl = t2p(v1);
     return compare_int(pl->to->vertex_id, v2);
@@ -315,8 +327,8 @@ void test_set(void) {
 
     printf("*************** print set memebers ****************************\n");
 
-    CN_inspect(&set);
-    
+    CN_inspect(&set, INT);
+
     type_value_t rdata;
     printf("removing %d \n", t2i(get(1)));
     CN_rm_target(&set, get(1), &rdata);
@@ -336,10 +348,10 @@ void test_set(void) {
     printf("removed %d \n", t2i(rdata));
     
 
-    CN_inspect(&set);
+    //CN_inspect(&set, INT);
 
     printf("insert %d \n", t2i(get(2)));
-    CN_inspect(&set);
+    //CN_inspect(&set, INT);
 
     CU_ASSERT(1);
 }
@@ -352,61 +364,91 @@ void test_graph ()
     Graph_init(&graph, find_vertex, find_edge);
     // 添加定点
     for(int i=0; i<10; ++i) {
-        Graph_addVertex(&graph, get(i));
+        Graph_addVertex(&graph, getcc(i));
     }
 
     // 添加边
-    vertex_t* from = Graph_getVertex(&graph, get(3));
-    vertex_t* to   = Graph_getVertex(&graph, get(5));
+    vertex_t* from = Graph_getVertex(&graph, getcc(3));
+    vertex_t* to   = Graph_getVertex(&graph, getcc(5));
 
     if (from && to) {
         Graph_addEdge(&graph, from, to, 0.0);
     }
 
-    from = Graph_getVertex(&graph, get(5));
-    to   = Graph_getVertex(&graph, get(8));
+    from = Graph_getVertex(&graph, getcc(5));
+    to   = Graph_getVertex(&graph, getcc(8));
 
     if (from && to) {
         Graph_addEdge(&graph, from , to, 0.0);
     }
 
-    from = Graph_getVertex(&graph, get(5));
-    to   = Graph_getVertex(&graph, get(2));
-    if (from && to) {
-        Graph_addEdge(&graph, from , to, 0.0);
-    }
-    from = Graph_getVertex(&graph, get(5));
-    to   = Graph_getVertex(&graph, get(3));
-    if (from && to) {
-        Graph_addEdge(&graph, from , to, 0.0);
-    }
-    from = Graph_getVertex(&graph, get(5));
-    to   = Graph_getVertex(&graph, get(4));
-    if (from && to) {
-        Graph_addEdge(&graph, from , to, 0.0);
-    }
-    from = Graph_getVertex(&graph, get(5));
-    to   = Graph_getVertex(&graph, get(6));
+    from = Graph_getVertex(&graph, getcc(5));
+    to   = Graph_getVertex(&graph, getcc(2));
 
     if (from && to) {
         Graph_addEdge(&graph, from , to, 0.0);
     }
 
-    from = Graph_getVertex(&graph, get(6));
-    to   = Graph_getVertex(&graph, get(8));
+    from = Graph_getVertex(&graph, getcc(5));
+    to   = Graph_getVertex(&graph, getcc(3));
 
     if (from && to) {
+        Graph_addEdge(&graph, from , to, 0.0);
+    }
+
+    from = Graph_getVertex(&graph, getcc(5));
+    to   = Graph_getVertex(&graph, getcc(4));
+
+    if (from && to) {
+        Graph_addEdge(&graph, from , to, 0.0);
+    }
+
+    from = Graph_getVertex(&graph, getcc(5));
+    to   = Graph_getVertex(&graph, getcc(6));
+
+    if (from && to) {
+        Graph_addEdge(&graph, from , to, 0.0);
+    }
+
+    from = Graph_getVertex(&graph, getcc(6));
+    to   = Graph_getVertex(&graph, getcc(8));
+
+    if (from && to) {    
+        Graph_addEdge(&graph, from, to, 0.0);
+    }
+
+    from = Graph_getVertex(&graph, getcc(8));
+    to   = Graph_getVertex(&graph, getcc(2));
+    if (from && to) {    
+        Graph_addEdge(&graph, from, to, 0.0);
+    }
+
+    from = Graph_getVertex(&graph, getcc(2));
+    to   = Graph_getVertex(&graph, getcc(9));
+
+    if (from && to) {    
         Graph_addEdge(&graph, from, to, 0.0);
     }
 
     printf("\n\n");
-    Graph_inspect(&graph);
+    Graph_inspect(&graph, PRINTF_TV_ON_CHAR);
 
-    printf("delete edge %d %d \n\n", t2i(get(6)), t2i(get(8)));
-    Graph_delEdge(from, to);
-    printf("\n\n");
-    Graph_inspect(&graph);
+    vertex_t* start = Graph_getVertex(&graph, getcc(3));
+    vertex_t* desc  = Graph_getVertex(&graph, getcc(9));
+    grp_bfs(&graph, start);
+
+
+    printf ("\n*************bfs***************\n");
+    LinkArray arr;
+    LinkArr_init(&arr, NULL);
+    grp_bfs_path(&graph, start, desc, &arr);
+
+    CN_inspect(&arr, VERTEX_CHAR);
+
+    LinkArr_free(&arr);
+    
     Graph_free(&graph);
+    
     CU_ASSERT(1);
 }
 

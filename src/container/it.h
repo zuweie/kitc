@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-05-30 08:54:21
- * @LastEditTime: 2020-06-04 22:54:23
+ * @LastEditTime: 2020-06-07 11:49:29
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /kitc/src/container/iterator.h
@@ -23,9 +23,9 @@ typedef iterator_t it;
 #define It_exchange(iter1, iter2) iterator_exchange(iter1, itert2)
 
 #define It_getV(it, vt) t2v(vt, It_dref(it))
-#define It_geti(it) It_getV(int, It_dref(it))
-#define It_getf(it) It_getV(float, It_dref(it))
-#define It_getd(it) It_getV(double, It_dref(it))
+#define It_geti(it) It_getV(it, int)
+#define It_getf(it) It_getV(it, float)
+#define It_getd(it) It_getV(it, double)
 #define It_getptr(it) t2p(It_dref(it))
 
 //#define ivalid(iter) iterator_valid(iter)

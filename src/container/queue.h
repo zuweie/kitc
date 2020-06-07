@@ -2,13 +2,14 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 19:09:21
- * @LastEditTime: 2020-06-04 12:48:39
+ * @LastEditTime: 2020-06-06 10:20:59
  * @LastEditors: Please set LastEditors
  */
 #ifndef _QUEUE_H_
 #define _QUEUE_H_
 
 #include "cn.h"
+//#include "__list.h"
 
 typedef Container Queue;
 
