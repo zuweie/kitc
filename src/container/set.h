@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-19 16:06:51
- * @LastEditTime: 2020-06-11 10:47:32
+ * @LastEditTime: 2020-06-11 23:25:11
  * @LastEditors: Please set LastEditors
  */
 #ifndef _SET_H_
@@ -20,6 +20,8 @@ typedef Container Set;
 #define Set_add(set, data) CN_add_tail(set, data)
 #define Set_find(set, find) CN_find(set, find)
 #define Set_has(set, find) CN_has(set, find)
-int Set_insert(Set*, tv);
+#define Set_size(set) CN_size(set)
+#define Set_to_arr(set, arr) CN_to_arr(set, arr)
 
+int Set_insert(Set*, tv);
 #endif

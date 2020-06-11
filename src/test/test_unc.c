@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2020-06-11 10:54:29
+ * @LastEditTime: 2020-06-12 00:25:54
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -69,14 +69,17 @@ static tv getcc(int i) {
 
 
 #define Graph_inspect(graph, printer) do{ \
+    printf(" ********* inspection of Graph *****************\n"); \
     for (it i = CN_first( &((graph)->vertexes) ); !It_equal(i, CN_tail( &((graph)->vertexes) ) ); i = It_next(i)) { \
         vertex_t* pv = It_getptr(i); \
         printf("vertex: "); \
         printer(pv->vertex_id); \
+        printf("(%d) ", pv->indexing); \
         printf("------> "); \
         for (it j = CN_first(&pv->edges); !It_equal(j, CN_tail(&pv->edges)); j = It_next(j)) { \
             edge_t* pnode = It_getptr(j); \
             printer(pnode->to->vertex_id); \
+            printf("(%d)   ", pnode->to->indexing);\
         }\
         printf("\n\n"); \
     } \
@@ -86,8 +89,18 @@ static tv getcc(int i) {
     printf(" ************* inspection of matrix ********************** \n");\
     float (*pdata)[(matrix)->col] = (matrix)->data;\
     for (int i=0; i<(matrix)->row; ++i) { \
+        if (i == 0) { \
+            printf("   ");\
+            for (int h=0; h<(matrix)->col; ++h) { \
+                printf("%4d  ", h); \
+            } \
+            printf("\n"); \
+        }\
         for (int j=0; j<(matrix)->col; ++j) { \
-            printf("%f  ", Matrix_data(matrix)[i][j]);\
+            if (j == 0) { \
+                printf("%2d ", i); \
+            } \
+            printf("%.2f  ", Matrix_data(matrix)[i][j]);\
         } \
         printf("\n"); \
     } \
@@ -381,11 +394,11 @@ void test_graph ()
     // 添加边
     vertex_t* from = Graph_getVertex(&graph, getcc(3));
     vertex_t* to   = Graph_getVertex(&graph, getcc(5));
-
+    
     if (from && to) {
-        Graph_addEdge(&graph, from, to, 0.0);
+        Graph_addEdge(from, to, 0.0);
     }
-
+    /*
     from = Graph_getVertex(&graph, getcc(5));
     to   = Graph_getVertex(&graph, getcc(8));
 
@@ -440,9 +453,8 @@ void test_graph ()
     if (from && to) {    
         Graph_addEdge(&graph, from, to, 0.0);
     }
-
+    
     printf("\n\n");
-    Graph_inspect(&graph, PRINTF_TV_ON_CHAR);
 
     vertex_t* start = Graph_getVertex(&graph, getcc(3));
     vertex_t* desc  = Graph_getVertex(&graph, getcc(9));
@@ -457,7 +469,16 @@ void test_graph ()
     CN_inspect(&arr, VERTEX_CHAR);
 
     LinkArr_free(&arr);
-    
+    */
+   
+    Matrix* matrix = Matrix_create(Set_size(&graph.vertexes), Set_size(&graph.vertexes));
+    Graph_getEdgeMatrix(&graph, matrix);
+    Graph_inspect(&graph, PRINTF_TV_ON_CHAR);
+
+    Matrix_set(matrix, 1, 2, 3.0);
+    Matrix_inspect(matrix);
+    Matrix_destroy(matrix);
+
     Graph_free(&graph);
     
     CU_ASSERT(1);
@@ -465,6 +486,7 @@ void test_graph ()
 
 void test_matrix()
 {
+    /*
     float data[6][4] = {
         {1,2,3,4},
         {5,6,7,8},
@@ -481,9 +503,21 @@ void test_matrix()
     Matrix_inspect(matrix1);
     Matrix* matrix2 = Matrix_create_transpose(matrix1);
     Matrix_inspect(matrix2);
+    Matrix* matrix3 = Matrix_create(4,4);
+    Matrix_inspect(matrix3);
+    */
 
-    Matrix_destroy(matrix1);
-    Matrix_destroy(matrix2);
+    Matrix* matrix4 = Matrix_create(4,2);
+    Matrix_inspect(matrix4);
+    Matrix_set(matrix4, 0,1, 1.2);
+    Matrix_set(matrix4, 1,0, 2.3);
+    Matrix_set(matrix4, 3,1,4.5);
+    Matrix_inspect(matrix4);
+
+    //Matrix_destroy(matrix1);
+    //Matrix_destroy(matrix2);
+    //Matrix_destroy(matrix3);
+    Matrix_destroy(matrix4);
 
 }
 
@@ -545,11 +579,13 @@ int main ()
         return CU_get_error();
     }
     */
+    
     if (NULL == CU_add_test(pSuite, "test_matrix", test_matrix))
     {
         CU_cleanup_registry();
         return CU_get_error();
     }
+    
     /*
     if (NULL == CU_add_test(pSuite, "test_mem_pool_maxslot", test_mem_pool_maxslot) ) {
         CU_cleanup_registry();

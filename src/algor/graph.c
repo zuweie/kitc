@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:14:04
- * @LastEditTime: 2020-06-11 10:44:37
+ * @LastEditTime: 2020-06-12 00:23:48
  * @LastEditors: Please set LastEditors
  */
 #include "graph.h"
@@ -71,11 +71,13 @@ int Graph_addVertex(Graph* graph, tv vertex)
     return Set_insert(&graph->vertexes, p2t(v));
 }
 
-int Graph_addEdge(Graph* graph, vertex_t* from, vertex_t* to, float weight)
+int Graph_addEdge(vertex_t* from, vertex_t* to, float weight)
 {
     // 首先得找一下 开始点 到 终结点 是不是在图中。
-    edge_t *p = _create_edge(to, weight);
-    return Set_insert(&from->edges, p2t(p));
+    if (Graph_getEdge(from, to->vertex_id) == NULL) {
+        edge_t *p = _create_edge(to, weight);
+        return Set_insert(&from->edges, p2t(p));
+    }
 }
 
 int Graph_delVertex(vertex_t* vertex)
@@ -100,11 +102,19 @@ int Graph_delEdge(vertex_t* from, vertex_t* to)
     return 0;
 }
 
-int Graph_transpose(Graph* origin, Graph* trans) 
-{
-    return 0;
-}
 
+int Graph_indexingVertexes(Graph* graph) 
+{
+    int i =0;
+    for (it first = CN_first(&graph->vertexes);
+        !It_equal(first, CN_tail(&graph->vertexes));
+        first = It_next(first)) {
+            vertex_t* pv = It_getptr(first);
+            pv->indexing = i ++;
+    }
+    return i;
+
+}
 
 vertex_t* Graph_getVertex(Graph* graph, tv vertex_id) 
 {
@@ -115,4 +125,58 @@ vertex_t* Graph_getVertex(Graph* graph, tv vertex_id)
 edge_t* Graph_getEdge(vertex_t* from, tv to_id) {
     it i = Set_find(&from->edges, to_id);
     return It_valid(i) ? It_getptr(i) : NULL;
+}
+
+int Graph_getEdgeMatrix(Graph* graph, Matrix* matrix) 
+{
+    
+    size_t size = CN_size(&graph->vertexes);
+    if (matrix->col == size && matrix->row == size ) {
+        Graph_indexingVertexes(graph);
+
+        //Matrix* matrix = Matrix_create(size, size);
+
+        for (it first = CN_first(&graph->vertexes);
+             !It_equal(first, CN_tail(&graph->vertexes));
+             first = It_next(first)){
+
+            vertex_t *pvertex = It_getptr(first);
+
+            for (it first2 = CN_first(&pvertex->edges);
+                 !It_equal(first2, CN_tail(&pvertex->edges));
+                 first2 = It_next(first2)){
+
+                edge_t *pedge = It_getptr(first2);
+
+                int x = pvertex->indexing;
+                int y = pedge->to->indexing;
+
+                Matrix_set(matrix, x, y, 1.0f);
+            }
+        }
+
+        return 0;
+    }
+    return -1;
+} 
+
+int Graph_addEdgeByMatrix(Graph* graph, Matrix* matrix) 
+{
+    size_t size = CN_size(&graph->vertexes);
+    if (matrix->col == size && matrix->row == size ) {
+       tv arr[size];
+       Set_to_arr(&graph->vertexes, arr);
+       for (int i=0; i<matrix->row; ++i) {
+           for (int j=0; j<matrix->col; ++j) {
+               if (Matrix_get(matrix,i,j) == 1.0f) {
+                    // you lianxian
+                    vertex_t* from = t2p(arr[i]);
+                    vertex_t* to   = t2p(arr[j]);
+                    Graph_addEdge(from, to, 0.f);
+               }
+           }
+       }
+       return 0;
+    }
+    return -1;
 }

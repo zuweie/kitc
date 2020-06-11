@@ -65,7 +65,7 @@ build_test_objs      := $(addprefix $(build_obj_dir)/, $(notdir $(test_objects))
 
 sources = $(test_sources) $(base_sources) $(container_sources) $(mem_pool_sources) $(algor_sources) $(matrix_sources)
 headers = $(base_headers) $(mem_pool_headers) $(container_headers) $(matrix_headers) 
-test_objects = $(test_objects) $(base_objects) $(mem_pool_objects) $(matrix_objects) $(container_objects)
+objects = $(test_objects) $(base_objects) $(mem_pool_objects) $(matrix_objects) $(container_objects)
 builde_objects = $(build_base_objs) $(build_mem_pool_objs) $(build_container_objs) $(build_matrix_objs)
 
 #INCLUDE_FLAGS   = $(addprefix -I, $(base_dir)) $(addprefix -I, $(container_dir)) $(addprefix -I, $(mem_pool_dir)) $(addprefix -I, $(algor_dir)) $(addprefix -I, $(matrix_dir))
@@ -115,8 +115,8 @@ $(test) : $(sources)
 	mkdir -p $(bin_dir)
 	$(CC) $(INCLUDE_FLAGS) $(TEST_LINK_FLAGS) $(DEBUG_CFLAGS) $^ -o $(bin_dir)/$@
 
-.PHONY: container_lib
-container_lib: $(container_lib)
+#.PHONY: container_lib
+#container_lib: $(container_lib)
 
 #  这里想要 build la 的算了不要了。
 #$(container_lib): $(base_objects) $(mem_pool_objects) $(container_objects) $(matrix_objects)
@@ -131,5 +131,6 @@ container_lib: $(container_lib)
 
 .PHONY: clean
 clean:
-	rm -rf $(test_objects) $(base_objects) $(mem_pool_objects) $(matrix_objects) $(container_objects) $(build_dir)
+	#rm -rf $(test_objects) $(base_objects) $(mem_pool_objects) $(matrix_objects) $(container_objects) $(build_dir)
+	rm -fr $(objects) $(build_dir)
  

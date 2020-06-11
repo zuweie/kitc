@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 18:51:11
- * @LastEditTime: 2020-06-11 10:45:51
+ * @LastEditTime: 2020-06-11 23:24:07
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CON_H_
@@ -41,8 +41,16 @@
 //#define chas(con, find) container_has(cc(con), find, ccmp(con))
 #define CN_size(con) container_size(cc(con))
 #define CN_sort(con, cmp) container_sort(cc(con), cmp)
-
 #define CN_has(con, find) It_valid( CN_find(con, find) )
+
+#define CN_to_arr(con, arr) do { \
+    int i = 0;                    \
+    for (it first = CN_first(con);      \
+        !It_equal(first, CN_tail(con)); \
+        first = It_next(first) ) {      \
+            arr[i++] = It_dref(first);  \
+        } \
+}while(0)
 
 #define CN_init(con, label, cmp) do {       \
     cc(con) = container_create(label);   \
