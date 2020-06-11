@@ -2,13 +2,13 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 09:34:56
- * @LastEditTime: 2020-06-07 13:06:57
+ * @LastEditTime: 2020-06-11 10:48:08
  * @LastEditors: Please set LastEditors
  */
 #include "graph_search.h"
-#include "queue.h"
-#include "tv.h"
-#include "it.h"
+#include "container/queue.h"
+#include "container/tv.h"
+#include "container/it.h"
 static void _init_bfs_exploring(it pos) 
 {
     //bfs_node_t* pn = allocate(g_pool(0), sizeof(bfs_node_t));
@@ -47,11 +47,18 @@ int grp_bfs(Graph* graph, vertex_t* start) {
     CN_travel(&graph->vertexes, _init_bfs_exploring);
     // 2 做广度优先遍历
     // 
+
+    bfs_explor_t* pbfs = (bfs_explor_t*)start->exploring;
+    pbfs->color = _grp_gray;
+    pbfs->distance = 0;
+    pbfs->pi = NULL;
+
     Queue queue;
     Queue_init(&queue, NULL);
     Queue_offer(&queue, p2t(start));
     tv rdata;
-    while(Queue_poll(&queue,&rdata) != -1) {
+    
+    while(Queue_poll(&queue, &rdata) != -1) {
 
         vertex_t* pu = t2p(rdata);
         bfs_explor_t* pubfs = (bfs_explor_t*) pu->exploring;
@@ -103,12 +110,16 @@ int grp_dfs(Graph* graph)
     int time = 0;
     CN_travel(&graph->vertexes, _init_dfs_exploring);
 
-    for(it first=CN_first(&graph->vertexes); !It_equal(first, CN_tail(&graph->vertexes)); first=It_next(first)) {
+    for(it first=CN_first(&graph->vertexes); 
+        !It_equal(first, CN_tail(&graph->vertexes)); 
+        first=It_next(first)) {
+
         vertex_t*   pu = It_getptr(first);
         dfs_explor_t* pudfs = (dfs_explor_t*)pu->exploring;
         if (pudfs->color == _grp_whtie) {
             _dfs_visit(pu, &time);
         }
+        
     }
     return 0;
 }

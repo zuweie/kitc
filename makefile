@@ -2,6 +2,7 @@
 ## makefile for unc
 
 project_dir   		= $(shell pwd)
+src_dir             = $(project_dir)/src
 build_dir           = $(project_dir)/build
 
 build_obj_dir       = $(build_dir)/objects
@@ -32,6 +33,10 @@ algor_headers :=
 algor_sources :=
 algor_dir     :=
 
+matrix_headers :=
+matrix_sources :=
+matrix_dir     := 
+
 test_sources :=
 test_dir     :=
 
@@ -39,6 +44,7 @@ include ./src/base/*.mk
 include ./src/mem_pool/*.mk
 include ./src/container/*.mk
 include ./src/algor/*.mk
+include ./src/matrix/*.mk
 include ./src/test/*.mk
 
 # := 意思是清空原来的变量的内容，放入新的内容
@@ -47,15 +53,24 @@ base_objects  	  := $(subst .c,.o,$(base_sources))
 container_objects := $(subst .c,.o,$(container_sources))
 mem_pool_objects  := $(subst .c,.o,$(mem_pool_sources))
 algor_objects     := $(subst .c,.o,$(algor_sources))
+matrix_objects    := $(subst .c,.o,$(matrix_sources))
 test_objects  	  := $(subst .c,.o,$(test_sources))
 
 build_base_objs      := $(addprefix $(build_obj_dir)/, $(notdir $(base_objects)))
 build_container_objs := $(addprefix $(build_obj_dir)/, $(notdir $(container_objects)))
 build_mem_pool_objs  := $(addprefix $(build_obj_dir)/, $(notdir $(mem_pool_objects)))
 build_algor_objs     := $(addprefix $(build_obj_dir)/, $(notdir $(algor_objects)))
+build_matrix_objs    := $(addprefix $(build_obj_dir)/, $(notdir $(matrix_objects)))
 build_test_objs      := $(addprefix $(build_obj_dir)/, $(notdir $(test_objects)))
 
-INCLUDE_FLAGS   = $(addprefix -I, $(base_dir)) $(addprefix -I, $(container_dir)) $(addprefix -I, $(mem_pool_dir)) $(addprefix -I, $(algor_dir))
+sources = $(test_sources) $(base_sources) $(container_sources) $(mem_pool_sources) $(algor_sources) $(matrix_sources)
+headers = $(base_headers) $(mem_pool_headers) $(container_headers) $(matrix_headers) 
+test_objects = $(test_objects) $(base_objects) $(mem_pool_objects) $(matrix_objects) $(container_objects)
+builde_objects = $(build_base_objs) $(build_mem_pool_objs) $(build_container_objs) $(build_matrix_objs)
+
+#INCLUDE_FLAGS   = $(addprefix -I, $(base_dir)) $(addprefix -I, $(container_dir)) $(addprefix -I, $(mem_pool_dir)) $(addprefix -I, $(algor_dir)) $(addprefix -I, $(matrix_dir))
+
+INCLUDE_FLAGS = $(addprefix -I, $(src_dir))
 TEST_LINK_FLAGS = -lcunit
 LIB_LINK_FLAGS  = 
 
@@ -95,18 +110,20 @@ CFLAGS          =  -Wall
 .PHONY: test
 test: $(test)
 
-$(test): $(test_sources) $(base_sources) $(container_sources) $(mem_pool_sources) $(algor_sources)
+#$(test): $(test_sources) $(base_sources) $(container_sources) $(mem_pool_sources) $(algor_sources) $(matrix_sources)
+$(test) : $(sources)
 	mkdir -p $(bin_dir)
 	$(CC) $(INCLUDE_FLAGS) $(TEST_LINK_FLAGS) $(DEBUG_CFLAGS) $^ -o $(bin_dir)/$@
 
 .PHONY: container_lib
 container_lib: $(container_lib)
 
-$(container_lib): $(base_objects) $(mem_pool_objects) $(container_objects)
-	mkdir -p $(export_header_dir)
-	mkdir -p $(lib_dir)
-	$(AR) -r $(lib_dir)/$@ $(build_base_objs) $(build_mem_pool_objs) $(build_container_objs)
-	cp $(base_headers) $(mem_pool_headers) $(container_headers) $(export_header_dir)
+#  这里想要 build la 的算了不要了。
+#$(container_lib): $(base_objects) $(mem_pool_objects) $(container_objects) $(matrix_objects)
+#	mkdir -p $(export_header_dir)
+#	mkdir -p $(lib_dir)
+#	$(AR) -r $(lib_dir)/$@ $(build_base_objs) $(build_mem_pool_objs) $(build_container_objs) $(build_matrix_objs)
+#	cp $(base_headers) $(mem_pool_headers) $(container_headers) $(matrix_headers) $(export_header_dir) 
 
 %.o : %.c
 	mkdir -p $(build_obj_dir)
@@ -114,5 +131,5 @@ $(container_lib): $(base_objects) $(mem_pool_objects) $(container_objects)
 
 .PHONY: clean
 clean:
-	rm -rf $(test_objects) $(base_objects) $(mem_pool_objects) $(container_objects) $(build_dir)
+	rm -rf $(test_objects) $(base_objects) $(mem_pool_objects) $(matrix_objects) $(container_objects) $(build_dir)
  

@@ -8,7 +8,7 @@
 #ifndef _GRAPH_SEARCH_H_
 #define _GRAPH_SEARCH_H_
 #include "graph.h"
-#include "LinkArray.h"
+#include "container/LinkArray.h"
 typedef enum _grp_color {
     _grp_whtie = 0,
     _grp_gray  = 1,

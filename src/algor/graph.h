@@ -2,15 +2,15 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:13:53
- * @LastEditTime: 2020-06-07 09:37:48
+ * @LastEditTime: 2020-06-11 10:45:16
  * @LastEditors: Please set LastEditors
  */
 #ifndef _GRAPH_H_
 #define _GRAPH_H_
 
 
-#include "tv.h"
-#include "set.h"
+#include "container/tv.h"
+#include "container/set.h"
 
 typedef struct _vertex 
 {
@@ -42,6 +42,8 @@ int Graph_addVertex(Graph* graph, tv vertex);
 int Graph_addEdge(Graph* graph, vertex_t* from, vertex_t* to, float weigth);
 int Graph_delVertex(vertex_t* vertex);
 int Graph_delEdge(vertex_t* from, vertex_t* edge);
+int Graph_transpose(Graph* origin, Graph* trans);
+int Graph_linkMatrix(Graph* origin);
 vertex_t* Graph_getVertex(Graph* graph, tv vertex_id);
 edge_t* Graph_getEdge(vertex_t* from, tv to_id);
 #endif

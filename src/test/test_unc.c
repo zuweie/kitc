@@ -2,23 +2,24 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2020-06-07 13:10:16
+ * @LastEditTime: 2020-06-11 10:54:29
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
 #include <CUnit/Basic.h>
-#include "__mem_pool.h"
-#include "__type_value.h"
-#include "__vector.h"
-#include "__list.h"
-#include "__rb_tree.h"
-#include "__sort.h"
-#include "set.h"
-#include "cn.h"
-#include "it.h"
-#include "tv.h"
-#include "graph.h"
-#include "graph_search.h"
+#include "mem_pool/__mem_pool.h"
+#include "base/__type_value.h"
+#include "base/__vector.h"
+#include "base/__list.h"
+#include "base/__rb_tree.h"
+#include "base/__sort.h"
+#include "container/set.h"
+#include "container/cn.h"
+#include "container/it.h"
+#include "container/tv.h"
+#include "algor/graph.h"
+#include "algor/graph_search.h"
+#include "matrix/matrix.h"
 
 #define TEST_DATA_SIZE 10000
 #define PRINTF_TV_ON_INT(tv) printf("%d ", t2i(tv))
@@ -81,6 +82,16 @@ static tv getcc(int i) {
     } \
 }while(0)
 
+#define Matrix_inspect(matrix) do{ \
+    printf(" ************* inspection of matrix ********************** \n");\
+    float (*pdata)[(matrix)->col] = (matrix)->data;\
+    for (int i=0; i<(matrix)->row; ++i) { \
+        for (int j=0; j<(matrix)->col; ++j) { \
+            printf("%f  ", Matrix_data(matrix)[i][j]);\
+        } \
+        printf("\n"); \
+    } \
+}while(0)
 
 int find_vertex(tv v1, tv v2) 
 {
@@ -452,6 +463,30 @@ void test_graph ()
     CU_ASSERT(1);
 }
 
+void test_matrix()
+{
+    float data[6][4] = {
+        {1,2,3,4},
+        {5,6,7,8},
+        {9,10,11,12},
+        {13,14,15,16},
+        {17,18,19,20},
+        {21,22,23,24}
+    };
+
+    float data2 [1][8] = {
+        {1,2,3,4,5,6,7,8}
+    };
+    Matrix* matrix1 = Matrix_create_by(1, 8, data2);
+    Matrix_inspect(matrix1);
+    Matrix* matrix2 = Matrix_create_transpose(matrix1);
+    Matrix_inspect(matrix2);
+
+    Matrix_destroy(matrix1);
+    Matrix_destroy(matrix2);
+
+}
+
 int main () 
 {
     printf("test unc what ");
@@ -503,13 +538,18 @@ int main ()
         return CU_get_error();
     }
     */
-    
+    /*
     if (NULL == CU_add_test(pSuite, "test_graph", test_graph))
     {
         CU_cleanup_registry();
         return CU_get_error();
     }
-    
+    */
+    if (NULL == CU_add_test(pSuite, "test_matrix", test_matrix))
+    {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
     /*
     if (NULL == CU_add_test(pSuite, "test_mem_pool_maxslot", test_mem_pool_maxslot) ) {
         CU_cleanup_registry();

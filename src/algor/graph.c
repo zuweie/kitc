@@ -2,12 +2,12 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:14:04
- * @LastEditTime: 2020-06-06 10:21:06
+ * @LastEditTime: 2020-06-11 10:44:37
  * @LastEditors: Please set LastEditors
  */
 #include "graph.h"
-#include "cn.h"
-#include "tv.h"
+#include "container/cn.h"
+#include "container/tv.h"
 
 static vertex_t* _create_vertex(Graph* graph, tv vertex) 
 {
@@ -99,6 +99,12 @@ int Graph_delEdge(vertex_t* from, vertex_t* to)
     }
     return 0;
 }
+
+int Graph_transpose(Graph* origin, Graph* trans) 
+{
+    return 0;
+}
+
 
 vertex_t* Graph_getVertex(Graph* graph, tv vertex_id) 
 {
