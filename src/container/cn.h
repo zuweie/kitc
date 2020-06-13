@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 18:51:11
- * @LastEditTime: 2020-06-11 23:24:07
+ * @LastEditTime: 2020-06-13 22:40:10
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CON_H_
@@ -68,6 +68,13 @@
     for(it first = CN_first(con);              \
         !It_equal(first, CN_tail(con));          \
         first = It_next(first) ){handle(first);} \
+}while(0)
+
+#define CN_cleanup(con, cleanup) do {    \
+    tv rdata;                            \
+    while(CN_rm_last(con, &rdata) != -1){ \
+        cleanup(rdata);                  \        
+    }                                    \
 }while(0)
 
 typedef struct _con{

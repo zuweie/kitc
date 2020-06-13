@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2020-06-12 00:25:54
+ * @LastEditTime: 2020-06-14 01:24:19
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -13,7 +13,6 @@
 #include "base/__list.h"
 #include "base/__rb_tree.h"
 #include "base/__sort.h"
-#include "container/set.h"
 #include "container/cn.h"
 #include "container/it.h"
 #include "container/tv.h"
@@ -87,7 +86,7 @@ static tv getcc(int i) {
 
 #define Matrix_inspect(matrix) do{ \
     printf(" ************* inspection of matrix ********************** \n");\
-    float (*pdata)[(matrix)->col] = (matrix)->data;\
+    float (*pdata)[(matrix)->col] = (matrix)->elems;\
     for (int i=0; i<(matrix)->row; ++i) { \
         if (i == 0) { \
             printf("   ");\
@@ -333,53 +332,6 @@ void test_rb_tree(void)
     CU_ASSERT(1);
 }
 
-void test_set(void) {
-    
-    Set set2;
-    Set_init(&set2, compare_int);
-
-    Set set;
-    Set_init(&set, compare_int);
-
-    for(int i=0; i<10; ++i) {
-        if (Set_insert(&set, get(i)) == 0) {
-            printf(" insert %d into set \n", type_int(get(i)));
-        }else{
-            printf(" insert %d fail \n", type_int(get(i)));
-        }
-    }    
-
-    printf("*************** print set memebers ****************************\n");
-
-    CN_inspect(&set, INT);
-
-    type_value_t rdata;
-    printf("removing %d \n", t2i(get(1)));
-    CN_rm_target(&set, get(1), &rdata);
-    printf("removed %d \n", t2i(rdata));
-
-    printf("removing %d \n", t2i(get(3)));
-    CN_rm_target(&set, get(3), &rdata);
-    printf("removed %d \n", t2i(rdata));
-
-    printf("removing %d \n", t2i(get(7)));
-    CN_rm_target(&set, get(7), &rdata);
-    printf("removed %d \n", t2i(rdata));
-    
-    
-    printf("removing %d \n", t2i(get(9)));
-    CN_rm_target(&set, get(9), &rdata);
-    printf("removed %d \n", t2i(rdata));
-    
-
-    //CN_inspect(&set, INT);
-
-    printf("insert %d \n", t2i(get(2)));
-    //CN_inspect(&set, INT);
-
-    CU_ASSERT(1);
-}
-
 void test_graph () 
 {
 
@@ -471,14 +423,20 @@ void test_graph ()
     LinkArr_free(&arr);
     */
    
-    Matrix* matrix = Matrix_create(Set_size(&graph.vertexes), Set_size(&graph.vertexes));
+    Matrix* matrix = Matrix_create(CN_size(&graph.vertexes), CN_size(&graph.vertexes));
     Graph_getEdgeMatrix(&graph, matrix);
+
+    Matrix_set(matrix, 1, 2, 1.0);
+    Graph_addEdgeByMatrix(&graph, matrix);
+    
+    Matrix_inspect(matrix);
+    Graph_inspect(&graph, PRINTF_TV_ON_CHAR);
+    Matrix* transpose = Matrix_create_transpose(matrix);
+    Graph_addEdgeByMatrix(&graph, transpose);
     Graph_inspect(&graph, PRINTF_TV_ON_CHAR);
 
-    Matrix_set(matrix, 1, 2, 3.0);
-    Matrix_inspect(matrix);
     Matrix_destroy(matrix);
-
+    Matrix_destroy(transpose);
     Graph_free(&graph);
     
     CU_ASSERT(1);
@@ -572,20 +530,20 @@ int main ()
         return CU_get_error();
     }
     */
-    /*
+    
     if (NULL == CU_add_test(pSuite, "test_graph", test_graph))
     {
         CU_cleanup_registry();
         return CU_get_error();
     }
-    */
     
+    /*
     if (NULL == CU_add_test(pSuite, "test_matrix", test_matrix))
     {
         CU_cleanup_registry();
         return CU_get_error();
     }
-    
+    */
     /*
     if (NULL == CU_add_test(pSuite, "test_mem_pool_maxslot", test_mem_pool_maxslot) ) {
         CU_cleanup_registry();

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-20 09:34:56
- * @LastEditTime: 2020-06-11 10:48:08
+ * @LastEditTime: 2020-06-14 01:22:23
  * @LastEditors: Please set LastEditors
  */
 #include "graph_search.h"
@@ -127,12 +127,12 @@ int grp_dfs(Graph* graph)
 int grp_bfs_path(Graph* graph, vertex_t* start, vertex_t* desc, LinkArray* arr) 
 {
     if (start == desc) {
-        LinkArr_add(arr, p2t(start));
+        CN_add_tail(arr, p2t(start));
     }else if (((bfs_explor_t*)(desc->exploring))->pi == NULL){
         return -1;
     }else {
         grp_bfs_path(graph, start, ((bfs_explor_t*)(desc->exploring))->pi, arr);
-        LinkArr_add(arr, p2t(desc));
+        CN_add_tail(arr, p2t(desc));
     }
     return 0;
 }

@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-06-07 12:36:10
- * @LastEditTime: 2020-06-07 13:05:46
+ * @LastEditTime: 2020-06-14 00:58:09
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /kitc/src/container/list.h
@@ -16,7 +16,5 @@ typedef Container LinkArray;
 
 #define LinkArr_init(la, compare) CN_init(la, list, compare)
 #define LinkArr_free(la) CN_free(la, list)
-
-#define LinkArr_add(la,tv) CN_add_tail(la, tv)
 
 #endif

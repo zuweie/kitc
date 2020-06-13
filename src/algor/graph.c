@@ -2,12 +2,11 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:14:04
- * @LastEditTime: 2020-06-12 00:23:48
+ * @LastEditTime: 2020-06-14 01:23:03
  * @LastEditors: Please set LastEditors
  */
-#include "graph.h"
 #include "container/cn.h"
-#include "container/tv.h"
+#include "graph.h"
 
 static vertex_t* _create_vertex(Graph* graph, tv vertex) 
 {
@@ -15,11 +14,11 @@ static vertex_t* _create_vertex(Graph* graph, tv vertex)
     vertex_t* v =(vertex_t*) malloc (sizeof (vertex_t));
     v->vertex_id = vertex;
     // 这个找
-    Set_init(&v->edges, graph->compare_edge);
+    LinkArr_init(&v->edges, graph->compare_edge);
     return v;
 }
 static int _free_vertex(vertex_t* vertex) {
-    Set_free(&vertex->edges);
+    LinkArr_free(&vertex->edges);
     free(vertex);
     return 0;
 }
@@ -39,7 +38,7 @@ static int _free_edge (edge_t* pnode)
 int Graph_init(Graph* graph, int(*find_vertex)(tv, tv), int(*find_link)(tv, tv)) 
 {
     // 初始化图
-    Set_init(&graph->vertexes, find_vertex);
+    LinkArr_init(&graph->vertexes, find_vertex);
     graph->compare_edge = find_link;
     graph->compare_vertex   = find_vertex;
     return 0;
@@ -50,7 +49,7 @@ int Graph_free(Graph* graph)
 {
     // 把图给干掉了
     
-    // 把定点删了。
+    // 把顶点删了。
     for (it first = CN_first(&graph->vertexes); 
         !It_equal(first, CN_tail(&graph->vertexes)); 
         first = It_next(first)) {
@@ -59,7 +58,7 @@ int Graph_free(Graph* graph)
 
             Graph_delVertex(pv);
     }
-    Set_free(&graph->vertexes);
+    LinkArr_free(&graph->vertexes);
     graph->compare_edge   = NULL;
     graph->compare_vertex = NULL;
     return 0;
@@ -68,7 +67,7 @@ int Graph_free(Graph* graph)
 int Graph_addVertex(Graph* graph, tv vertex) 
 {
     vertex_t* v = _create_vertex(graph, vertex);
-    return Set_insert(&graph->vertexes, p2t(v));
+    return CN_add_tail(&graph->vertexes, p2t(v));
 }
 
 int Graph_addEdge(vertex_t* from, vertex_t* to, float weight)
@@ -76,14 +75,14 @@ int Graph_addEdge(vertex_t* from, vertex_t* to, float weight)
     // 首先得找一下 开始点 到 终结点 是不是在图中。
     if (Graph_getEdge(from, to->vertex_id) == NULL) {
         edge_t *p = _create_edge(to, weight);
-        return Set_insert(&from->edges, p2t(p));
+        return CN_add_tail(&from->edges, p2t(p));
     }
 }
 
 int Graph_delVertex(vertex_t* vertex)
 {
     tv rnode;
-    while (Set_rm_last(&vertex->edges, &rnode) != -1)
+    while (CN_rm_last(&vertex->edges, &rnode) != -1)
     {
         _free_edge(t2p(rnode));
     }
@@ -95,7 +94,7 @@ int Graph_delVertex(vertex_t* vertex)
 int Graph_delEdge(vertex_t* from, vertex_t* to)
 {
     tv rnode;
-    if (Set_rm_target(&from->edges, to->vertex_id, &rnode) != -1)
+    if (CN_rm_target(&from->edges, to->vertex_id, &rnode) != -1)
     {
         _free_edge(t2p(rnode));
     }
@@ -118,12 +117,12 @@ int Graph_indexingVertexes(Graph* graph)
 
 vertex_t* Graph_getVertex(Graph* graph, tv vertex_id) 
 {
-    it i = Set_find(&graph->vertexes, vertex_id);
+    it i = CN_find(&graph->vertexes, vertex_id);
     return It_valid(i) ? It_getptr(i) : NULL;
 }
 
 edge_t* Graph_getEdge(vertex_t* from, tv to_id) {
-    it i = Set_find(&from->edges, to_id);
+    it i = CN_find(&from->edges, to_id);
     return It_valid(i) ? It_getptr(i) : NULL;
 }
 
@@ -165,10 +164,10 @@ int Graph_addEdgeByMatrix(Graph* graph, Matrix* matrix)
     size_t size = CN_size(&graph->vertexes);
     if (matrix->col == size && matrix->row == size ) {
        tv arr[size];
-       Set_to_arr(&graph->vertexes, arr);
+       CN_to_arr(&graph->vertexes, arr);
        for (int i=0; i<matrix->row; ++i) {
            for (int j=0; j<matrix->col; ++j) {
-               if (Matrix_get(matrix,i,j) == 1.0f) {
+               if (Matrix_get(matrix,i,j) > 0.0f) {
                     // you lianxian
                     vertex_t* from = t2p(arr[i]);
                     vertex_t* to   = t2p(arr[j]);

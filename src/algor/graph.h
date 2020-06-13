@@ -2,16 +2,16 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:13:53
- * @LastEditTime: 2020-06-12 00:20:00
+ * @LastEditTime: 2020-06-14 00:53:46
  * @LastEditors: Please set LastEditors
  */
 #ifndef _GRAPH_H_
 #define _GRAPH_H_
 
-
 #include "container/tv.h"
-#include "container/set.h"
+#include "container/link_array.h"
 #include "matrix/matrix.h"
+
 typedef struct _vertex 
 {
     /* vertex id */
@@ -21,7 +21,7 @@ typedef struct _vertex
     /* 本顶点在列表中的索引，用于生成连接矩阵 */
     int indexing;
 
-    Set edges;
+    LinkArray edges;
 } vertex_t;
 
 typedef struct _edge
@@ -34,8 +34,7 @@ typedef struct _edge
 typedef struct _graph
 {
     /* data */
-    Set vertexes;
-    
+    LinkArray vertexes;
     int (*compare_edge)(tv node, tv find);
     int (*compare_vertex) (tv node, tv find);
 } Graph;
