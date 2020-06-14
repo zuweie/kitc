@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-06-13 10:14:00
- * @LastEditTime: 2020-06-14 08:55:11
+ * @LastEditTime: 2020-06-14 11:57:58
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /kitc/src/matrix/tsmatrix.c
@@ -67,7 +67,7 @@ TSMatrix* TSMatrix_create_transpose(TSMatrix* tsmatrix)
     TSMatrix* trans = TSMatrix_create(tsmatrix->col, tsmatrix->row);
     for (it first = CN_first(&tsmatrix->elems); !It_equal(first, CN_tail(&tsmatrix->elems)); first=It_next(first)) {
         ts_elem* elem = It_getptr(first);
-        float value = TSMatrix_get(tsmatrix, elem->position.y, elem->position.x);
+        float value = TSMatrix_get(tsmatrix, elem->position.x, elem->position.y);
         TSMatrix_set(trans, elem->position.y, elem->position.x, value);
     }
     return trans;
