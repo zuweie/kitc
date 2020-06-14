@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-06-09 16:11:26
- * @LastEditTime: 2020-06-14 00:47:12
+ * @LastEditTime: 2020-06-14 01:31:49
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /kitc/src/matrix/matrix.c
@@ -61,5 +61,6 @@ Matrix* Matrix_create_transpose (Matrix*  o_matrix)
 
 TSMatrix* Matrix_create_tsmatrix(Matrix* matrix) 
 {
-    return (TSMatrix*)NULL;
+    TSMatrix* tsmatrix = TSMatrix_create_by(matrix->row, matrix->col, Matrix_data(matrix));
+    return tsmatrix;
 }

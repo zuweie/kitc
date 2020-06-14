@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 10:14:04
- * @LastEditTime: 2020-06-14 01:23:03
+ * @LastEditTime: 2020-06-14 09:11:46
  * @LastEditors: Please set LastEditors
  */
 #include "container/cn.h"
@@ -126,11 +126,11 @@ edge_t* Graph_getEdge(vertex_t* from, tv to_id) {
     return It_valid(i) ? It_getptr(i) : NULL;
 }
 
-int Graph_getEdgeMatrix(Graph* graph, Matrix* matrix) 
+int Graph_getEdgeMatrix(Graph* graph, TSMatrix* tsmatrix) 
 {
     
     size_t size = CN_size(&graph->vertexes);
-    if (matrix->col == size && matrix->row == size ) {
+    if (tsmatrix->col == size && tsmatrix->row == size ) {
         Graph_indexingVertexes(graph);
 
         //Matrix* matrix = Matrix_create(size, size);
@@ -150,7 +150,7 @@ int Graph_getEdgeMatrix(Graph* graph, Matrix* matrix)
                 int x = pvertex->indexing;
                 int y = pedge->to->indexing;
 
-                Matrix_set(matrix, x, y, 1.0f);
+                TSMatrix_set(tsmatrix, x, y, 1.0f);
             }
         }
 
@@ -159,22 +159,18 @@ int Graph_getEdgeMatrix(Graph* graph, Matrix* matrix)
     return -1;
 } 
 
-int Graph_addEdgeByMatrix(Graph* graph, Matrix* matrix) 
+int Graph_addEdgeByMatrix(Graph* graph, TSMatrix* tsmatrix, float weight)
 {
     size_t size = CN_size(&graph->vertexes);
-    if (matrix->col == size && matrix->row == size ) {
-       tv arr[size];
-       CN_to_arr(&graph->vertexes, arr);
-       for (int i=0; i<matrix->row; ++i) {
-           for (int j=0; j<matrix->col; ++j) {
-               if (Matrix_get(matrix,i,j) > 0.0f) {
-                    // you lianxian
-                    vertex_t* from = t2p(arr[i]);
-                    vertex_t* to   = t2p(arr[j]);
-                    Graph_addEdge(from, to, 0.f);
-               }
-           }
-       }
+    if (tsmatrix->col == size && tsmatrix->row == size ) {
+        tv arr[size];
+        CN_to_arr(&graph->vertexes, arr);
+        for (it first; !It_equal(first, CN_tail(&graph->vertexes)); first = It_next(first)) {
+            ts_elem* elem = It_getptr(first);
+            vertex_t* from = t2p(arr[elem->position.x]);
+            vertex_t* to   = t2p(arr[elem->position.y]);
+            Graph_addEdge(from, to, weight);
+        }
        return 0;
     }
     return -1;

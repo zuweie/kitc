@@ -2,7 +2,7 @@
  * @Description: test case for unc
  * @Author: your name
  * @Date: 2019-09-04 10:43:36
- * @LastEditTime: 2020-06-14 01:24:19
+ * @LastEditTime: 2020-06-14 09:19:27
  * @LastEditors: Please set LastEditors
  */
 #include <stdio.h>
@@ -423,20 +423,23 @@ void test_graph ()
     LinkArr_free(&arr);
     */
    
-    Matrix* matrix = Matrix_create(CN_size(&graph.vertexes), CN_size(&graph.vertexes));
-    Graph_getEdgeMatrix(&graph, matrix);
+    //Matrix* matrix = Matrix_create(CN_size(&graph.vertexes), CN_size(&graph.vertexes));
+    size_t size = CN_size(&graph.vertexes);
+    TSMatrix* tsmatrix = TSMatrix_create(size, size);
 
-    Matrix_set(matrix, 1, 2, 1.0);
-    Graph_addEdgeByMatrix(&graph, matrix);
+    Graph_getEdgeMatrix(&graph, tsmatrix);
+
+    TSMatrix_set(tsmatrix, 1, 2, 1.0);
+    Graph_addEdgeByMatrix(&graph, tsmatrix, 0.f);
     
-    Matrix_inspect(matrix);
+    //Matrix_inspect(matrix);
     Graph_inspect(&graph, PRINTF_TV_ON_CHAR);
-    Matrix* transpose = Matrix_create_transpose(matrix);
-    Graph_addEdgeByMatrix(&graph, transpose);
+    TSMatrix* transpose = TSMatrix_create_transpose(tsmatrix);
+    Graph_addEdgeByMatrix(&graph, transpose, 0.f);
     Graph_inspect(&graph, PRINTF_TV_ON_CHAR);
 
-    Matrix_destroy(matrix);
-    Matrix_destroy(transpose);
+    TSMatrix_destroy(tsmatrix);
+    TSMatrix_destroy(transpose);
     Graph_free(&graph);
     
     CU_ASSERT(1);
