@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:46
- * @LastEditTime: 2020-06-11 10:46:27
+ * @LastEditTime: 2020-06-20 08:10:17
  * @LastEditors: Please set LastEditors
  */
 #ifndef _CONTAINER_H_
@@ -13,6 +13,7 @@
 #include "__type_value.h"
 #include "__iterator.h"
 #include "mem_pool/__mem_pool.h"
+typedef struct _iterator iterator_t;
 
 #define container_create(container_label, ...) container_label##_create(__VA_ARGS__)
 #define container_destroy(conatainer_label, ...) conatainer_label##_destroy(__VA_ARGS__)
@@ -73,9 +74,9 @@
     ((container_t*)(container))->mem_pool = (__mem_pool);                                   \
 } while (0)
 
-typedef struct _container container_t;
-typedef struct _iterator iterator_t;
-struct _container {
+//typedef struct _container container_t;
+
+typedef struct _container {
     iterator_t (*first) (container_t* container);   
     iterator_t (*last) (container_t * container);   
     iterator_t (*search) (container_t* container, iterator_t offset, type_value_t find, int (*compare)(type_value_t, type_value_t)); 
@@ -84,6 +85,6 @@ struct _container {
     int (*sort) (container_t* container, int(*compare)(type_value_t, type_value_t));
     size_t (*size) (container_t*);
     pool_t* mem_pool;
-};
+} container_t;
 
 #endif

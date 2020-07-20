@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-07 23:21:54
- * @LastEditTime: 2020-05-30 22:29:14
+ * @LastEditTime: 2020-06-20 08:11:01
  * @LastEditors: Please set LastEditors
  */
 #ifndef _ITERATOR_H_
@@ -35,12 +35,12 @@
 #define iterator_is_boundary(iter) (iterator_is_tail(iter) || iterator_is_head(iter))
 #define iterator_valid(iter) !iterator_is_boundary(iter)
 
-typedef struct _iterator iterator_t;
-struct _iterator {
+//typedef struct _iterator iterator_t;
+typedef struct _iterator {
     iterator_t (*move)(iterator_t, int step);
     void* reference;
     void* container;
-};
+}iterator_t;
 
 static inline 
 iterator_t get_iterator(void* __refer, void* __container, iterator_t (*__move)(iterator_t, int))
